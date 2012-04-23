@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+	inputmimetype="application/vnd.oasis.opendocument.text" xmlns="http://www.example.org/documenttests"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+
+	<import href="odfvaliditytests.xml" />
+
+	<test name="emptytextroundtrip">
+		<input>
+			<o:text>
+				<text:p>hello</text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<check href="validODF" />
+			<file path="content.xml">
+				<xpath expr="count(/o:document-content/o:body/text:p)=1" />
+			</file>
+		</output>
+	</test>
+</documenttests>

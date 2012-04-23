@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
+	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
+	<include schemaLocation="documenttestsconfig.xsd" />
+	<complexType name="inputType">
+		<sequence>
+			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<complexType name="operationType">
+		<sequence>
+		</sequence>
+	</complexType>
+	<simpleType name="filetypeType">
+		<restriction base="string">
+			<enumeration value="zip" />
+			<enumeration value="xml" />
+		</restriction>
+	</simpleType>
+	<simpleType name="mimetypeType">
+		<restriction base="string">
+			<enumeration value="application/vnd.oasis.opendocument.text" />
+			<enumeration value="application/vnd.oasis.opendocument.spreadsheet" />
+			<enumeration value="application/vnd.oasis.opendocument.presentation" />
+		</restriction>
+	</simpleType>
+	<complexType name="fileType">
+		<sequence>
+			<element name="xpath" type="tns:xpathType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="path" use="required" type="string" />
+	</complexType>
+	<complexType name="xpathType">
+		<attribute name="expr" use="required" type="string" />
+	</complexType>
+	<complexType name="outputType">
+		<sequence>
+			<element name="check" type="tns:checkRef" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="file" type="tns:fileType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="type" use="required" type="tns:filetypeType" />
+	</complexType>
+	<complexType name="checkRef">
+		<attribute name="href" use="required" type="anyURI" />
+	</complexType>
+	<complexType name="testType">
+		<sequence>
+			<element name="input" type="tns:inputType" />
+			<element name="operation" type="tns:operationType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="output" type="tns:outputType" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="documenttestsType">
+		<sequence>
+			<element name="import" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<attribute name="href" type="anyURI" use="required" />
+				</complexType>
+			</element>
+			<element name="test" type="tns:testType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="inputmimetype" type="tns:mimetypeType" use="required" />
+	</complexType>
+	<element name="documenttests" type="tns:documenttestsType">
+		<key name="uniqueTestNames">
+			<selector xpath="tns:test" />
+			<field xpath="@name" />
+		</key>
+	</element>
+</schema>

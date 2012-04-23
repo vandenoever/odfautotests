@@ -1,0 +1,24 @@
+<config xmlns="http://www.example.org/documenttests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+	<target name="Calligra">
+		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
+			<env name="DISPLAY" />
+			<env name="KDEDIRS" />
+			<env name="HOME" />
+			<argument value="--roundtrip-filename" />
+			<outfile />
+			<infile />
+		</command>
+	</target>
+	<target name="Abiword">
+		<command exe="/bin/cp">
+			<infile />
+			<outfile />
+		</command>
+		<command exe="/usr/bin/abiword">
+			<argument value="-t" />
+			<argument value="odt" />
+			<infile />
+		</command>
+	</target>
+</config>

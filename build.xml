@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="documenttester" default="jar" basedir=".">
+   <target name="checkforxjcchanges">
+	  <uptodate property="noxjcchanges" targetfile="src/org/example/documenttests/DocumenttestsType.java">
+		 <srcfiles dir="." includes="*.xsd"/>
+	  </uptodate>
+   </target>
+	<target name="xjc" depends="checkforxjcchanges" unless="noxjcchanges">
+		<java jar="lib/jaxb-xjc.jar" fork='true'>
+			<arg value="-xmlschema"/>
+			<arg value="-target"/>
+			<arg value="2.1"/>
+			<arg file="documenttests.xsd"/>
+			<arg value="-d"/>
+			<arg file="src"/>
+		</java>
+	</target>
+	<target name="compile" depends="xjc">
+		<mkdir dir="bin" />
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin" debug="on" debuglevel="source" />
+	</target>
+	<target name="jar" depends="compile" description="package the compiled code in a jar">
+		<jar destfile="odftester.jar" basedir="bin" level="9">
+			<manifest>
+				<attribute name="Main-Class" value="org.opendocumentformat.tester.Main" />
+			</manifest>
+		</jar>
+	</target>
+	<target name="run" depends="jar" description="run the tests">
+		<java jar="odftester.jar" fork='true'>
+			<arg file="config.xml"/>
+            <arg file="ODF10fragments.xml"/>
+		</java>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="src/org/example" />
+		<delete file="odftester.jar" />
+	</target>
+</project>
