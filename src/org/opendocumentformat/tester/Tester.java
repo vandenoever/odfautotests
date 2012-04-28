@@ -1,6 +1,7 @@
 package org.opendocumentformat.tester;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +12,22 @@ import org.example.documenttests.ArgumentType;
 import org.example.documenttests.CommandType;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
+import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
+import org.example.documenttests.InputReportType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
+import org.example.documenttests.TestreportType;
 import org.opendocumentformat.tester.InputCreator.ODFType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
+import org.opendocumentformat.tester.validator.OutputChecker;
 
 public class Tester {
 
 	private final List<DocumenttestsType> tests;
 	private final List<DocumenttestsconfigType> configs;
+
+	private final OutputChecker outputchecker = new OutputChecker();
 
 	public Tester() {
 		tests = new ArrayList<DocumenttestsType>();
@@ -35,15 +42,18 @@ public class Tester {
 		this.configs.add(config);
 	}
 
-	public void runAllTests() {
+	public DocumenttestsreportType runAllTests() {
+		DocumenttestsreportType report = new DocumenttestsreportType();
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
-				runAllTests(target);
+				report.getTestreport().addAll(runAllTests(target));
 			}
 		}
+		return report;
 	}
 
-	public void runAllTests(TargetType target) {
+	public List<TestreportType> runAllTests(TargetType target) {
+		List<TestreportType> testreports = new ArrayList<TestreportType>();
 		for (DocumenttestsType t : tests) {
 			ODFType type = null;
 			switch (t.getInputmimetype()) {
@@ -58,19 +68,25 @@ public class Tester {
 				break;
 			}
 			for (TestType test : t.getTest()) {
-				runTest(target, test, type);
+				testreports.add(runTest(target, test, type));
 			}
 		}
+		return testreports;
 	}
 
-	public void runTest(TargetType target, TestType test, ODFType type) {
+	public TestreportType runTest(TargetType target, TestType test, ODFType type) {
+		TestreportType report = new TestreportType();
 		System.out.println(target.getName() + " " + test.getName());
 		System.out.flush();
 		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
 		String path = creator.createInput(test.getInput());
-		for (CommandType cmd : target.getCommand()) {
-			path = runCommand(cmd, path);
-		}
+		InputReportType inputReport = new InputReportType();
+		inputReport.setValidation(outputchecker.check(path));
+		//for (CommandType cmd : target.getCommand()) {
+		//	path = runCommand(cmd, path);
+		//}
+		(new File(path)).delete();
+		return report;
 	}
 
 	public String runCommand(CommandType command, String inpath) {
@@ -91,7 +107,7 @@ public class Tester {
 		}
 		String env[] = new String[command.getEnv().size()];
 		i = 0;
-		for (EnvType e: command.getEnv()) {
+		for (EnvType e : command.getEnv()) {
 			String value = System.getenv(e.getName());
 			if (e.getValue() != null) {
 				value = e.getValue();

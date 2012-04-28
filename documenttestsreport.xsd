@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
+	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
+	<include schemaLocation="documenttestsconfig.xsd" />
+	<simpleType name="validationErrorType">
+		<restriction base="string">
+			<enumeration value="INVALIDZIPFILE" />
+			<enumeration value="INVALIDMIMETYPE" />
+			<enumeration value="DOUBLEZIPENTRY" />
+			<enumeration value="MISSINGVERSIONNUMBER" />
+			<enumeration value="INVALIDCONTENTXML" />
+			<enumeration value="INVALIDSTYLESXML" />
+		</restriction>
+	</simpleType>
+	<complexType name="validationReportType">
+		<sequence>
+			<element name="error" type="tns:validationErrorType"
+				minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<complexType name="inputReportType">
+		<sequence>
+			<element name="validation" type="tns:validationReportType" />
+		</sequence>
+	</complexType>
+	<complexType name="outputReportType">
+		<sequence>
+			<element name="validation" type="tns:validationReportType" />
+		</sequence>
+	</complexType>
+	<complexType name="targetReportType">
+		<sequence>
+			<element name="output" type="tns:outputReportType" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="testreportType">
+		<sequence>
+			<element name="input" type="tns:inputReportType" />
+			<element name="target" type="tns:targetReportType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="documenttestsreportType">
+		<sequence>
+			<element name="testreport" type="tns:testreportType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+		</sequence>
+	</complexType>
+	<element name="documenttestsreport" type="tns:documenttestsreportType">
+	</element>
+</schema>

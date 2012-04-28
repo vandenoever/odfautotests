@@ -2,6 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
 	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
 	<include schemaLocation="documenttestsconfig.xsd" />
+	<include schemaLocation="documenttestsreport.xsd" />
 	<complexType name="inputType">
 		<sequence>
 			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />

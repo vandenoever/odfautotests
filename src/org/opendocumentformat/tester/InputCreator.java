@@ -1,5 +1,6 @@
 package org.opendocumentformat.tester;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -55,6 +56,7 @@ public class InputCreator {
 	Document settings;
 	Document manifest;
 	Element bodyChild;
+	Element contentAutomaticStyles;
 	final Transformer xformer;
 
 	final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
@@ -74,9 +76,11 @@ public class InputCreator {
 					+ "<xsl:attribute name=\"{local-name()}\">"
 					+ "<xsl:value-of select=\".\"/>" + "</xsl:attribute>"
 					+ "</xsl:for-each>" + "<xsl:apply-templates/>"
-					+ "</xsl:element>" + "</xsl:template>" + "</xsl:stylesheet>";
+					+ "</xsl:element>" + "</xsl:template>"
+					+ "</xsl:stylesheet>";
 
-			StreamSource xslSource = new StreamSource(new StringReader(stylesheet));
+			StreamSource xslSource = new StreamSource(new StringReader(
+					stylesheet));
 			TransformerFactory tf = TransformerFactory.newInstance();
 			xformer = tf.newTransformer(xslSource);
 
@@ -105,6 +109,9 @@ public class InputCreator {
 		Element e = doc.getDocumentElement();
 		e.setPrefix("office");
 		setAttribute(e, "office", officens, "version", version.toString());
+		contentAutomaticStyles = doc.createElementNS(officens, "automatic-styles");
+		contentAutomaticStyles.setPrefix("office");
+		e.appendChild(contentAutomaticStyles);
 		Element body = doc.createElementNS(officens, "body");
 		body.setPrefix("office");
 		e.appendChild(body);
@@ -158,8 +165,8 @@ public class InputCreator {
 		return doc;
 	}
 
-	private static void setAttribute(Element e, String prefix, String ns, String name,
-			String value) {
+	private static void setAttribute(Element e, String prefix, String ns,
+			String name, String value) {
 		Attr a = e.getOwnerDocument().createAttributeNS(ns, name);
 		a.setPrefix(prefix);
 		a.setValue(value);
@@ -175,11 +182,15 @@ public class InputCreator {
 	}
 
 	private void setDocumentPart(Element e) {
-		if (e.getNamespaceURI().equals(officens)
-				&& e.getLocalName().equals(type.toString())) {
+		if (e.getNamespaceURI().equals(officens)) {
 			e = (Element) content.importNode(e, true);
 			e.setPrefix("office");
-			bodyChild.getParentNode().replaceChild(e, bodyChild);
+			if (e.getLocalName().equals(type.toString())) {
+				bodyChild.getParentNode().replaceChild(e, bodyChild);
+			} else if (e.getLocalName().equals("automatic-styles")) {
+				contentAutomaticStyles.getParentNode().replaceChild(e,
+						contentAutomaticStyles);
+			}
 		} else {
 			System.err.println("No support for setting element {"
 					+ e.getNamespaceURI() + "}" + e.getLocalName());
@@ -200,9 +211,11 @@ public class InputCreator {
 	String createInput(InputType input) {
 		createDocument(input);
 
-		String filename = "in.odt";
+		String filename = null;
 		try {
-			FileOutputStream fos = new FileOutputStream(filename);
+			File f = File.createTempFile("input", ".odt");
+			filename = f.getAbsolutePath();
+			FileOutputStream fos = new FileOutputStream(f);
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			zos.setMethod(ZipOutputStream.STORED);
 			addEntry(zos, "mimetype", "application/vnd.oasis.opendocument."
@@ -213,6 +226,10 @@ public class InputCreator {
 			addEntry(zos, "styles.xml", styles);
 			addEntry(zos, "meta.xml", meta);
 			addEntry(zos, "settings.xml", settings);
+			zos.flush();
+			fos.flush();
+			fos.getChannel().force(true);
+			fos.getFD().sync();
 			zos.close();
 			fos.close();
 		} catch (IOException e) {
