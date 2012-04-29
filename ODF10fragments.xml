@@ -35,7 +35,7 @@
 			<o:text>
 				<draw:rect draw:style-name="gr1" text:anchor-type="page"
 					text:anchor-page-number="1" svg:x="5cm" svg:y="5cm" svg:width="5cm"
-					svg:height="5mm" draw:transform="skewY(0.785)" b="b"/>
+					svg:height="5mm" draw:transform="skewY(0.785)" />
 			</o:text>
 		</input>
 		<output type="zip">
