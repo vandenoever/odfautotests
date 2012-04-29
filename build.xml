@@ -17,13 +17,17 @@
 	</target>
 	<target name="compile" depends="xjc">
 		<mkdir dir="bin" />
-		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin" debug="on" debuglevel="source" />
+        <copy todir="bin">
+            <fileset dir="rng"/>
+        </copy>
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
 		<jar destfile="odftester.jar" basedir="bin" level="9">
 			<manifest>
 				<attribute name="Main-Class" value="org.opendocumentformat.tester.Main" />
 			</manifest>
+            <zipfileset src="lib/jing.jar" includes="**/*.java **/*.class **/*.properties"/>
 		</jar>
 	</target>
 	<target name="run" depends="jar" description="run the tests">

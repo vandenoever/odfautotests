@@ -59,8 +59,8 @@ public class InputCreator {
 	Element contentAutomaticStyles;
 	final Transformer xformer;
 
-	final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
-	final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
+	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
 	InputCreator(ODFType type, ODFVersion version) {
 		this.type = type;

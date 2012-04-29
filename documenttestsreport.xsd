@@ -2,7 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
 	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
 	<include schemaLocation="documenttestsconfig.xsd" />
-	<simpleType name="validationErrorType">
+	<simpleType name="validationErrorTypeType">
 		<restriction base="string">
 			<enumeration value="INVALIDZIPFILE" />
 			<enumeration value="INVALIDMIMETYPE" />
@@ -10,8 +10,23 @@
 			<enumeration value="MISSINGVERSIONNUMBER" />
 			<enumeration value="INVALIDCONTENTXML" />
 			<enumeration value="INVALIDSTYLESXML" />
+			<enumeration value="MISSINGSTYLESXML" />
+			<enumeration value="MISSINGCONTENTXML" />
+			<enumeration value="INVALIDVERSIONNUMBER" />
 		</restriction>
 	</simpleType>
+	<complexType name="validationErrorType">
+		<attribute name="type" type="tns:validationErrorTypeType"
+			use="required" />
+		<attribute name="message" type="string" />
+	</complexType>
+	<complexType name="missingFileErrorType">
+		<complexContent>
+			<extension base="tns:validationErrorType">
+				<attribute name="path" type="string" use="required" />
+			</extension>
+		</complexContent>
+	</complexType>
 	<complexType name="validationReportType">
 		<sequence>
 			<element name="error" type="tns:validationErrorType"
@@ -27,6 +42,8 @@
 		<sequence>
 			<element name="validation" type="tns:validationReportType" />
 		</sequence>
+		<attribute name="size" type="long" use="required" />
+		<attribute name="path" type="string" use="required" />
 	</complexType>
 	<complexType name="targetReportType">
 		<sequence>

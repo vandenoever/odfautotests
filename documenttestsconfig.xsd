@@ -36,5 +36,9 @@
 		</sequence>
 	</complexType>
 	<element name="config" type="tns:documenttestsconfigType">
+		<key name="uniqueReportNames">
+			<selector xpath="tns:test" />
+			<field xpath="@name" />
+		</key>
 	</element>
 </schema>

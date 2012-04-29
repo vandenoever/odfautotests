@@ -15,6 +15,8 @@ import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
 import org.example.documenttests.InputReportType;
+import org.example.documenttests.OutputReportType;
+import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
 import org.example.documenttests.TestreportType;
@@ -44,16 +46,7 @@ public class Tester {
 
 	public DocumenttestsreportType runAllTests() {
 		DocumenttestsreportType report = new DocumenttestsreportType();
-		for (DocumenttestsconfigType config : configs) {
-			for (TargetType target : config.getTarget()) {
-				report.getTestreport().addAll(runAllTests(target));
-			}
-		}
-		return report;
-	}
-
-	public List<TestreportType> runAllTests(TargetType target) {
-		List<TestreportType> testreports = new ArrayList<TestreportType>();
+		List<TestreportType> testreports = report.getTestreport();
 		for (DocumenttestsType t : tests) {
 			ODFType type = null;
 			switch (t.getInputmimetype()) {
@@ -68,24 +61,40 @@ public class Tester {
 				break;
 			}
 			for (TestType test : t.getTest()) {
-				testreports.add(runTest(target, test, type));
+				testreports.add(runTest(test, type));
 			}
 		}
-		return testreports;
+		return report;
 	}
 
-	public TestreportType runTest(TargetType target, TestType test, ODFType type) {
+	public TestreportType runTest(TestType test, ODFType type) {
 		TestreportType report = new TestreportType();
-		System.out.println(target.getName() + " " + test.getName());
-		System.out.flush();
+		report.setName(test.getName());
 		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
 		String path = creator.createInput(test.getInput());
 		InputReportType inputReport = new InputReportType();
 		inputReport.setValidation(outputchecker.check(path));
-		//for (CommandType cmd : target.getCommand()) {
-		//	path = runCommand(cmd, path);
-		//}
+		report.setInput(inputReport);
+		for (DocumenttestsconfigType config : configs) {
+			for (TargetType target : config.getTarget()) {
+				report.getTarget().add(runTest(target, path));
+			}
+		}
 		(new File(path)).delete();
+		return report;
+	}
+
+	public TargetReportType runTest(TargetType target, String path) {
+		TargetReportType report = new TargetReportType();
+		report.setName(target.getName());
+		OutputReportType output = new OutputReportType();
+		report.setOutput(output);
+		for (CommandType cmd : target.getCommand()) {
+			path = runCommand(cmd, path);
+		}
+		output.setPath(path);
+		output.setSize((new File(path)).length());
+		output.setValidation(outputchecker.check(path));
 		return report;
 	}
 
