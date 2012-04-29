@@ -8,11 +8,19 @@
 			<enumeration value="INVALIDMIMETYPE" />
 			<enumeration value="DOUBLEZIPENTRY" />
 			<enumeration value="MISSINGVERSIONNUMBER" />
-			<enumeration value="INVALIDCONTENTXML" />
-			<enumeration value="INVALIDSTYLESXML" />
-			<enumeration value="MISSINGSTYLESXML" />
+			<enumeration value="MISSINGMANIFESTXML" />
+			<enumeration value="INVALIDMANIFESTXML" />
 			<enumeration value="MISSINGCONTENTXML" />
+			<enumeration value="INVALIDCONTENTXML" />
+			<enumeration value="MISSINGSTYLESXML" />
+			<enumeration value="INVALIDSTYLESXML" />
+			<enumeration value="MISSINGMETAXML" />
+			<enumeration value="INVALIDMETAXML" />
+			<enumeration value="MISSINGSETTINGSXML" />
+			<enumeration value="INVALIDSETTINGSXML" />
+			<enumeration value="MISSINGFILE" />
 			<enumeration value="INVALIDVERSIONNUMBER" />
+			<enumeration value="INCONSISTENTVERSIONNUMBER" />
 		</restriction>
 	</simpleType>
 	<complexType name="validationErrorType">

@@ -109,7 +109,8 @@ public class InputCreator {
 		Element e = doc.getDocumentElement();
 		e.setPrefix("office");
 		setAttribute(e, "office", officens, "version", version.toString());
-		contentAutomaticStyles = doc.createElementNS(officens, "automatic-styles");
+		contentAutomaticStyles = doc.createElementNS(officens,
+				"automatic-styles");
 		contentAutomaticStyles.setPrefix("office");
 		e.appendChild(contentAutomaticStyles);
 		Element body = doc.createElementNS(officens, "body");

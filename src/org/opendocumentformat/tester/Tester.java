@@ -2,6 +2,7 @@ package org.opendocumentformat.tester;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +111,13 @@ public class Tester {
 			} else if (name.equals("infile")) {
 				cmd[i] = inpath;
 			} else if (name.equals("outfile")) {
-				cmd[i] = outpath = "out.odt";
+				File f = null;
+				try {
+					f = File.createTempFile("output", ".odt");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				cmd[i] = outpath = f.getAbsolutePath();
 			}
 			++i;
 		}

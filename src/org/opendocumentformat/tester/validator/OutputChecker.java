@@ -1,6 +1,7 @@
 package org.opendocumentformat.tester.validator;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,16 +24,15 @@ import org.example.documenttests.ValidationErrorTypeType;
 import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.InputCreator;
 import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
+import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.thaiopensource.util.PropertyMapBuilder;
-import com.thaiopensource.validate.Schema;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.ValidationDriver;
-import com.thaiopensource.validate.Validator;
 import com.thaiopensource.validate.prop.rng.RngProperty;
 import com.thaiopensource.validate.rng.SAXSchemaReader;
 import com.thaiopensource.xml.sax.ErrorHandlerImpl;
@@ -78,33 +79,7 @@ public class OutputChecker {
 
 	private class OdfData {
 		public String version;
-
-	}
-
-	static Validator loadValidator(String path) {
-		SchemaReader schemaReader = SAXSchemaReader.getInstance();
-		Schema schema;
-		ErrorHandlerImpl eh = new ErrorHandlerImpl(System.out);
-		PropertyMapBuilder properties = new PropertyMapBuilder();
-		properties.put(ValidateProperty.ERROR_HANDLER, eh);
-		RngProperty.CHECK_ID_IDREF.add(properties);
-		properties.put(RngProperty.CHECK_ID_IDREF, null);
-		try {
-			schema = schemaReader.createSchema(
-					ValidationDriver.fileInputSource(new File(path)),
-					properties.toPropertyMap());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		// can use different error handler here (try DraconianErrorHandler
-		// http://www.thaiopensource.com/relaxng/api/jing/com/thaiopensource/xml/sax/DraconianErrorHandler.html)
-		PropertyMapBuilder builder = new PropertyMapBuilder();
-		ErrorHandler seh = new ErrorHandlerImpl();
-		builder.put(ValidateProperty.ERROR_HANDLER, seh);
-
-		// Validator is NOT thread safe
-		return schema.createValidator(builder.toPropertyMap());
+		public Set<String> entries = new HashSet<String>();
 	}
 
 	static void extract(String target, String path) {
@@ -178,7 +153,32 @@ public class OutputChecker {
 			factory.setCoalescing(false);
 			factory.setValidating(false);
 			factory.setExpandEntityReferences(true);
+			factory.setFeature("http://xml.org/sax/features/namespaces", true);
+			factory.setFeature("http://xml.org/sax/features/validation", false);
+			factory.setFeature(
+					"http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
+					false);
+			factory.setFeature(
+					"http://apache.org/xml/features/nonvalidating/load-external-dtd",
+					false);
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			builder = factory.newDocumentBuilder();
+			builder.setEntityResolver(new EntityResolver() {
+				public InputSource resolveEntity(String publicId,
+						String systemId) throws SAXException, IOException {
+					// deal with <!DOCTYPE manifest:manifest PUBLIC
+					// "-//OpenOffice.org//DTD Manifest 1.0//EN" "Manifest.dtd">
+					if (systemId.contains("Manifest.dtd")) {
+						System.out.println(systemId); // this deactivates the
+														// open office DTD
+						return new InputSource(new ByteArrayInputStream(""
+								.getBytes()));
+					} else {
+						return null;
+					}
+				}
+			});
+
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -203,99 +203,93 @@ public class OutputChecker {
 
 		checkMimetypeFile(odfpath, report);
 
-		Set<String> entrynames = new HashSet<String>();
 		OdfData data = new OdfData();
 		try {
 			ZipFile zip = new ZipFile(odfpath);
 			checkStylesXml(zip, report, data);
-			checkManifestXml(zip, report);
-			/*
-			 * Enumeration<?> entries = zip.entries(); while
-			 * (entries.hasMoreElements()) { ZipEntry ze = (ZipEntry)
-			 * entries.nextElement(); if (entrynames.contains(ze.getName())) {
-			 * System.err.println(pos + " double entry:'" + ze.getName() + "'");
-			 * report(report, ValidationErrorTypeType.DOUBLEZIPENTRY); }
-			 * entrynames.add(ze.getName()); version = checkEntry(ze.getName(),
-			 * zip.getInputStream(ze), version, report); pos++; }
-			 */
+			checkManifestXml(zip, report, data);
+			checkContentXml(zip, report, data);
+			checkMetaXml(zip, report, data);
+			checkSettingsXml(zip, report, data);
 		} catch (IOException e) {
 			report(report, ValidationErrorTypeType.INVALIDZIPFILE,
 					e.getMessage());
+			e.printStackTrace();
 			return report;
 		}
 		return report;
 	}
 
-	private void checkManifestXml(ZipFile zip, ValidationReportType report) {
-
-	}
-
-	private String checkEntry(String name, InputStream in, String version,
-			ValidationReportType report) {
-		String fileversion = null;
-		if (name.equals("content.xml")) {
-			fileversion = checkContentXml(in, version, report);
-		}
-		/*
-		 * if (name.equals("meta.xml")) { fileversion = checkMetaXml(in,
-		 * version, report); } if (name.equals("settings.xml")) { fileversion =
-		 * checkSettingsXml(in, version, report); }
-		 */
-		if (version == null) {
-			fileversion = findVersion(in);
-			if (name.equals("content.xml") || name.equals("styles.xml")
-					|| name.equals("meta.xml") || name.equals("settings.xml")) {
-				if (fileversion == null) {
-					report(report, ValidationErrorTypeType.MISSINGVERSIONNUMBER);
-					return version;
-				}
-			}
-		}
-		return fileversion;
-	}
-
-	private String checkContentXml(ZipFile zip, ValidationReportType report) {
-		return "1.2";
-	}
-
-	private String checkContentXml(InputStream in, String version,
-			ValidationReportType report) {
-		validateRelaxNG(odf12Validator, in,
-				ValidationErrorTypeType.INVALIDCONTENTXML, report);
-		return "1.2";
-	}
-
 	private void checkStylesXml(ZipFile zip, ValidationReportType report,
 			OdfData data) throws IOException {
-		ZipEntry ze = zip.getEntry("styles.xml");
+		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSTYLESXML,
+				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml");
+	}
+
+	private void checkContentXml(ZipFile zip, ValidationReportType report,
+			OdfData data) throws IOException {
+		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDCONTENTXML,
+				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml");
+	}
+	
+	private void checkMetaXml(ZipFile zip, ValidationReportType report,
+			OdfData data) throws IOException {
+		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDMETAXML,
+				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml");
+	}
+	
+	private void checkSettingsXml(ZipFile zip, ValidationReportType report,
+			OdfData data) throws IOException {
+		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSETTINGSXML,
+				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml");
+	}
+
+	private Document checkXml(ZipFile zip, ValidationReportType report,
+			OdfData data, ValidationErrorTypeType invalid,
+			ValidationErrorTypeType missing, String path) throws IOException {
+		ZipEntry ze = zip.getEntry(path);
 		if (ze == null) {
-			report(report, ValidationErrorTypeType.MISSINGSTYLESXML);
-			return;
+			report(report, missing);
+			return null;
 		}
-		Document styles = null;
+		Document doc = null;
 		try {
-			styles = documentBuilder.parse(zip.getInputStream(ze));
+			doc = documentBuilder.parse(zip.getInputStream(ze));
 		} catch (SAXException e) {
-			report(report, ValidationErrorTypeType.INVALIDSTYLESXML,
-					e.getMessage());
-			System.err.println("STYLESXML: " + e.getMessage());
-			return;
+			report(report, invalid, e.getMessage());
+			return null;
 		}
-		if (!styles.getDocumentElement().hasAttributeNS(InputCreator.officens,
-				"version")) {
-			report(report, ValidationErrorTypeType.MISSINGVERSIONNUMBER,
-					"styles.xml");
+		checkVersion(data, doc, report, InputCreator.officens, path);
+		checkXml(zip.getInputStream(ze), data.version, report, invalid);
+		return doc;
+	}
+
+	private void checkVersion(OdfData data, Document doc,
+			ValidationReportType report, String namespace, String filename) {
+		String version = null;
+		if (!doc.getDocumentElement().hasAttributeNS(namespace, "version")) {
+			if (!namespace.equals(InputCreator.manifestns)) {
+				report(report, ValidationErrorTypeType.MISSINGVERSIONNUMBER,
+						filename);
+			}
 		} else {
-			data.version = styles.getDocumentElement().getAttributeNS(
-					InputCreator.officens, "version");
-			if (!data.version.equals("1.2") && !data.version.equals("1.1")
-					&& !data.version.equals("1.0")) {
+			version = doc.getDocumentElement().getAttributeNS(namespace,
+					"version");
+		}
+		if (version != null) {
+			if (!"1.2".equals(version) && !"1.1".equals(version)
+					&& !"1.0".equals(version)) {
 				report(report, ValidationErrorTypeType.INVALIDVERSIONNUMBER,
-						data.version);
+						version);
+			}
+			if (data.version != null && !data.version.equals(version)) {
+				report(report,
+						ValidationErrorTypeType.INCONSISTENTVERSIONNUMBER,
+						version + " != " + data.version);
+			} else {
+				data.version = version;
 			}
 		}
-		checkXml(zip.getInputStream(ze), data.version, report,
-				ValidationErrorTypeType.INVALIDSTYLESXML);
 	}
 
 	private void checkXml(InputStream in, String version,
@@ -312,11 +306,58 @@ public class OutputChecker {
 		}
 	}
 
-	private String checkManifestXml(InputStream in, String version,
-			ValidationReportType report) {
-		validateRelaxNG(odf12Validator, in,
-				ValidationErrorTypeType.INVALIDSTYLESXML, report);
-		return "1.2";
+	private void checkManifestXml(InputStream in, String version,
+			ValidationReportType report, ValidationErrorTypeType error) {
+		ValidationDriver driver = null;
+		if ("1.2".equals(version)) {
+			driver = odf12manifestValidator;
+		} else if ("1.1".equals(version)) {
+			driver = odf11manifestValidator;
+		} else if ("1.0".equals(version)) {
+		}
+		if (driver != null) {
+			validateRelaxNG(driver, in, error, report);
+		}
+	}
+
+	private void checkManifestXml(ZipFile zip, ValidationReportType report,
+			OdfData data) throws IOException {
+		ZipEntry ze = zip.getEntry("META-INF/manifest.xml");
+		if (ze == null) {
+			report(report, ValidationErrorTypeType.MISSINGMANIFESTXML);
+			return;
+		}
+		Document manifest = null;
+		try {
+			manifest = documentBuilder.parse(zip.getInputStream(ze));
+		} catch (Exception e) {
+			report(report, ValidationErrorTypeType.INVALIDMANIFESTXML,
+					e.getMessage());
+			return;
+		}
+		checkVersion(data, manifest, report, InputCreator.manifestns,
+				"META-INF/manifest.xml");
+		checkManifestXml(zip.getInputStream(ze), data.version, report,
+				ValidationErrorTypeType.INVALIDMANIFESTXML);
+		Node n = manifest.getDocumentElement().getFirstChild();
+		while (n != null) {
+			if (n.getNodeType() == Node.ELEMENT_NODE
+					&& n.getNamespaceURI().equals(InputCreator.manifestns)
+					&& "file-entry".equals(n.getLocalName())) {
+				String path = n.getAttributes()
+						.getNamedItemNS(InputCreator.manifestns, "full-path")
+						.getNodeValue();
+				if (path != null && !"/".equals(path) && !path.endsWith("/")) {
+					ZipEntry member = zip.getEntry(path);
+					if (member == null) {
+						report(report, ValidationErrorTypeType.MISSINGFILE,
+								path);
+					}
+					data.entries.add(path);
+				}
+			}
+			n = n.getNextSibling();
+		}
 	}
 
 	private void validateRelaxNG(ValidationDriver driver, InputStream in,
@@ -328,12 +369,9 @@ public class OutputChecker {
 				report(report, errorIfInvalid, errorbuffer.toString());
 			}
 		} catch (Exception e) {
-			report(report, errorIfInvalid, errorbuffer.toString());
+			report(report, errorIfInvalid,
+					errorbuffer.toString() + e.getMessage());
 		}
-	}
-
-	private String findVersion(InputStream in) {
-		return "1.2";
 	}
 
 	private void checkMimetypeFile(String odfpath, ValidationReportType report) {

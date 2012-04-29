@@ -20,6 +20,5 @@
 			<argument value="odt" />
 			<infile />
 		</command>
-		<command exe="/bin/sync"/>
 	</target>
 </config>
