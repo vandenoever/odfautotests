@@ -100,11 +100,11 @@ public class Tester {
 	}
 
 	public String runCommand(CommandType command, String inpath) {
-		String cmd[] = new String[command.getInfileOrOutfileOrArgument().size() + 1];
+		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
 		String outpath = inpath;
 		cmd[0] = command.getExe();
 		int i = 1;
-		for (JAXBElement<?> a : command.getInfileOrOutfileOrArgument()) {
+		for (JAXBElement<?> a : command.getInfileOrOutfileOrOutdir()) {
 			String name = a.getName().getLocalPart();
 			if (a.getValue() instanceof ArgumentType) {
 				cmd[i] = ((ArgumentType) a.getValue()).getValue();
@@ -118,6 +118,10 @@ public class Tester {
 					e1.printStackTrace();
 				}
 				cmd[i] = outpath = f.getAbsolutePath();
+			} else if (name.equals("outdir")) {
+				cmd[i] = "tmp";
+				outpath = cmd[i] + File.separator
+						+ (new File(inpath)).getName();
 			}
 			++i;
 		}

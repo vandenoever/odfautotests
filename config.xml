@@ -21,4 +21,14 @@
 			<infile />
 		</command>
 	</target>
+	<target name="LibreOffice">
+		<command exe="/opt/libreoffice3.5/program/swriter">
+			<argument value="--headless" />
+			<argument value="--convert-to" />
+			<argument value="odt:writer8" />
+			<argument value="--outdir" />
+			<outdir/>
+			<infile />
+		</command>
+	</target>
 </config>

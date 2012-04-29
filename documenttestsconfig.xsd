@@ -17,6 +17,7 @@
 			<choice minOccurs="0" maxOccurs="unbounded">
 				<element name="infile" type="tns:emptyElement" />
 				<element name="outfile" type="tns:emptyElement" />
+				<element name="outdir" type="tns:emptyElement" />
 				<element name="argument" type="tns:argumentType" />
 			</choice>
 		</sequence>
