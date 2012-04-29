@@ -3,11 +3,11 @@ package org.opendocumentformat.tester.validator;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -49,6 +49,10 @@ public class OutputChecker {
 
 	class ErrorBuffer extends Writer {
 		private StringWriter buffer;
+
+		public ErrorBuffer() {
+			reset();
+		}
 
 		public void reset() {
 			buffer = new StringWriter();
@@ -103,8 +107,30 @@ public class OutputChecker {
 		return schema.createValidator(builder.toPropertyMap());
 	}
 
-	static ValidationDriver createValidationDriver(String path,
+	static void extract(String target, String path) {
+		InputStream i = OutputChecker.class.getClassLoader()
+				.getResourceAsStream(path);
+		try {
+			FileOutputStream out = new FileOutputStream(target);
+			int c;
+			while ((c = i.read()) != -1) {
+				out.write(c);
+			}
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	static ValidationDriver createValidationDriver(String tmpdir, String path,
 			ErrorBuffer errorbuffer) {
+		File rng = new File(tmpdir + File.separator + path);
+		if (!rng.exists()) {
+			extract(rng.getAbsolutePath(), path);
+		}
+		String rngpath = rng.getAbsolutePath();
+
 		ErrorHandlerImpl eh = new ErrorHandlerImpl(errorbuffer);
 		SchemaReader schemaReader = SAXSchemaReader.getInstance();
 		PropertyMapBuilder properties = new PropertyMapBuilder();
@@ -112,14 +138,12 @@ public class OutputChecker {
 		RngProperty.CHECK_ID_IDREF.add(properties);
 		properties.put(RngProperty.CHECK_ID_IDREF, null);
 
-		URL url = OutputChecker.class.getClassLoader().getResource(path);
 		ValidationDriver driver = new ValidationDriver(
 				properties.toPropertyMap(), schemaReader);
-		InputSource in = ValidationDriver.uriOrFileInputSource(url.toString());
+		InputSource in = ValidationDriver.uriOrFileInputSource(rngpath);
 		try {
 			if (!driver.loadSchema(in)) {
-				System.err.println("Could not load schema " + path + ".");
-				driver = null;
+				throw new Error("Could not load schema " + rngpath + ".");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,17 +154,20 @@ public class OutputChecker {
 
 	public OutputChecker() {
 		errorbuffer = new ErrorBuffer();
-		odf11Validator = createValidationDriver("OpenDocument-schema-v1.1.rng",
-				errorbuffer);
-		odf11strictValidator = createValidationDriver(
+		String tmpdir = "rng";
+		(new File(tmpdir)).mkdir();
+
+		odf11Validator = createValidationDriver(tmpdir,
+				"OpenDocument-schema-v1.1.rng", errorbuffer);
+		odf11strictValidator = createValidationDriver(tmpdir,
 				"OpenDocument-strict-schema-v1.1.rng", errorbuffer);
-		odf11manifestValidator = createValidationDriver(
+		odf11manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer);
-		odf12manifestValidator = createValidationDriver(
+		odf12manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer);
-		odf12dsigValidator = createValidationDriver(
+		odf12dsigValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
-		odf12Validator = createValidationDriver(
+		odf12Validator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-schema.rng", errorbuffer);
 
 		DocumentBuilder builder = null;

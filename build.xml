@@ -27,7 +27,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.opendocumentformat.tester.Main" />
 			</manifest>
-            <zipfileset src="lib/jing.jar" includes="**/*.java **/*.class **/*.properties"/>
+            <zipfileset src="lib/jing.jar" includes="**/*"/>
 		</jar>
 	</target>
 	<target name="run" depends="jar" description="run the tests">
