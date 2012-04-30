@@ -56,12 +56,12 @@ public class OutputChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
-	private final ValidationDriver odf11Validator;
+	//private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
 	private final ValidationDriver odf12Validator;
 	private final ValidationDriver odf12manifestValidator;
-	private final ValidationDriver odf12dsigValidator;
+	//private final ValidationDriver odf12dsigValidator;
 	private final ErrorBuffer errorbuffer;
 	private final DocumentBuilder documentBuilder;
 	private final XPathFactory factory = XPathFactory.newInstance();
@@ -155,16 +155,16 @@ public class OutputChecker {
 				"OpenDocument-schema-v1.0-os.rng", errorbuffer);
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer);
-		odf11Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.1.rng", errorbuffer);
+		//odf11Validator = createValidationDriver(tmpdir,
+		//		"OpenDocument-schema-v1.1.rng", errorbuffer);
 		odf11strictValidator = createValidationDriver(tmpdir,
 				"OpenDocument-strict-schema-v1.1.rng", errorbuffer);
 		odf11manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer);
 		odf12manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer);
-		odf12dsigValidator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
+		//odf12dsigValidator = createValidationDriver(tmpdir,
+		//		"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
 		odf12Validator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-schema.rng", errorbuffer);
 
