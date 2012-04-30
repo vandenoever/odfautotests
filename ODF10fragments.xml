@@ -16,7 +16,6 @@
 			</o:text>
 		</input>
 		<output type="zip">
-			<check href="validODF" />
 			<file path="content.xml">
 				<xpath expr="count(/o:document-content/o:body/text:p)=1" />
 			</file>
@@ -39,7 +38,6 @@
 			</o:text>
 		</input>
 		<output type="zip">
-			<check href="validODF" />
 		</output>
 	</test>
 

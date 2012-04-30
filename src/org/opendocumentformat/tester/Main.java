@@ -2,6 +2,7 @@ package org.opendocumentformat.tester;
 
 import java.io.File;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -10,11 +11,15 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
+import org.xml.sax.SAXException;
 
 public class Main {
 
@@ -27,23 +32,41 @@ public class Main {
 		class Handler extends ValidationEventCollector {
 			public int linenumber;
 			public int offset;
+			public ValidationEvent lastEvent = null;
 
 			@Override
 			public boolean handleEvent(ValidationEvent event) {
 				linenumber = event.getLocator().getLineNumber();
 				offset = event.getLocator().getOffset();
+				lastEvent = event;
 				return false;
 			}
 		}
 
 		Loader() throws JAXBException {
+			final SchemaFactory schemaFactory = SchemaFactory
+					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+			String dir = "/home/oever/work/workspace/odfautotests/";
+			Source source[] = new Source[] {
+					new StreamSource(dir + "documenttests.xsd"),
+					new StreamSource(dir + "documenttestsreport.xsd"),
+					new StreamSource(dir + "documenttestsconfig.xsd") };
+			Schema schema = null;
+			try {
+				schema = schemaFactory.newSchema(source);
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+
 			jaxbContext = JAXBContext.newInstance(DocumenttestsType.class);
 			unmarshaller = jaxbContext.createUnmarshaller();
+			handler = new Handler();
+			unmarshaller.setEventHandler(handler);
+			unmarshaller.setSchema(schema);
 			marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
-			handler = new Handler();
-			unmarshaller.setEventHandler(handler);
 		}
 
 		DocumenttestsType loadTests(String path) throws JAXBException {
@@ -53,7 +76,8 @@ public class Main {
 			return root.getValue();
 		}
 
-		DocumenttestsconfigType loadConfig(String path) throws JAXBException {
+		DocumenttestsconfigType loadConfig(String path)
+				throws JAXBException {
 			JAXBElement<DocumenttestsconfigType> root;
 			root = unmarshaller.unmarshal(new StreamSource(new File(path)),
 					DocumenttestsconfigType.class);
@@ -92,12 +116,21 @@ public class Main {
 					DocumenttestsconfigType config = loader.loadConfig(arg);
 					tester.addConfig(config);
 				} catch (JAXBException e2) {
-					System.err.println("Could not load " + arg + " line: "
-							+ linenumber + " " + loader.handler.linenumber);
+					Throwable ex = e;
 					if (loader.handler.linenumber > linenumber) {
-						System.err.println(e2.getMessage());
+						linenumber = loader.handler.linenumber;
+						ex = e2;
+					}
+					System.err.print("Could not load " + arg + " line "
+							+ linenumber + ": ");
+					if (ex.getMessage() == null) {
+						ex = e.getCause();
+						if (ex.getMessage() == null) {
+						    ex.printStackTrace();
+						}
+						System.err.println(ex.getMessage());
 					} else {
-						System.err.println(e.getMessage());
+						System.err.println(ex.getMessage());
 					}
 				}
 			}
