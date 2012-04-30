@@ -48,10 +48,8 @@ public class Main {
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
 			String dir = "/home/oever/work/workspace/odfautotests/";
-			Source source[] = new Source[] {
-					new StreamSource(dir + "documenttests.xsd"),
-					new StreamSource(dir + "documenttestsreport.xsd"),
-					new StreamSource(dir + "documenttestsconfig.xsd") };
+			Source source[] = new Source[] { new StreamSource(dir
+					+ "documenttests.xsd") };
 			Schema schema = null;
 			try {
 				schema = schemaFactory.newSchema(source);
@@ -76,8 +74,7 @@ public class Main {
 			return root.getValue();
 		}
 
-		DocumenttestsconfigType loadConfig(String path)
-				throws JAXBException {
+		DocumenttestsconfigType loadConfig(String path) throws JAXBException {
 			JAXBElement<DocumenttestsconfigType> root;
 			root = unmarshaller.unmarshal(new StreamSource(new File(path)),
 					DocumenttestsconfigType.class);
@@ -126,7 +123,7 @@ public class Main {
 					if (ex.getMessage() == null) {
 						ex = e.getCause();
 						if (ex.getMessage() == null) {
-						    ex.printStackTrace();
+							ex.printStackTrace();
 						}
 						System.err.println(ex.getMessage());
 					} else {

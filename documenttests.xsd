@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
 	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
-	<include schemaLocation="documenttestsconfig.xsd" />
-	<include schemaLocation="documenttestsreport.xsd" />
+
+    <!-- TESTS -->
+
 	<complexType name="inputType">
 		<sequence>
 			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
@@ -71,6 +72,127 @@
 	</complexType>
 	<element name="documenttests" type="tns:documenttestsType">
 		<key name="uniqueTestNames">
+			<selector xpath="tns:test" />
+			<field xpath="@name" />
+		</key>
+	</element>
+
+    <!-- REPORT -->
+
+	<simpleType name="validationErrorTypeType">
+		<restriction base="string">
+			<enumeration value="INVALIDZIPFILE" />
+			<enumeration value="INVALIDMIMETYPE" />
+			<enumeration value="DOUBLEZIPENTRY" />
+			<enumeration value="MISSINGVERSIONNUMBER" />
+			<enumeration value="MISSINGMANIFESTXML" />
+			<enumeration value="INVALIDMANIFESTXML" />
+			<enumeration value="MISSINGCONTENTXML" />
+			<enumeration value="INVALIDCONTENTXML" />
+			<enumeration value="MISSINGSTYLESXML" />
+			<enumeration value="INVALIDSTYLESXML" />
+			<enumeration value="MISSINGMETAXML" />
+			<enumeration value="INVALIDMETAXML" />
+			<enumeration value="MISSINGSETTINGSXML" />
+			<enumeration value="INVALIDSETTINGSXML" />
+			<enumeration value="MISSINGFILE" />
+			<enumeration value="INVALIDVERSIONNUMBER" />
+			<enumeration value="INCONSISTENTVERSIONNUMBER" />
+		</restriction>
+	</simpleType>
+	<complexType name="validationErrorType">
+		<attribute name="type" type="tns:validationErrorTypeType"
+			use="required" />
+		<attribute name="message" type="string" />
+	</complexType>
+	<complexType name="missingFileErrorType">
+		<complexContent>
+			<extension base="tns:validationErrorType">
+				<attribute name="path" type="string" use="required" />
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="validationReportType">
+		<sequence>
+			<element name="error" type="tns:validationErrorType"
+				minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<complexType name="inputReportType">
+		<sequence>
+			<element name="validation" type="tns:validationReportType" />
+		</sequence>
+	</complexType>
+	<complexType name="outputReportType">
+		<sequence>
+			<element name="validation" type="tns:validationReportType" />
+		</sequence>
+		<attribute name="size" type="long" use="required" />
+		<attribute name="path" type="string" use="required" />
+	</complexType>
+	<complexType name="targetReportType">
+		<sequence>
+			<element name="output" type="tns:outputReportType" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="testreportType">
+		<sequence>
+			<element name="input" type="tns:inputReportType" />
+			<element name="target" type="tns:targetReportType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="documenttestsreportType">
+		<sequence>
+			<element name="testreport" type="tns:testreportType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+		</sequence>
+	</complexType>
+	<element name="documenttestsreport" type="tns:documenttestsreportType">
+	</element>
+
+    <!-- CONFIG -->
+
+	<complexType name="argumentType">
+		<attribute name="value" type="string" use="required" />
+	</complexType>
+	<complexType name="emptyElement">
+	</complexType>
+	<complexType name="envType">
+		<attribute name="name" type="string" use="required" />
+		<attribute name="value" type="string" />
+	</complexType>
+	<complexType name="commandType">
+		<sequence>
+			<element name="env" type="tns:envType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<choice minOccurs="0" maxOccurs="unbounded">
+				<element name="infile" type="tns:emptyElement" />
+				<element name="outfile" type="tns:emptyElement" />
+				<element name="outdir" type="tns:emptyElement" />
+				<element name="argument" type="tns:argumentType" />
+			</choice>
+		</sequence>
+		<attribute name="exe" type="anyURI" use="required" />
+	</complexType>
+	<complexType name="targetType">
+		<sequence>
+			<element name="command" minOccurs="0" maxOccurs="unbounded"
+				type="tns:commandType" />
+		</sequence>
+		<attribute name="name" type="NCName" use="required" />
+	</complexType>
+	<complexType name="documenttestsconfigType">
+		<sequence>
+			<element name="target" minOccurs="0" maxOccurs="unbounded"
+				type="tns:targetType" />
+		</sequence>
+	</complexType>
+	<element name="config" type="tns:documenttestsconfigType">
+		<key name="uniqueReportNames">
 			<selector xpath="tns:test" />
 			<field xpath="@name" />
 		</key>
