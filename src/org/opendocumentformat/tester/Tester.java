@@ -10,6 +10,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 
 import org.example.documenttests.ArgumentType;
+import org.example.documenttests.CommandReportType;
 import org.example.documenttests.CommandType;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
@@ -82,7 +83,7 @@ public class Tester {
 		OutputReportType output = new OutputReportType();
 		report.setOutput(output);
 		for (CommandType cmd : target.getCommand()) {
-			path = runCommand(cmd, path);
+			path = runCommand(cmd, path, report);
 		}
 		output.setPath(path);
 		output.setSize((new File(path)).length());
@@ -90,7 +91,8 @@ public class Tester {
 		return report;
 	}
 
-	public String runCommand(CommandType command, String inpath) {
+	public String runCommand(CommandType command, String inpath,
+			TargetReportType report) {
 		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
 		String outpath = inpath;
 		cmd[0] = command.getExe();
@@ -129,11 +131,16 @@ public class Tester {
 			env[i] = e.getName() + "=" + value;
 			++i;
 		}
-		runCommand(cmd, env);
+		CommandReportType cr = runCommand(cmd, env);
+		report.getCommands().add(cr);
 		return outpath;
 	}
 
-	private void runCommand(String cmd[], String env[]) {
+	private CommandReportType runCommand(String cmd[], String env[]) {
+		CommandReportType cr = new CommandReportType();
+		cr.setExe(cmd[0]);
+		cr.setExitCode(-255);
+		long start = System.nanoTime();
 		try {
 			String line;
 			Process p = Runtime.getRuntime().exec(cmd, env);
@@ -141,17 +148,27 @@ public class Tester {
 					p.getInputStream()));
 			BufferedReader bre = new BufferedReader(new InputStreamReader(
 					p.getErrorStream()));
+			String stdout = "", stderr = "";
 			while ((line = bri.readLine()) != null) {
-				System.err.println(line);
+				stdout += line + "\n";
 			}
 			bri.close();
 			while ((line = bre.readLine()) != null) {
-				System.err.println(line);
+				stderr += line + "\n";
 			}
 			bre.close();
 			p.waitFor();
+			cr.setExitCode(p.exitValue());
+			if (stdout.length() > 0) {
+				cr.setStdout(stdout);
+			}
+			if (stderr.length() > 0) {
+				cr.setStderr(stderr);
+			}
 		} catch (Exception err) {
 			err.printStackTrace();
 		}
+		cr.setRuntime((int) ((System.nanoTime() - start) / 1000000));
+		return cr;
 	}
 }
