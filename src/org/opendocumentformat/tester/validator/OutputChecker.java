@@ -27,11 +27,15 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.example.documenttests.FileTestReportType;
 import org.example.documenttests.FileType;
+import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationErrorTypeType;
 import org.example.documenttests.ValidationReportType;
+import org.example.documenttests.XpathReportType;
+import org.example.documenttests.XpathResultType;
 import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
 import org.w3c.dom.Document;
@@ -233,6 +237,11 @@ public class OutputChecker {
 		return builder;
 	}
 
+	static private void report(OutputReportType report,
+			ValidationErrorTypeType type, String msg) {
+		report(report.getValidation(), type, msg);
+	}
+
 	static private void report(ValidationReportType report,
 			ValidationErrorTypeType type, String msg) {
 		ValidationErrorType error = new ValidationErrorType();
@@ -246,17 +255,17 @@ public class OutputChecker {
 		report(report, type, null);
 	}
 
-	public void check(String odfpath, ValidationReportType report,
-			OutputType out, Map<String, String> nsmap) {
+	public void check(String odfpath, OutputReportType report, OutputType out,
+			Map<String, String> nsmap) {
 		xpath.setNamespaceContext(new NSMapper(nsmap));
 
-		checkMimetypeFile(odfpath, report);
+		checkMimetypeFile(odfpath, report.getValidation());
 
 		OdfData data = new OdfData();
 		try {
 			ZipFile zip = new ZipFile(odfpath);
 			checkStylesXml(zip, report, data, out);
-			checkManifestXml(zip, report, data);
+			checkManifestXml(zip, report.getValidation(), data);
 			checkContentXml(zip, report, data, out);
 			checkMetaXml(zip, report, data, out);
 			checkSettingsXml(zip, report, data, out);
@@ -267,37 +276,37 @@ public class OutputChecker {
 		}
 	}
 
-	private void checkStylesXml(ZipFile zip, ValidationReportType report,
+	private void checkStylesXml(ZipFile zip, OutputReportType report,
 			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSTYLESXML,
 				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml", out);
 	}
 
-	private void checkContentXml(ZipFile zip, ValidationReportType report,
+	private void checkContentXml(ZipFile zip, OutputReportType report,
 			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDCONTENTXML,
 				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml", out);
 	}
 
-	private void checkMetaXml(ZipFile zip, ValidationReportType report,
+	private void checkMetaXml(ZipFile zip, OutputReportType report,
 			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDMETAXML,
 				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml", out);
 	}
 
-	private void checkSettingsXml(ZipFile zip, ValidationReportType report,
+	private void checkSettingsXml(ZipFile zip, OutputReportType report,
 			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSETTINGSXML,
 				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml", out);
 	}
 
-	private Document checkXml(ZipFile zip, ValidationReportType report,
+	private Document checkXml(ZipFile zip, OutputReportType report,
 			OdfData data, ValidationErrorTypeType invalid,
 			ValidationErrorTypeType missing, String path, OutputType out)
 			throws IOException {
 		ZipEntry ze = zip.getEntry(path);
 		if (ze == null) {
-			report(report, missing);
+			report(report.getValidation(), missing);
 			return null;
 		}
 		Document doc = null;
@@ -307,42 +316,66 @@ public class OutputChecker {
 			report(report, invalid, e.getMessage());
 			return null;
 		}
-		checkVersion(data, doc, report, InputCreator.officens, path);
+		checkVersion(data, doc, report.getValidation(), InputCreator.officens,
+				path);
 		checkXml(zip.getInputStream(ze), data.version, report, invalid);
 
-		checkExpressions(doc, out, path);
+		FileTestReportType filereport = checkExpressions(doc, out, path);
+		if (filereport != null) {
+			report.getFile().add(filereport);
+		}
 
 		return doc;
 	}
 
-	private void checkExpressions(Document doc, OutputType out, String path) {
+	private FileTestReportType checkExpressions(Document doc, OutputType out,
+			String path) {
 		if (out == null) {
-			return;
+			return null;
 		}
+		FileTestReportType ft = null;
 		for (FileType f : out.getFile()) {
 			if (f.getPath().equals(path)) {
+				if (ft == null && f.getXpath().size() > 0) {
+					ft = new FileTestReportType();
+					ft.setPath(path);
+				}
 				for (XpathType xpath : f.getXpath()) {
-					checkExpression(doc, xpath.getExpr());
+					ft.getXpath().add(checkExpression(doc, xpath.getExpr()));
 				}
 			}
 		}
+		return ft;
 	}
 
-	private void checkExpression(Document doc, String xpathstring) {
+	private XpathReportType checkExpression(Document doc, String xpathstring) {
+		XpathReportType report = new XpathReportType();
+		report.setExpr(xpathstring);
 		XPathExpression x = null;
 		try {
 			x = xpath.compile(xpathstring);
 		} catch (XPathExpressionException e) {
-			e.printStackTrace();
-			return;
+			report.setError(e.getMessage());
+			report.setResult(XpathResultType.INVALID);
+			return report;
 		}
 		Object o = null;
 		try {
 			o = x.evaluate(doc);
 		} catch (XPathExpressionException e) {
-			e.printStackTrace();
+			report.setError(e.getMessage());
+			report.setResult(XpathResultType.INVALID);
+			return report;
 		}
-		System.out.println(o);
+		if ("true".equals(o)) {
+			report.setResult(XpathResultType.TRUE);
+		} else if ("false".equals(o)) {
+			report.setResult(XpathResultType.FALSE);
+		} else {
+			report.setError("Result of XPath is not boolean but " + o);
+			report.setResult(XpathResultType.INVALID);
+		}
+		return report;
 	}
 
 	private void checkVersion(OdfData data, Document doc,
@@ -374,7 +407,7 @@ public class OutputChecker {
 	}
 
 	private void checkXml(InputStream in, String version,
-			ValidationReportType report, ValidationErrorTypeType error) {
+			OutputReportType report, ValidationErrorTypeType error) {
 		ValidationDriver driver = null;
 		if ("1.2".equals(version)) {
 			driver = odf12Validator;
@@ -383,7 +416,7 @@ public class OutputChecker {
 		} else if ("1.0".equals(version)) {
 		}
 		if (driver != null) {
-			validateRelaxNG(driver, in, error, report);
+			validateRelaxNG(driver, in, error, report.getValidation());
 		}
 	}
 

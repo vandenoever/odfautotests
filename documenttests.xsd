@@ -121,9 +121,30 @@
 			<element name="validation" type="tns:validationReportType" />
 		</sequence>
 	</complexType>
+	<simpleType name="xpathResultType">
+		<restriction base="NCName">
+			<enumeration value="true" />
+			<enumeration value="false" />
+			<enumeration value="invalid" />
+		</restriction>
+	</simpleType>
+	<complexType name="xpathReportType">
+		<attribute name="expr" use="required" type="string" />
+		<attribute name="result" use="required" type="tns:xpathResultType" />
+		<attribute name="error" type="string" />
+	</complexType>
+	<complexType name="fileTestReportType">
+		<sequence>
+			<element name="xpath" type="tns:xpathReportType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="path" use="required" type="string" />
+	</complexType>
 	<complexType name="outputReportType">
 		<sequence>
 			<element name="validation" type="tns:validationReportType" />
+			<element name="file" type="tns:fileTestReportType" minOccurs="0"
+				maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="size" type="long" use="required" />
 		<attribute name="path" type="string" use="required" />

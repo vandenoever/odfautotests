@@ -71,8 +71,8 @@ public class Tester {
 		String path = creator.createInput(test.getInput());
 		InputReportType inputReport = new InputReportType();
 		ValidationReportType vreport = new ValidationReportType();
-		outputchecker.check(path, vreport, null, nsmap);
 		inputReport.setValidation(vreport);
+		// outputchecker.check(path, vreport, null, nsmap);
 		report.setInput(inputReport);
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
@@ -98,8 +98,8 @@ public class Tester {
 		output.setPath(path);
 		output.setSize((new File(path)).length());
 		ValidationReportType vreport = new ValidationReportType();
-		outputchecker.check(path, vreport, out, nsmap);
 		output.setValidation(vreport);
+		outputchecker.check(path, output, out, nsmap);
 		return report;
 	}
 
