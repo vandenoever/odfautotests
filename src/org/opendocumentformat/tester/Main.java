@@ -46,10 +46,8 @@ public class Main {
 		Loader() throws JAXBException {
 			final SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-			String dir = "/home/oever/work/workspace/odfautotests/";
-			Source source[] = new Source[] { new StreamSource(dir
-					+ "documenttests.xsd") };
+			Source source = new StreamSource(Loader.class.getClassLoader()
+					.getResourceAsStream("documenttests.xsd"));
 			Schema schema = null;
 			try {
 				schema = schemaFactory.newSchema(source);
@@ -134,6 +132,5 @@ public class Main {
 		}
 		DocumenttestsreportType report = tester.runAllTests();
 		loader.writeReport(report, "report.xml");
-
 	}
 }

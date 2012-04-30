@@ -17,7 +17,7 @@
 	</target>
 	<target name="compile" depends="xjc">
 		<mkdir dir="bin" />
-        <copy todir="bin">
+        <copy todir="bin" file="documenttests.xsd">
             <fileset dir="rng"/>
         </copy>
 		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar" debug="on" debuglevel="source" />
