@@ -4,10 +4,9 @@
 	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-	inputmimetype="application/vnd.oasis.opendocument.text" xmlns="http://www.example.org/documenttests"
+	odftype="text" xmlns="http://www.example.org/documenttests"
+	inputVersion="1.2"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
-
-	<import href="odfvaliditytests.xml" />
 
 	<test name="simpletext">
 		<input>

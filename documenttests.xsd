@@ -14,16 +14,23 @@
 		</sequence>
 	</complexType>
 	<simpleType name="filetypeType">
-		<restriction base="string">
+		<restriction base="NCName">
 			<enumeration value="zip" />
 			<enumeration value="xml" />
 		</restriction>
 	</simpleType>
-	<simpleType name="mimetypeType">
+	<simpleType name="versionType">
+		<restriction base="token">
+			<enumeration value="1.0" />
+			<enumeration value="1.1" />
+			<enumeration value="1.2" />
+		</restriction>
+	</simpleType>
+	<simpleType name="odfTypeType">
 		<restriction base="string">
-			<enumeration value="application/vnd.oasis.opendocument.text" />
-			<enumeration value="application/vnd.oasis.opendocument.spreadsheet" />
-			<enumeration value="application/vnd.oasis.opendocument.presentation" />
+			<enumeration value="text" />
+			<enumeration value="presentation" />
+			<enumeration value="spreadsheet" />
 		</restriction>
 	</simpleType>
 	<complexType name="fileType">
@@ -59,16 +66,12 @@
 	</complexType>
 	<complexType name="documenttestsType">
 		<sequence>
-			<element name="import" minOccurs="0" maxOccurs="unbounded">
-				<complexType>
-					<attribute name="href" type="anyURI" use="required" />
-				</complexType>
-			</element>
 			<element name="test" type="tns:testType" minOccurs="0"
 				maxOccurs="unbounded">
 			</element>
 		</sequence>
-		<attribute name="inputmimetype" type="tns:mimetypeType" use="required" />
+		<attribute name="odftype" type="tns:odfTypeType" use="required" />
+		<attribute name="inputVersion" type="tns:versionType" use="required" />
 	</complexType>
 	<element name="documenttests" type="tns:documenttestsType">
 		<key name="uniqueTestNames">
@@ -130,6 +133,11 @@
 		<attribute name="size" type="long" use="required" />
 		<attribute name="path" type="string" use="required" />
 	</complexType>
+	<complexType name="commandReportType">
+		<attribute name="exe" type="string" use="required" />
+		<attribute name="runtime" type="int" use="required" />
+		<attribute name="exitCode" type="int" use="required" />
+	</complexType>
 	<complexType name="targetReportType">
 		<sequence>
 			<element name="output" type="tns:outputReportType" />
@@ -178,28 +186,14 @@
 		</sequence>
 		<attribute name="exe" type="anyURI" use="required" />
 	</complexType>
-	<simpleType name="odfTypeType">
-		<restriction base="string">
-			<enumeration value="text" />
-			<enumeration value="presentation" />
-			<enumeration value="spreadsheet" />
-		</restriction>
-	</simpleType>
 	<simpleType name="odfTypesType">
 		<list itemType="tns:odfTypeType" />
 	</simpleType>
-	<simpleType name="inputTypeType">
-		<restriction base="string">
-			<enumeration value="zip_v1_0" />
-			<enumeration value="zip_v1_1" />
-			<enumeration value="zip_v1_2" />
-			<enumeration value="xml_v1_0" />
-			<enumeration value="xml_v1_1" />
-			<enumeration value="xml_v1_2" />
-		</restriction>
+	<simpleType name="filetypesType">
+		<list itemType="tns:filetypeType" />
 	</simpleType>
-	<simpleType name="inputTypesType">
-		<list itemType="tns:inputTypeType" />
+	<simpleType name="versionsType">
+		<list itemType="tns:versionType" />
 	</simpleType>
 	<complexType name="targetType">
 		<sequence>
@@ -208,8 +202,10 @@
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
 		<attribute name="odftypes" type="tns:odfTypesType" use="required" />
-		<attribute name="inputs" type="tns:inputTypesType" use="required" />
-		<attribute name="output" type="tns:inputTypeType" use="required" />
+		<attribute name="inputVersions" type="tns:versionsType" use="required" />
+		<attribute name="outputVersion" type="tns:versionType" use="required" />
+		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
+		<attribute name="outputType" type="tns:filetypeType" use="required" />
 	</complexType>
 	<complexType name="documenttestsconfigType">
 		<sequence>

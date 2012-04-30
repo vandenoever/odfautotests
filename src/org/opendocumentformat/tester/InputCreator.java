@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.example.documenttests.InputType;
+import org.example.documenttests.OdfTypeType;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -25,10 +26,7 @@ import org.w3c.dom.Element;
 
 public class InputCreator {
 
-	public enum ODFType {
-		text, presentation, spreadsheet
-	}
-
+	final OdfTypeType type;
 	public enum ODFVersion {
 		v1_0 {
 			public String toString() {
@@ -46,8 +44,6 @@ public class InputCreator {
 			}
 		}
 	}
-
-	final ODFType type;
 	final ODFVersion version;
 
 	Document content;
@@ -62,7 +58,7 @@ public class InputCreator {
 	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
-	InputCreator(ODFType type, ODFVersion version) {
+	InputCreator(OdfTypeType type, ODFVersion version) {
 		this.type = type;
 		this.version = version;
 		Transformer xformer = null;
@@ -116,7 +112,7 @@ public class InputCreator {
 		Element body = doc.createElementNS(officens, "body");
 		body.setPrefix("office");
 		e.appendChild(body);
-		bodyChild = doc.createElementNS(officens, type.toString());
+		bodyChild = doc.createElementNS(officens, type.toString().toLowerCase());
 		bodyChild.setPrefix("office");
 		body.appendChild(bodyChild);
 		return doc;
@@ -141,7 +137,7 @@ public class InputCreator {
 					version.toString());
 		}
 		addFileEntry(doc,
-				"application/vnd.oasis.opendocument." + type.toString(), "/");
+				"application/vnd.oasis.opendocument." + type.toString().toLowerCase(), "/");
 		addFileEntry(doc, "text/xml", "content.xml");
 		addFileEntry(doc, "text/xml", "styles.xml");
 		addFileEntry(doc, "text/xml", "meta.xml");
@@ -220,7 +216,7 @@ public class InputCreator {
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			zos.setMethod(ZipOutputStream.STORED);
 			addEntry(zos, "mimetype", "application/vnd.oasis.opendocument."
-					+ type.toString());
+					+ type.toString().toLowerCase());
 			zos.setMethod(ZipOutputStream.DEFLATED);
 			addEntry(zos, "META-INF/manifest.xml", manifest);
 			addEntry(zos, "content.xml", content);

@@ -16,12 +16,12 @@ import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
 import org.example.documenttests.InputReportType;
+import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
 import org.example.documenttests.TestreportType;
-import org.opendocumentformat.tester.InputCreator.ODFType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
 import org.opendocumentformat.tester.validator.OutputChecker;
 
@@ -49,18 +49,7 @@ public class Tester {
 		DocumenttestsreportType report = new DocumenttestsreportType();
 		List<TestreportType> testreports = report.getTestreport();
 		for (DocumenttestsType t : tests) {
-			ODFType type = null;
-			switch (t.getInputmimetype()) {
-			case APPLICATION_VND_OASIS_OPENDOCUMENT_TEXT:
-				type = InputCreator.ODFType.text;
-				break;
-			case APPLICATION_VND_OASIS_OPENDOCUMENT_PRESENTATION:
-				type = InputCreator.ODFType.presentation;
-				break;
-			case APPLICATION_VND_OASIS_OPENDOCUMENT_SPREADSHEET:
-				type = InputCreator.ODFType.spreadsheet;
-				break;
-			}
+			OdfTypeType type = t.getOdftype();
 			for (TestType test : t.getTest()) {
 				testreports.add(runTest(test, type));
 			}
@@ -68,7 +57,7 @@ public class Tester {
 		return report;
 	}
 
-	public TestreportType runTest(TestType test, ODFType type) {
+	public TestreportType runTest(TestType test, OdfTypeType type) {
 		TestreportType report = new TestreportType();
 		report.setName(test.getName());
 		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
@@ -78,7 +67,9 @@ public class Tester {
 		report.setInput(inputReport);
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
-				report.getTarget().add(runTest(target, path));
+				if (target.getOutputType().equals(test.getOutput().getType())) {
+					report.getTarget().add(runTest(target, path));
+				}
 			}
 		}
 		(new File(path)).delete();
