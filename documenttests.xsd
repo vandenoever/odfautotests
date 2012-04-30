@@ -45,15 +45,10 @@
 	</complexType>
 	<complexType name="outputType">
 		<sequence>
-			<element name="check" type="tns:checkRef" minOccurs="0"
-				maxOccurs="unbounded" />
 			<element name="file" type="tns:fileType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="type" use="required" type="tns:filetypeType" />
-	</complexType>
-	<complexType name="checkRef">
-		<attribute name="href" use="required" type="anyURI" />
 	</complexType>
 	<complexType name="testType">
 		<sequence>

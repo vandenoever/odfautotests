@@ -1,6 +1,9 @@
 package org.opendocumentformat.tester;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -11,6 +14,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -19,6 +23,10 @@ import javax.xml.validation.SchemaFactory;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
+import org.opendocumentformat.tester.validator.OutputChecker;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class Main {
@@ -28,6 +36,7 @@ public class Main {
 		final Unmarshaller unmarshaller;
 		final Marshaller marshaller;
 		final Handler handler;
+		private final DocumentBuilder documentBuilder;
 
 		class Handler extends ValidationEventCollector {
 			public int linenumber;
@@ -63,9 +72,28 @@ public class Main {
 			marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
+
+			documentBuilder = OutputChecker.createDocumentBuilder();
 		}
 
-		DocumenttestsType loadTests(String path) throws JAXBException {
+		void getNSPrefixMap(NamedNodeMap atts, Map<String, String> nsmap) {
+			nsmap.clear();
+			for (int i = 0; i < atts.getLength(); ++i) {
+				Node n = atts.item(i);
+				if ("http://www.w3.org/2000/xmlns/".equals(n.getNamespaceURI())) {
+					if ("xmlns".equals(n.getLocalName())) {
+						nsmap.put("", n.getNodeValue());
+					} else {
+						nsmap.put(n.getLocalName(), n.getNodeValue());
+					}
+				}
+			}
+		}
+
+		DocumenttestsType loadTests(String path, Map<String, String> nsmap)
+				throws JAXBException, SAXException, IOException {
+			Document doc = documentBuilder.parse(new File(path));
+			getNSPrefixMap(doc.getDocumentElement().getAttributes(), nsmap);
 			JAXBElement<DocumenttestsType> root;
 			root = unmarshaller.unmarshal(new StreamSource(new File(path)),
 					DocumenttestsType.class);
@@ -103,9 +131,10 @@ public class Main {
 		// the each argument can be either a config file or a set of tests
 		for (String arg : args) {
 			try {
-				DocumenttestsType tests = loader.loadTests(arg);
-				tester.addTests(tests);
-			} catch (JAXBException e) {
+				Map<String, String> nsmap = new HashMap<String, String>();
+				DocumenttestsType tests = loader.loadTests(arg, nsmap);
+				tester.addTests(tests, nsmap);
+			} catch (Exception e) {
 				int linenumber = loader.handler.linenumber;
 				try {
 					DocumenttestsconfigType config = loader.loadConfig(arg);
@@ -120,7 +149,7 @@ public class Main {
 							+ linenumber + ": ");
 					if (ex.getMessage() == null) {
 						if (e.getCause() != null) {
-						    ex = e.getCause();
+							ex = e.getCause();
 						}
 						if (ex.getMessage() == null) {
 							ex.printStackTrace();

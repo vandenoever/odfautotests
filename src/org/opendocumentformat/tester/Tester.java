@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
@@ -19,27 +22,29 @@ import org.example.documenttests.EnvType;
 import org.example.documenttests.InputReportType;
 import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
+import org.example.documenttests.OutputType;
 import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
 import org.example.documenttests.TestreportType;
+import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
 import org.opendocumentformat.tester.validator.OutputChecker;
 
 public class Tester {
 
-	private final List<DocumenttestsType> tests;
+	private final Map<DocumenttestsType, Map<String, String>> tests;
 	private final List<DocumenttestsconfigType> configs;
 
 	private final OutputChecker outputchecker = new OutputChecker();
 
 	public Tester() {
-		tests = new ArrayList<DocumenttestsType>();
+		tests = new HashMap<DocumenttestsType, Map<String, String>>();
 		configs = new ArrayList<DocumenttestsconfigType>();
 	}
 
-	public void addTests(DocumenttestsType tests) {
-		this.tests.add(tests);
+	public void addTests(DocumenttestsType tests, Map<String, String> nsmap) {
+		this.tests.put(tests, nsmap);
 	}
 
 	public void addConfig(DocumenttestsconfigType config) {
@@ -49,27 +54,31 @@ public class Tester {
 	public DocumenttestsreportType runAllTests() {
 		DocumenttestsreportType report = new DocumenttestsreportType();
 		List<TestreportType> testreports = report.getTestreport();
-		for (DocumenttestsType t : tests) {
-			OdfTypeType type = t.getOdftype();
-			for (TestType test : t.getTest()) {
-				testreports.add(runTest(test, type));
+		for (Entry<DocumenttestsType, Map<String, String>> e : tests.entrySet()) {
+			OdfTypeType type = e.getKey().getOdftype();
+			for (TestType test : e.getKey().getTest()) {
+				testreports.add(runTest(test, type, e.getValue()));
 			}
 		}
 		return report;
 	}
 
-	public TestreportType runTest(TestType test, OdfTypeType type) {
+	public TestreportType runTest(TestType test, OdfTypeType type,
+			Map<String, String> nsmap) {
 		TestreportType report = new TestreportType();
 		report.setName(test.getName());
 		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
 		String path = creator.createInput(test.getInput());
 		InputReportType inputReport = new InputReportType();
-		inputReport.setValidation(outputchecker.check(path));
+		ValidationReportType vreport = new ValidationReportType();
+		outputchecker.check(path, vreport, null, nsmap);
+		inputReport.setValidation(vreport);
 		report.setInput(inputReport);
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
 				if (target.getOutputType().equals(test.getOutput().getType())) {
-					report.getTarget().add(runTest(target, path));
+					report.getTarget().add(
+							runTest(target, path, test.getOutput(), nsmap));
 				}
 			}
 		}
@@ -77,7 +86,8 @@ public class Tester {
 		return report;
 	}
 
-	public TargetReportType runTest(TargetType target, String path) {
+	public TargetReportType runTest(TargetType target, String path,
+			OutputType out, Map<String, String> nsmap) {
 		TargetReportType report = new TargetReportType();
 		report.setName(target.getName());
 		OutputReportType output = new OutputReportType();
@@ -87,7 +97,9 @@ public class Tester {
 		}
 		output.setPath(path);
 		output.setSize((new File(path)).length());
-		output.setValidation(outputchecker.check(path));
+		ValidationReportType vreport = new ValidationReportType();
+		outputchecker.check(path, vreport, out, nsmap);
+		output.setValidation(vreport);
 		return report;
 	}
 

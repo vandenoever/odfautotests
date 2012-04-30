@@ -10,18 +10,29 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.example.documenttests.FileType;
+import org.example.documenttests.OutputType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationErrorTypeType;
 import org.example.documenttests.ValidationReportType;
+import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,6 +58,8 @@ public class OutputChecker {
 	private final ValidationDriver odf12dsigValidator;
 	private final ErrorBuffer errorbuffer;
 	private final DocumentBuilder documentBuilder;
+	private final XPathFactory factory = XPathFactory.newInstance();
+	private final XPath xpath = factory.newXPath();
 
 	class ErrorBuffer extends Writer {
 		private StringWriter buffer;
@@ -145,6 +158,41 @@ public class OutputChecker {
 		odf12Validator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-schema.rng", errorbuffer);
 
+		documentBuilder = createDocumentBuilder();
+	}
+
+	class NSMapper implements NamespaceContext {
+		Map<String, String> nsmap;
+
+		NSMapper(Map<String, String> map) {
+			nsmap = map;
+		}
+
+		public String getNamespaceURI(String prefix) {
+			return nsmap.get(prefix);
+		}
+
+		public String getPrefix(String nsuri) {
+			for (Entry<String, String> e : nsmap.entrySet()) {
+				if (e.getValue().equals(nsuri)) {
+					return e.getKey();
+				}
+			}
+			return null;
+		}
+
+		public Iterator<String> getPrefixes(String nsuri) {
+			Set<String> set = new HashSet<String>();
+			for (Entry<String, String> e : nsmap.entrySet()) {
+				if (e.getValue().equals(nsuri)) {
+					set.add(e.getKey());
+				}
+			}
+			return set.iterator();
+		}
+	}
+
+	static public DocumentBuilder createDocumentBuilder() {
 		DocumentBuilder builder = null;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory
@@ -182,7 +230,7 @@ public class OutputChecker {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
-		documentBuilder = builder;
+		return builder;
 	}
 
 	static private void report(ValidationReportType report,
@@ -198,55 +246,55 @@ public class OutputChecker {
 		report(report, type, null);
 	}
 
-	public ValidationReportType check(String odfpath) {
-		ValidationReportType report = new ValidationReportType();
+	public void check(String odfpath, ValidationReportType report,
+			OutputType out, Map<String, String> nsmap) {
+		xpath.setNamespaceContext(new NSMapper(nsmap));
 
 		checkMimetypeFile(odfpath, report);
 
 		OdfData data = new OdfData();
 		try {
 			ZipFile zip = new ZipFile(odfpath);
-			checkStylesXml(zip, report, data);
+			checkStylesXml(zip, report, data, out);
 			checkManifestXml(zip, report, data);
-			checkContentXml(zip, report, data);
-			checkMetaXml(zip, report, data);
-			checkSettingsXml(zip, report, data);
+			checkContentXml(zip, report, data, out);
+			checkMetaXml(zip, report, data, out);
+			checkSettingsXml(zip, report, data, out);
 		} catch (IOException e) {
 			report(report, ValidationErrorTypeType.INVALIDZIPFILE,
 					e.getMessage());
 			e.printStackTrace();
-			return report;
 		}
-		return report;
 	}
 
 	private void checkStylesXml(ZipFile zip, ValidationReportType report,
-			OdfData data) throws IOException {
+			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSTYLESXML,
-				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml");
+				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml", out);
 	}
 
 	private void checkContentXml(ZipFile zip, ValidationReportType report,
-			OdfData data) throws IOException {
+			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDCONTENTXML,
-				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml");
+				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml", out);
 	}
-	
+
 	private void checkMetaXml(ZipFile zip, ValidationReportType report,
-			OdfData data) throws IOException {
+			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDMETAXML,
-				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml");
+				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml", out);
 	}
-	
+
 	private void checkSettingsXml(ZipFile zip, ValidationReportType report,
-			OdfData data) throws IOException {
+			OdfData data, OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSETTINGSXML,
-				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml");
+				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml", out);
 	}
 
 	private Document checkXml(ZipFile zip, ValidationReportType report,
 			OdfData data, ValidationErrorTypeType invalid,
-			ValidationErrorTypeType missing, String path) throws IOException {
+			ValidationErrorTypeType missing, String path, OutputType out)
+			throws IOException {
 		ZipEntry ze = zip.getEntry(path);
 		if (ze == null) {
 			report(report, missing);
@@ -261,7 +309,40 @@ public class OutputChecker {
 		}
 		checkVersion(data, doc, report, InputCreator.officens, path);
 		checkXml(zip.getInputStream(ze), data.version, report, invalid);
+
+		checkExpressions(doc, out, path);
+
 		return doc;
+	}
+
+	private void checkExpressions(Document doc, OutputType out, String path) {
+		if (out == null) {
+			return;
+		}
+		for (FileType f : out.getFile()) {
+			if (f.getPath().equals(path)) {
+				for (XpathType xpath : f.getXpath()) {
+					checkExpression(doc, xpath.getExpr());
+				}
+			}
+		}
+	}
+
+	private void checkExpression(Document doc, String xpathstring) {
+		XPathExpression x = null;
+		try {
+			x = xpath.compile(xpathstring);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+			return;
+		}
+		Object o = null;
+		try {
+			o = x.evaluate(doc);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		System.out.println(o);
 	}
 
 	private void checkVersion(OdfData data, Document doc,
