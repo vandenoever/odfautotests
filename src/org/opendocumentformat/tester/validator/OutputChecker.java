@@ -54,6 +54,8 @@ import com.thaiopensource.xml.sax.ErrorHandlerImpl;
 
 public class OutputChecker {
 
+	private final ValidationDriver odf10Validator;
+	private final ValidationDriver odf10manifestValidator;
 	private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
@@ -149,6 +151,10 @@ public class OutputChecker {
 		String tmpdir = "rng";
 		(new File(tmpdir)).mkdir();
 
+		odf10Validator = createValidationDriver(tmpdir,
+				"OpenDocument-schema-v1.0-os.rng", errorbuffer);
+		odf10manifestValidator = createValidationDriver(tmpdir,
+				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer);
 		odf11Validator = createValidationDriver(tmpdir,
 				"OpenDocument-schema-v1.1.rng", errorbuffer);
 		odf11strictValidator = createValidationDriver(tmpdir,
@@ -412,8 +418,9 @@ public class OutputChecker {
 		if ("1.2".equals(version)) {
 			driver = odf12Validator;
 		} else if ("1.1".equals(version)) {
-			driver = odf11Validator;
+			driver = odf11strictValidator;
 		} else if ("1.0".equals(version)) {
+			driver = odf10Validator;
 		}
 		if (driver != null) {
 			validateRelaxNG(driver, in, error, report.getValidation());
@@ -428,6 +435,7 @@ public class OutputChecker {
 		} else if ("1.1".equals(version)) {
 			driver = odf11manifestValidator;
 		} else if ("1.0".equals(version)) {
+			driver = odf10manifestValidator;
 		}
 		if (driver != null) {
 			validateRelaxNG(driver, in, error, report);
