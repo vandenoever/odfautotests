@@ -1,6 +1,6 @@
 <config xmlns="http://www.example.org/documenttests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
-	<target name="Calligra" types="text" inputs="zip_v1_0 zip_v1_1 zip_v1_2"
+	<target name="Calligra" odftypes="text" inputs="zip_v1_0 zip_v1_1 zip_v1_2"
 		output="zip_v1_2">
 		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
 			<env name="DISPLAY" />
@@ -11,7 +11,7 @@
 			<infile />
 		</command>
 	</target>
-	<target name="Abiword" types="text" input="zip_v1_0 zip_v1_1 zip_v1_2"
+	<target name="Abiword" odftypes="text" inputs="zip_v1_0 zip_v1_1 zip_v1_2"
 		output="zip_v1_1">
 		<command exe="/bin/cp">
 			<infile />
@@ -23,8 +23,8 @@
 			<infile />
 		</command>
 	</target>
-	<target name="LibreOffice" types="text spreadsheet presentations"
-		input="zip_v1_0 zip_v1_1 zip_v1_2" output="zip_v1_2">
+	<target name="LibreOffice" odftypes="text spreadsheet presentation"
+		inputs="zip_v1_0 zip_v1_1 zip_v1_2" output="zip_v1_2">
 		<command exe="/opt/libreoffice3.5/program/soffice">
 			<argument value="--headless" />
 			<argument value="--convert-to" />

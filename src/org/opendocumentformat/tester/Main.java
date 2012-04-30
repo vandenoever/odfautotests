@@ -119,7 +119,9 @@ public class Main {
 					System.err.print("Could not load " + arg + " line "
 							+ linenumber + ": ");
 					if (ex.getMessage() == null) {
-						ex = e.getCause();
+						if (e.getCause() != null) {
+						    ex = e.getCause();
+						}
 						if (ex.getMessage() == null) {
 							ex.printStackTrace();
 						}

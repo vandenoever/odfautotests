@@ -2,7 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests"
 	xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
 
-    <!-- TESTS -->
+	<!-- TESTS -->
 
 	<complexType name="inputType">
 		<sequence>
@@ -77,7 +77,7 @@
 		</key>
 	</element>
 
-    <!-- REPORT -->
+	<!-- REPORT -->
 
 	<simpleType name="validationErrorTypeType">
 		<restriction base="string">
@@ -154,7 +154,7 @@
 	<element name="documenttestsreport" type="tns:documenttestsreportType">
 	</element>
 
-    <!-- CONFIG -->
+	<!-- CONFIG -->
 
 	<complexType name="argumentType">
 		<attribute name="value" type="string" use="required" />
@@ -178,12 +178,38 @@
 		</sequence>
 		<attribute name="exe" type="anyURI" use="required" />
 	</complexType>
+	<simpleType name="odfTypeType">
+		<restriction base="string">
+			<enumeration value="text" />
+			<enumeration value="presentation" />
+			<enumeration value="spreadsheet" />
+		</restriction>
+	</simpleType>
+	<simpleType name="odfTypesType">
+		<list itemType="tns:odfTypeType" />
+	</simpleType>
+	<simpleType name="inputTypeType">
+		<restriction base="string">
+			<enumeration value="zip_v1_0" />
+			<enumeration value="zip_v1_1" />
+			<enumeration value="zip_v1_2" />
+			<enumeration value="xml_v1_0" />
+			<enumeration value="xml_v1_1" />
+			<enumeration value="xml_v1_2" />
+		</restriction>
+	</simpleType>
+	<simpleType name="inputTypesType">
+		<list itemType="tns:inputTypeType" />
+	</simpleType>
 	<complexType name="targetType">
 		<sequence>
 			<element name="command" minOccurs="0" maxOccurs="unbounded"
 				type="tns:commandType" />
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
+		<attribute name="odftypes" type="tns:odfTypesType" use="required" />
+		<attribute name="inputs" type="tns:inputTypesType" use="required" />
+		<attribute name="output" type="tns:inputTypeType" use="required" />
 	</complexType>
 	<complexType name="documenttestsconfigType">
 		<sequence>
