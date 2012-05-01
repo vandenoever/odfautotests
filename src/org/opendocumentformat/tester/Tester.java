@@ -19,7 +19,6 @@ import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
-import org.example.documenttests.InputReportType;
 import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
@@ -69,10 +68,13 @@ public class Tester {
 		report.setName(test.getName());
 		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
 		String path = creator.createInput(test.getInput());
-		InputReportType inputReport = new InputReportType();
+		OutputReportType inputReport = new OutputReportType();
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
-		// outputchecker.check(path, vreport, null, nsmap);
+		outputchecker.check(path, inputReport, null, nsmap);
+		File inputfile = new File(path);
+		inputReport.setPath(path);
+		inputReport.setSize(inputfile.length());
 		report.setInput(inputReport);
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
@@ -82,7 +84,7 @@ public class Tester {
 				}
 			}
 		}
-		(new File(path)).delete();
+		inputfile.delete();
 		return report;
 	}
 
@@ -180,7 +182,7 @@ public class Tester {
 		} catch (Exception err) {
 			err.printStackTrace();
 		}
-		cr.setRuntime((int) ((System.nanoTime() - start) / 1000000));
+		cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		return cr;
 	}
 }

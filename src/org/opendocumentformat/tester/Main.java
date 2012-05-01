@@ -1,5 +1,7 @@
 package org.opendocumentformat.tester;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -112,9 +114,18 @@ public class Main {
 					new QName("http://www.example.org/documenttests",
 							"documenttestsreport"),
 					DocumenttestsreportType.class, report);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			try {
-				marshaller.marshal(root, System.out);
+				marshaller.marshal(root, out);
+				unmarshaller.unmarshal(new StreamSource(
+						new ByteArrayInputStream(out.toByteArray())),
+						DocumenttestsreportType.class);
 			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
+			try {
+				System.out.write(out.toByteArray());
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}

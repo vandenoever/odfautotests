@@ -116,11 +116,6 @@
 				minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
-	<complexType name="inputReportType">
-		<sequence>
-			<element name="validation" type="tns:validationReportType" />
-		</sequence>
-	</complexType>
 	<simpleType name="xpathResultType">
 		<restriction base="NCName">
 			<enumeration value="true" />
@@ -151,7 +146,7 @@
 	</complexType>
 	<complexType name="commandReportType">
 		<attribute name="exe" type="string" use="required" />
-		<attribute name="runtime" type="int" use="required" />
+		<attribute name="durationMs" type="int" use="required" />
 		<attribute name="exitCode" type="int" use="required" />
 		<attribute name="stderr" type="string" />
 		<attribute name="stdout" type="string" />
@@ -166,7 +161,7 @@
 	</complexType>
 	<complexType name="testreportType">
 		<sequence>
-			<element name="input" type="tns:inputReportType" />
+			<element name="input" type="tns:outputReportType" />
 			<element name="target" type="tns:targetReportType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</sequence>
