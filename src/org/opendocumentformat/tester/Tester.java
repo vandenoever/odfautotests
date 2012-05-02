@@ -84,7 +84,6 @@ public class Tester {
 				}
 			}
 		}
-		inputfile.delete();
 		return report;
 	}
 

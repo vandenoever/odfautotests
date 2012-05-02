@@ -4,8 +4,9 @@
 	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-	odftype="text" xmlns="http://www.example.org/documenttests"
-	inputVersion="1.2" xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" odftype="text"
+	xmlns="http://www.example.org/documenttests" inputVersion="1.2"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 
 	<test name="simpletext">
 		<input>
@@ -33,6 +34,31 @@
 				<draw:rect draw:style-name="gr1" text:anchor-type="page"
 					text:anchor-page-number="1" svg:x="5cm" svg:y="5cm" svg:width="5cm"
 					svg:height="5mm" draw:transform="skewY(0.785)" />
+			</o:text>
+		</input>
+		<output type="zip">
+		</output>
+	</test>
+	<test name="mergedcells">
+		<input>
+			<o:text>
+				<table:table>
+					<table:table-column table:number-columns-repeated="2"/>
+					<table:table-row>
+						<table:table-cell>
+							<text:p>a1</text:p>
+						</table:table-cell>
+						<table:table-cell>
+							<text:p>b1</text:p>
+						</table:table-cell>
+					</table:table-row>
+					<table:table-row>
+						<table:table-cell table:number-columns-spanned="2">
+							<text:p>a2</text:p>
+						</table:table-cell>
+						<table:covered-table-cell />
+					</table:table-row>
+				</table:table>
 			</o:text>
 		</input>
 		<output type="zip">

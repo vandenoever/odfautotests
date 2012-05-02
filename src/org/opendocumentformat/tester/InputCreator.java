@@ -182,7 +182,7 @@ public class InputCreator {
 		if (e.getNamespaceURI().equals(officens)) {
 			e = (Element) content.importNode(e, true);
 			e.setPrefix("office");
-			if (e.getLocalName().equals(type.toString())) {
+			if (e.getLocalName().equals(type.toString().toLowerCase())) {
 				bodyChild.getParentNode().replaceChild(e, bodyChild);
 			} else if (e.getLocalName().equals("automatic-styles")) {
 				contentAutomaticStyles.getParentNode().replaceChild(e,
