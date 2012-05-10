@@ -3,6 +3,7 @@ package org.opendocumentformat.tester;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +19,11 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -134,6 +139,21 @@ public class Main {
 		}
 	}
 
+	private static void writeHTML(String inpath, String outpath) {
+		Source source = new StreamSource(Loader.class.getClassLoader()
+				.getResourceAsStream("report2html.xsl"));
+		TransformerFactory transFact = TransformerFactory.newInstance();
+		try {
+			Transformer trans = transFact.newTransformer(source);
+			source = new StreamSource(new FileInputStream(inpath));
+			Result result = new StreamResult(new FileOutputStream(outpath));
+			trans.transform(source, result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public static void main(String[] args) {
 		Tester tester = new Tester();
 		Loader loader;
@@ -177,5 +197,6 @@ public class Main {
 		}
 		DocumenttestsreportType report = tester.runAllTests();
 		loader.writeReport(report, "report.xml");
+		writeHTML("report.xml", "report.html");
 	}
 }

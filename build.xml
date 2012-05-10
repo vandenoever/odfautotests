@@ -20,6 +20,7 @@
         <copy todir="bin" file="documenttests.xsd">
             <fileset dir="rng"/>
         </copy>
+        <copy todir="bin" file="report2html.xsl"/>
 		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
