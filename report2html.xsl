@@ -43,8 +43,69 @@
 			</table>
 		</div>
 	</xsl:template>
+	<xsl:template name="openelement">
+		<xsl:param name="indent" />
+		<xsl:variable name="s"
+			select="'                                         '" />
+		<xsl:value-of
+			select="concat(substring($s, 1, $indent), '&lt;', local-name(.))" />
+		<xsl:for-each select="@*">
+			<br />
+			<xsl:value-of
+				select="concat(substring($s, 1, $indent + 2), local-name(.), '=&quot;', ., '&quot;')" />
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="formatxml">
+		<xsl:param name="indent">
+			0
+		</xsl:param>
+		<xsl:variable name="s"
+			select="'                                         '" />
+		<xsl:variable name="i" select="number($indent)" />
+		<xsl:for-each select="*|text()">
+			<xsl:choose>
+				<xsl:when test="count(*)">
+					<xsl:call-template name="openelement">
+						<xsl:with-param name="indent" select="$i" />
+					</xsl:call-template>
+					<xsl:value-of select="'>'" />
+					<br />
+					<xsl:call-template name="formatxml">
+						<xsl:with-param name="indent" select="$i + 1" />
+					</xsl:call-template>
+					<xsl:value-of
+						select="concat(substring($s, 1, $i), '&lt;/', local-name(.), '>')" />
+					<br />
+				</xsl:when>
+				<xsl:when test="text()">
+					<xsl:call-template name="openelement">
+						<xsl:with-param name="indent" select="$i" />
+					</xsl:call-template>
+					<xsl:value-of select="'>'" />
+					<xsl:value-of select="concat(text(), '&lt;', local-name(.), '/>')" />
+					<br />
+				</xsl:when>
+				<xsl:when test="local-name(.)">
+					<xsl:call-template name="openelement">
+						<xsl:with-param name="indent" select="$i" />
+					</xsl:call-template>
+					<xsl:value-of select="'/>'" />
+					<br />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="concat(substring($s, 1, $i), .)" />
+					<br />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:template>
 	<xsl:template match="r:input|r:output">
 		<div class="popup">
+			<pre>
+				<xsl:for-each select="r:fragment">
+					<xsl:call-template name="formatxml" />
+				</xsl:for-each>
+			</pre>
 			<a>
 				<xsl:attribute name="href">
 				<xsl:value-of select="@path" />

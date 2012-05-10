@@ -4,7 +4,7 @@
 
 	<!-- TESTS -->
 
-	<complexType name="inputType">
+	<complexType name="fragmentType">
 		<sequence>
 			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
@@ -52,7 +52,7 @@
 	</complexType>
 	<complexType name="testType">
 		<sequence>
-			<element name="input" type="tns:inputType" />
+			<element name="input" type="tns:fragmentType" />
 			<element name="operation" type="tns:operationType" minOccurs="0"
 				maxOccurs="unbounded" />
 			<element name="output" type="tns:outputType" />
@@ -137,6 +137,7 @@
 	</complexType>
 	<complexType name="outputReportType">
 		<sequence>
+			<element name="fragment" type="tns:fragmentType" />
 			<element name="validation" type="tns:validationReportType" />
 			<element name="file" type="tns:fileTestReportType" minOccurs="0"
 				maxOccurs="unbounded" />

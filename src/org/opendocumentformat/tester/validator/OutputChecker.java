@@ -29,6 +29,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.example.documenttests.FileTestReportType;
 import org.example.documenttests.FileType;
+import org.example.documenttests.FragmentType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
 import org.example.documenttests.ValidationErrorType;
@@ -39,6 +40,7 @@ import org.example.documenttests.XpathResultType;
 import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -56,12 +58,12 @@ public class OutputChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
-	//private final ValidationDriver odf11Validator;
+	// private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
 	private final ValidationDriver odf12Validator;
 	private final ValidationDriver odf12manifestValidator;
-	//private final ValidationDriver odf12dsigValidator;
+	// private final ValidationDriver odf12dsigValidator;
 	private final ErrorBuffer errorbuffer;
 	private final DocumentBuilder documentBuilder;
 	private final XPathFactory factory = XPathFactory.newInstance();
@@ -155,16 +157,16 @@ public class OutputChecker {
 				"OpenDocument-schema-v1.0-os.rng", errorbuffer);
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer);
-		//odf11Validator = createValidationDriver(tmpdir,
-		//		"OpenDocument-schema-v1.1.rng", errorbuffer);
+		// odf11Validator = createValidationDriver(tmpdir,
+		// "OpenDocument-schema-v1.1.rng", errorbuffer);
 		odf11strictValidator = createValidationDriver(tmpdir,
 				"OpenDocument-strict-schema-v1.1.rng", errorbuffer);
 		odf11manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer);
 		odf12manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer);
-		//odf12dsigValidator = createValidationDriver(tmpdir,
-		//		"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
+		// odf12dsigValidator = createValidationDriver(tmpdir,
+		// "OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
 		odf12Validator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-schema.rng", errorbuffer);
 
@@ -265,6 +267,8 @@ public class OutputChecker {
 			Map<String, String> nsmap) {
 		xpath.setNamespaceContext(new NSMapper(nsmap));
 
+		report.setFragment(new FragmentType());
+
 		checkMimetypeFile(odfpath, report.getValidation());
 
 		OdfData data = new OdfData();
@@ -306,6 +310,25 @@ public class OutputChecker {
 				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml", out);
 	}
 
+	private Element getChild(String localname, Element e) {
+		Node n = e.getFirstChild();
+		while (n != null) {
+			if (n instanceof Element) {
+				e = (Element)n;
+				if (e.getLocalName().equals(localname)) {
+					return e;
+				} else {
+					e = getChild(localname, e);
+					if (e != null) {
+						return e;
+					}
+				}
+			}
+			n = n.getNextSibling();
+		}
+		return null;
+	}
+	
 	private Document checkXml(ZipFile zip, OutputReportType report,
 			OdfData data, ValidationErrorTypeType invalid,
 			ValidationErrorTypeType missing, String path, OutputType out)
@@ -325,6 +348,12 @@ public class OutputChecker {
 		checkVersion(data, doc, report.getValidation(), InputCreator.officens,
 				path);
 		checkXml(zip.getInputStream(ze), data.version, report, invalid);
+		if (path.equals("content.xml")) {
+			Element e = getChild("text", doc.getDocumentElement());
+			if (e != null) {
+			report.getFragment().getAny().add(e);
+			}
+		}
 
 		FileTestReportType filereport = checkExpressions(doc, out, path);
 		if (filereport != null) {

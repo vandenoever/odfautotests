@@ -17,7 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.example.documenttests.InputType;
+import org.example.documenttests.FragmentType;
 import org.example.documenttests.OdfTypeType;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
@@ -194,7 +194,7 @@ public class InputCreator {
 		}
 	}
 
-	private void createDocument(InputType input) {
+	private void createDocument(FragmentType input) {
 		Element first = (Element) input.getAny().get(0);
 		if (content == null) {
 			createNewDocument(first.getOwnerDocument().getImplementation());
@@ -205,7 +205,7 @@ public class InputCreator {
 		}
 	}
 
-	String createInput(InputType input) {
+	String createInput(FragmentType input) {
 		createDocument(input);
 
 		String filename = null;
