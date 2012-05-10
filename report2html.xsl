@@ -175,7 +175,18 @@
 		<html>
 			<head>
 				<title>ODF Automatic tests report</title>
-				<link rel="stylesheet" type="text/css" href="report.css" />
+				<style type="text/css">
+					.popup {
+					display: none;
+					}
+					td:hover .popup {
+					display:
+					block;
+					position: absolute;
+					background: white;
+					border: 1px solid black;
+					}
+				</style>
 			</head>
 			<body>
 				<xsl:apply-templates select="r:testreport" />
