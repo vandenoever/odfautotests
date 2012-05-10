@@ -16,7 +16,7 @@
 		</input>
 		<output type="zip">
 			<file path="content.xml">
-				<xpath expr="count(/o:document-content/o:body/o:text/text:p)=1" />
+				<xpath expr="count(//o:text/text:p)=1" />
 			</file>
 		</output>
 	</test>
@@ -37,6 +37,9 @@
 			</o:text>
 		</input>
 		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//o:text/draw:rect)=1" />
+            </file>
 		</output>
 	</test>
 	<test name="mergedcells">
@@ -62,7 +65,27 @@
 			</o:text>
 		</input>
 		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//table:table)=1" />
+				<xpath expr="count(//table:table-cell)=3" />
+				<xpath expr="count(//table:covered-table-cell)=1" />
+				<xpath expr="count(//table:table-row)=2" />
+				<xpath expr="count(//table:table-column)=1 or count(//table:table-column)=2" />
+			</file>
 		</output>
 	</test>
+	<test name="hiddenparagraph">
+		<input>
+			<o:text>
+				<text:p><text:hidden-paragraph text:condition="ooow:true"/>hello</text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//text:p)=1" />
+				<xpath expr="count(//text:hidden-paragraph)=1" />
+			</file>
+		</output>
+    </test>
 
 </documenttests>

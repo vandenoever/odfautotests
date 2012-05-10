@@ -3,6 +3,7 @@ package org.opendocumentformat.tester;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,7 +125,9 @@ public class Main {
 				e.printStackTrace();
 			}
 			try {
-				System.out.write(out.toByteArray());
+				FileOutputStream f = new FileOutputStream(path);
+				f.write(out.toByteArray());
+				f.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

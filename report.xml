@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<documenttestsreport xmlns="http://www.example.org/documenttests">
+	<testreport name="simpletext">
+		<input path="/tmp/input3847432954054698046.odt" size="1629">
+			<validation />
+		</input>
+		<target name="Calligra">
+			<commands
+				stderr="QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(17975)/koffice (lib kopageapp) KoOdfLoadingContext::KoOdfLoadingContext: could not parse manifest document &#xA;QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(17975)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(17975)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(17975)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;Enchant dict for &quot;en_US&quot; 0x25ad1d0 &#xA;words(17975)/kdeui (KAction) KActionCollection::setComponentData: this does not work on a KActionCollection containing actions! &#xA;This is to find if the item is created every time I press OD&#xA;&#xA;** (process:17975): WARNING **: 1 dictionaries weren't free'd.&#xA;&#xA;"
+				exitCode="0" durationMs="878"
+				exe="/home/oever/work/nokia/inst/bin/calligrawords" />
+			<output path="/tmp/output462549512062997951.odt" size="4015">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true"
+						expr="count(/o:document-content/o:body/o:text/text:p)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="Abiword">
+			<commands exitCode="0" durationMs="6" exe="/bin/cp" />
+			<commands exitCode="0" durationMs="129" exe="/usr/bin/abiword" />
+			<output path="/tmp/output1033835085036221585.odt" size="2345">
+				<validation>
+					<error
+						message="/home/oever/work/workspace/odfautotests/Manifest.dtd (No such file or directory)"
+						type="INVALIDMANIFESTXML" />
+				</validation>
+				<file path="content.xml">
+					<xpath result="true"
+						expr="count(/o:document-content/o:body/o:text/text:p)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="LibreOffice">
+			<commands
+				stdout="convert /tmp/input3847432954054698046.odt -&gt; /home/oever/work/workspace/odfautotests/tmp/input3847432954054698046.odt using writer8&#xA;"
+				exitCode="0" durationMs="1603" exe="/opt/libreoffice3.5/program/soffice" />
+			<output path="tmp/input3847432954054698046.odt" size="7990">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true"
+						expr="count(/o:document-content/o:body/o:text/text:p)=1" />
+				</file>
+			</output>
+		</target>
+	</testreport>
+	<testreport name="angleunit">
+		<input path="/tmp/input8384197270221633854.odt" size="1809">
+			<validation />
+		</input>
+		<target name="Calligra">
+			<commands
+				stderr="QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18004)/koffice (lib kopageapp) KoOdfLoadingContext::KoOdfLoadingContext: could not parse manifest document &#xA;QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18004)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18004)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18004)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18004)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;Enchant dict for &quot;en_US&quot; 0x2742e00 &#xA;words(18004)/kdeui (KAction) KActionCollection::setComponentData: this does not work on a KActionCollection containing actions! &#xA;This is to find if the item is created every time I press OD&#xA;&#xA;** (process:18004): WARNING **: 1 dictionaries weren't free'd.&#xA;&#xA;"
+				exitCode="0" durationMs="861"
+				exe="/home/oever/work/nokia/inst/bin/calligrawords" />
+			<output path="/tmp/output4316918428153776725.odt" size="4284">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//draw:rect)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="Abiword">
+			<commands exitCode="0" durationMs="11" exe="/bin/cp" />
+			<commands exitCode="0" durationMs="130" exe="/usr/bin/abiword" />
+			<output path="/tmp/output3154817765566066611.odt" size="2342">
+				<validation>
+					<error
+						message="/home/oever/work/workspace/odfautotests/Manifest.dtd (No such file or directory)"
+						type="INVALIDMANIFESTXML" />
+				</validation>
+				<file path="content.xml">
+					<xpath result="false" expr="count(//draw:rect)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="LibreOffice">
+			<commands
+				stdout="convert /tmp/input8384197270221633854.odt -&gt; /home/oever/work/workspace/odfautotests/tmp/input8384197270221633854.odt using writer8&#xA;"
+				exitCode="0" durationMs="1647" exe="/opt/libreoffice3.5/program/soffice" />
+			<output path="tmp/input8384197270221633854.odt" size="8465">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//draw:rect)=1" />
+				</file>
+			</output>
+		</target>
+	</testreport>
+	<testreport name="mergedcells">
+		<input path="/tmp/input8006663065736577794.odt" size="1708">
+			<validation />
+		</input>
+		<target name="Calligra">
+			<commands
+				stderr="QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18032)/koffice (lib kopageapp) KoOdfLoadingContext::KoOdfLoadingContext: could not parse manifest document &#xA;QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18032)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18032)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18032)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;Enchant dict for &quot;en_US&quot; 0x1cc2f50 &#xA;words(18032)/kdeui (KAction) KActionCollection::setComponentData: this does not work on a KActionCollection containing actions! &#xA;This is to find if the item is created every time I press OD&#xA;&#xA;** (process:18032): WARNING **: 1 dictionaries weren't free'd.&#xA;&#xA;"
+				exitCode="0" durationMs="998"
+				exe="/home/oever/work/nokia/inst/bin/calligrawords" />
+			<output path="/tmp/output1392922551369768641.odt" size="4120">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//table:table)=1" />
+					<xpath result="true" expr="count(//table:table-cell)=3" />
+					<xpath result="true" expr="count(//table:covered-table-cell)=1" />
+					<xpath result="true" expr="count(//table:table-row)=2" />
+					<xpath result="true"
+						expr="count(//table:table-column)=1 or count(//table:table-column)=2" />
+				</file>
+			</output>
+		</target>
+		<target name="Abiword">
+			<commands exitCode="0" durationMs="7" exe="/bin/cp" />
+			<commands exitCode="0" durationMs="119" exe="/usr/bin/abiword" />
+			<output path="/tmp/output7342271616463593981.odt" size="2564">
+				<validation>
+					<error
+						message="/home/oever/work/workspace/odfautotests/Manifest.dtd (No such file or directory)"
+						type="INVALIDMANIFESTXML" />
+				</validation>
+				<file path="content.xml">
+					<xpath result="true" expr="count(//table:table)=1" />
+					<xpath result="true" expr="count(//table:table-cell)=3" />
+					<xpath result="true" expr="count(//table:covered-table-cell)=1" />
+					<xpath result="true" expr="count(//table:table-row)=2" />
+					<xpath result="true"
+						expr="count(//table:table-column)=1 or count(//table:table-column)=2" />
+				</file>
+			</output>
+		</target>
+		<target name="LibreOffice">
+			<commands
+				stdout="convert /tmp/input8006663065736577794.odt -&gt; /home/oever/work/workspace/odfautotests/tmp/input8006663065736577794.odt using writer8&#xA;"
+				exitCode="0" durationMs="1621" exe="/opt/libreoffice3.5/program/soffice" />
+			<output path="tmp/input8006663065736577794.odt" size="8336">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//table:table)=1" />
+					<xpath result="true" expr="count(//table:table-cell)=3" />
+					<xpath result="true" expr="count(//table:covered-table-cell)=1" />
+					<xpath result="true" expr="count(//table:table-row)=2" />
+					<xpath result="true"
+						expr="count(//table:table-column)=1 or count(//table:table-column)=2" />
+				</file>
+			</output>
+		</target>
+	</testreport>
+	<testreport name="hiddenparagraph">
+		<input path="/tmp/input7584051264382271771.odt" size="1656">
+			<validation />
+		</input>
+		<target name="Calligra">
+			<commands
+				stderr="QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18061)/koffice (lib kopageapp) KoOdfLoadingContext::KoOdfLoadingContext: could not parse manifest document &#xA;QPixmap::handle(): Pixmap is not an X11 class pixmap&#xA;words(18061)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18061)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;words(18061)/kparts: Can't set a read-only document to 'modified' ! &#xA;&#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;Enchant dict for &quot;en_US&quot; 0x2936c80 &#xA;words(18061)/kdeui (KAction) KActionCollection::setComponentData: this does not work on a KActionCollection containing actions! &#xA;This is to find if the item is created every time I press OD&#xA;&#xA;** (process:18061): WARNING **: 1 dictionaries weren't free'd.&#xA;&#xA;"
+				exitCode="0" durationMs="904"
+				exe="/home/oever/work/nokia/inst/bin/calligrawords" />
+			<output path="/tmp/output629092012120005889.odt" size="4015">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//text:p)=1" />
+					<xpath result="false" expr="count(//text:hidden-paragraph)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="Abiword">
+			<commands exitCode="0" durationMs="11" exe="/bin/cp" />
+			<commands exitCode="0" durationMs="139" exe="/usr/bin/abiword" />
+			<output path="/tmp/output113530698394498947.odt" size="2346">
+				<validation>
+					<error
+						message="/home/oever/work/workspace/odfautotests/Manifest.dtd (No such file or directory)"
+						type="INVALIDMANIFESTXML" />
+				</validation>
+				<file path="content.xml">
+					<xpath result="true" expr="count(//text:p)=1" />
+					<xpath result="false" expr="count(//text:hidden-paragraph)=1" />
+				</file>
+			</output>
+		</target>
+		<target name="LibreOffice">
+			<commands
+				stdout="convert /tmp/input7584051264382271771.odt -&gt; /home/oever/work/workspace/odfautotests/tmp/input7584051264382271771.odt using writer8&#xA;"
+				exitCode="0" durationMs="1594" exe="/opt/libreoffice3.5/program/soffice" />
+			<output path="tmp/input7584051264382271771.odt" size="7990">
+				<validation />
+				<file path="content.xml">
+					<xpath result="true" expr="count(//text:p)=1" />
+					<xpath result="false" expr="count(//text:hidden-paragraph)=1" />
+				</file>
+			</output>
+		</target>
+	</testreport>
+</documenttestsreport>
