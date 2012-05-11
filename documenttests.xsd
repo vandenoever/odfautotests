@@ -17,6 +17,7 @@
 		<restriction base="NCName">
 			<enumeration value="zip" />
 			<enumeration value="xml" />
+			<enumeration value="pdf" />
 		</restriction>
 	</simpleType>
 	<simpleType name="versionType">
@@ -55,7 +56,7 @@
 			<element name="input" type="tns:fragmentType" />
 			<element name="operation" type="tns:operationType" minOccurs="0"
 				maxOccurs="unbounded" />
-			<element name="output" type="tns:outputType" />
+			<element name="output" type="tns:outputType" maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
 	</complexType>
@@ -137,13 +138,14 @@
 	</complexType>
 	<complexType name="outputReportType">
 		<sequence>
-			<element name="fragment" type="tns:fragmentType" />
+			<element name="fragment" type="tns:fragmentType" minOccurs="0" />
 			<element name="validation" type="tns:validationReportType" />
 			<element name="file" type="tns:fileTestReportType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="size" type="long" use="required" />
 		<attribute name="path" type="string" use="required" />
+		<attribute name="type" type="tns:filetypeType" use="required" />
 	</complexType>
 	<complexType name="commandReportType">
 		<attribute name="exe" type="string" use="required" />
@@ -219,7 +221,7 @@
 		<attribute name="name" type="NCName" use="required" />
 		<attribute name="odftypes" type="tns:odfTypesType" use="required" />
 		<attribute name="inputVersions" type="tns:versionsType" use="required" />
-		<attribute name="outputVersion" type="tns:versionType" use="required" />
+		<attribute name="odfOutputVersion" type="tns:versionType" />
 		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
 		<attribute name="outputType" type="tns:filetypeType" use="required" />
 	</complexType>

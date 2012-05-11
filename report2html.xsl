@@ -137,7 +137,7 @@
 						input
 						<xsl:apply-templates select="r:input" />
 					</td>
-					<xsl:for-each select="r:target">
+					<xsl:for-each select="r:target[r:output[@type='zip']]">
 						<td>
 							<xsl:value-of select="@name" />
 							<xsl:apply-templates select="r:output" />
@@ -150,14 +150,15 @@
 						<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
 						<xsl:apply-templates select="r:input/r:validation" />
 					</td>
-					<xsl:for-each select="r:target">
+					<xsl:for-each select="r:target[r:output[@type='zip']]">
 						<td>
 							<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
 							<xsl:apply-templates select="r:output/r:validation" />
 						</td>
 					</xsl:for-each>
 				</tr>
-				<xsl:for-each select="r:target[position()=1]/r:output/r:file/r:xpath">
+				<xsl:for-each
+					select="r:target[position()=1]/r:output[@type='zip']/r:file/r:xpath">
 					<tr>
 						<td>
 							<xsl:value-of select="@expr" />

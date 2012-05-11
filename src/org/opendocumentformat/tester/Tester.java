@@ -19,6 +19,7 @@ import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
+import org.example.documenttests.FiletypeType;
 import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
@@ -28,14 +29,14 @@ import org.example.documenttests.TestType;
 import org.example.documenttests.TestreportType;
 import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
-import org.opendocumentformat.tester.validator.OutputChecker;
+import org.opendocumentformat.tester.validator.OdfOutputChecker;
 
 public class Tester {
 
 	private final Map<DocumenttestsType, Map<String, String>> tests;
 	private final List<DocumenttestsconfigType> configs;
 
-	private final OutputChecker outputchecker = new OutputChecker();
+	private final OdfOutputChecker outputchecker = new OdfOutputChecker();
 
 	public Tester() {
 		tests = new HashMap<DocumenttestsType, Map<String, String>>();
@@ -75,12 +76,15 @@ public class Tester {
 		File inputfile = new File(path);
 		inputReport.setPath(path);
 		inputReport.setSize(inputfile.length());
+		inputReport.setType(FiletypeType.ZIP);
 		report.setInput(inputReport);
 		for (DocumenttestsconfigType config : configs) {
 			for (TargetType target : config.getTarget()) {
-				if (target.getOutputType().equals(test.getOutput().getType())) {
-					report.getTarget().add(
-							runTest(target, path, test.getOutput(), nsmap));
+				for (int i = 0; i < test.getOutput().size(); ++i) {
+					OutputType o = test.getOutput().get(i);
+					if (target.getOutputType().equals(o.getType())) {
+						report.getTarget().add(runTest(target, path, o, nsmap));
+					}
 				}
 			}
 		}
@@ -100,7 +104,10 @@ public class Tester {
 		output.setSize((new File(path)).length());
 		ValidationReportType vreport = new ValidationReportType();
 		output.setValidation(vreport);
-		outputchecker.check(path, output, out, nsmap);
+		if (out.getType() == FiletypeType.ZIP || out.getType() == FiletypeType.XML) {
+		    outputchecker.check(path, output, out, nsmap);
+		}
+	    output.setType(out.getType());
 		return report;
 	}
 

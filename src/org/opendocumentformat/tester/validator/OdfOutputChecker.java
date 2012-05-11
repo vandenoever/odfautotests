@@ -54,7 +54,7 @@ import com.thaiopensource.validate.prop.rng.RngProperty;
 import com.thaiopensource.validate.rng.SAXSchemaReader;
 import com.thaiopensource.xml.sax.ErrorHandlerImpl;
 
-public class OutputChecker {
+public class OdfOutputChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
@@ -104,7 +104,7 @@ public class OutputChecker {
 	}
 
 	static void extract(String target, String path) {
-		InputStream i = OutputChecker.class.getClassLoader()
+		InputStream i = OdfOutputChecker.class.getClassLoader()
 				.getResourceAsStream(path);
 		try {
 			FileOutputStream out = new FileOutputStream(target);
@@ -148,7 +148,7 @@ public class OutputChecker {
 		return driver;
 	}
 
-	public OutputChecker() {
+	public OdfOutputChecker() {
 		errorbuffer = new ErrorBuffer();
 		String tmpdir = "rng";
 		(new File(tmpdir)).mkdir();

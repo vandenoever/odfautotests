@@ -1,7 +1,7 @@
 <config xmlns="http://www.example.org/documenttests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 	<target name="Calligra" odftypes="text" inputVersions="1.0 1.1 1.2"
-		outputVersion="1.2" inputTypes="zip" outputType="zip">
+		odfOutputVersion="1.2" inputTypes="zip" outputType="zip">
 		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
 			<env name="DISPLAY" />
 			<env name="KDEDIRS" />
@@ -11,8 +11,20 @@
 			<infile />
 		</command>
 	</target>
+	<target name="CalligraPdf" odftypes="text" inputVersions="1.0 1.1 1.2"
+		inputTypes="zip" outputType="pdf">
+		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
+			<env name="DISPLAY" />
+			<env name="KDEDIRS" />
+			<env name="HOME" />
+			<argument value="--export-pdf" />
+			<argument value="--export-filename" />
+			<outfile />
+			<infile />
+		</command>
+	</target>
 	<target name="Abiword" odftypes="text" inputVersions="1.0 1.1 1.2"
-		outputVersion="1.1" inputTypes="zip" outputType="zip">
+		odfOutputVersion="1.1" inputTypes="zip" outputType="zip">
 		<command exe="/bin/cp">
 			<infile />
 			<outfile />
@@ -24,7 +36,7 @@
 		</command>
 	</target>
 	<target name="LibreOffice" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" outputVersion="1.2" inputTypes="xml zip"
+		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="zip">
 		<command exe="/opt/libreoffice3.5/program/soffice">
 			<argument value="--headless" />
@@ -36,7 +48,7 @@
 		</command>
 	</target>
 	<target name="LibreOffice" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" outputVersion="1.2" inputTypes="xml zip"
+		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="xml">
 		<command exe="/opt/libreoffice3.5/program/soffice">
 			<argument value="--headless" />

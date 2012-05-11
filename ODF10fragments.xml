@@ -19,6 +19,8 @@
 				<xpath expr="count(//o:text/text:p)=1" />
 			</file>
 		</output>
+		<output type="pdf">
+		</output>
 	</test>
 	<test name="angleunit">
 		<!-- show a rectangle rotated 45 degrees or 0.785 radians -->

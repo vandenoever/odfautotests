@@ -31,7 +31,7 @@ import javax.xml.validation.SchemaFactory;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
-import org.opendocumentformat.tester.validator.OutputChecker;
+import org.opendocumentformat.tester.validator.OdfOutputChecker;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -81,7 +81,7 @@ public class Main {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
 
-			documentBuilder = OutputChecker.createDocumentBuilder();
+			documentBuilder = OdfOutputChecker.createDocumentBuilder();
 		}
 
 		void getNSPrefixMap(NamedNodeMap atts, Map<String, String> nsmap) {
