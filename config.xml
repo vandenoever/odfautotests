@@ -25,13 +25,21 @@
 	</target>
 	<target name="Abiword" odftypes="text" inputVersions="1.0 1.1 1.2"
 		odfOutputVersion="1.1" inputTypes="zip" outputType="zip">
-		<command exe="/bin/cp">
-			<infile />
-			<outfile />
-		</command>
 		<command exe="/usr/bin/abiword">
 			<argument value="-t" />
 			<argument value="odt" />
+			<argument value="-o" />
+			<outfile />
+			<infile />
+		</command>
+	</target>
+	<target name="AbiwordPdf" odftypes="text" inputVersions="1.0 1.1 1.2"
+		inputTypes="zip" outputType="pdf">
+		<command exe="/usr/bin/abiword">
+			<argument value="-t" />
+			<argument value="pdf" />
+			<argument value="-o" />
+			<outfile />
 			<infile />
 		</command>
 	</target>
@@ -54,6 +62,18 @@
 			<argument value="--headless" />
 			<argument value="--convert-to" />
 			<argument value="odt" />
+			<argument value="--outdir" />
+			<outdir />
+			<infile />
+		</command>
+	</target>
+	<target name="LibreOfficePdf" odftypes="text spreadsheet presentation"
+		inputVersions="1.0 1.1 1.2" inputTypes="xml zip"
+		outputType="pdf">
+		<command exe="/opt/libreoffice3.5/program/soffice">
+			<argument value="--headless" />
+			<argument value="--convert-to" />
+			<argument value="pdf" />
 			<argument value="--outdir" />
 			<outdir />
 			<infile />

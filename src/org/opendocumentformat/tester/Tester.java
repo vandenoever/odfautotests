@@ -30,6 +30,7 @@ import org.example.documenttests.TestreportType;
 import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
 import org.opendocumentformat.tester.validator.OdfOutputChecker;
+import org.opendocumentformat.tester.validator.PdfOutputChecker;
 
 public class Tester {
 
@@ -97,22 +98,30 @@ public class Tester {
 		report.setName(target.getName());
 		OutputReportType output = new OutputReportType();
 		report.setOutput(output);
+		String suffix = ".odt";
+		if (target.getOutputType().equals(FiletypeType.PDF)) {
+			suffix = ".pdf";
+		}
 		for (CommandType cmd : target.getCommand()) {
-			path = runCommand(cmd, path, report);
+			path = runCommand(cmd, path, report, suffix);
 		}
 		output.setPath(path);
 		output.setSize((new File(path)).length());
 		ValidationReportType vreport = new ValidationReportType();
 		output.setValidation(vreport);
-		if (out.getType() == FiletypeType.ZIP || out.getType() == FiletypeType.XML) {
-		    outputchecker.check(path, output, out, nsmap);
+		if (out.getType() == FiletypeType.ZIP
+				|| out.getType() == FiletypeType.XML) {
+			outputchecker.check(path, output, out, nsmap);
+		} else if (out.getType() == FiletypeType.PDF) {
+			PdfOutputChecker pdf = new PdfOutputChecker();
+			pdf.createPngs(path);
 		}
-	    output.setType(out.getType());
+		output.setType(out.getType());
 		return report;
 	}
 
 	public String runCommand(CommandType command, String inpath,
-			TargetReportType report) {
+			TargetReportType report, String outsuffix) {
 		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
 		String outpath = inpath;
 		cmd[0] = command.getExe();
@@ -126,7 +135,7 @@ public class Tester {
 			} else if (name.equals("outfile")) {
 				File f = null;
 				try {
-					f = File.createTempFile("output", ".odt");
+					f = File.createTempFile("output", outsuffix);
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -156,7 +165,7 @@ public class Tester {
 		return outpath;
 	}
 
-	private CommandReportType runCommand(String cmd[], String env[]) {
+	public static CommandReportType runCommand(String cmd[], String env[]) {
 		CommandReportType cr = new CommandReportType();
 		cr.setExe(cmd[0]);
 		cr.setExitCode(-255);
