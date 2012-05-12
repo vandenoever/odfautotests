@@ -135,7 +135,7 @@ public class Tester {
 			} else if (name.equals("outfile")) {
 				File f = null;
 				try {
-					f = File.createTempFile("output", outsuffix);
+					f = File.createTempFile("output", outsuffix, new File("tmp"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

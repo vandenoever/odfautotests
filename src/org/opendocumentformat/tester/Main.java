@@ -155,6 +155,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		try {
+			(new File("tmp")).mkdir();
+		} catch (Exception e) {
+		}
 		Tester tester = new Tester();
 		Loader loader;
 		try {
