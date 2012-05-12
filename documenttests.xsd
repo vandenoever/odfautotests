@@ -80,6 +80,7 @@
 
 	<simpleType name="validationErrorTypeType">
 		<restriction base="string">
+			<enumeration value="INVALIDPDFFILE" />
 			<enumeration value="INVALIDZIPFILE" />
 			<enumeration value="INVALIDMIMETYPE" />
 			<enumeration value="DOUBLEZIPENTRY" />
@@ -99,6 +100,18 @@
 			<enumeration value="INCONSISTENTVERSIONNUMBER" />
 		</restriction>
 	</simpleType>
+	<complexType name="pdfinfoType">
+		<sequence>
+			<element name="page" maxOccurs="unbounded">
+				<complexType>
+					<attribute name="width" type="float" use="required" />
+					<attribute name="height" type="float" use="required" />
+					<attribute name="png" type="anyURI" use="required" />
+				</complexType>
+			</element>
+		</sequence>
+		<attribute name="pages" type="int" use="required" />
+	</complexType>
 	<complexType name="validationErrorType">
 		<attribute name="type" type="tns:validationErrorTypeType"
 			use="required" />
@@ -142,6 +155,7 @@
 			<element name="validation" type="tns:validationReportType" />
 			<element name="file" type="tns:fileTestReportType" minOccurs="0"
 				maxOccurs="unbounded" />
+			<element name="pdfinfo" type="tns:pdfinfoType" minOccurs="0" />
 		</sequence>
 		<attribute name="size" type="long" use="required" />
 		<attribute name="path" type="string" use="required" />

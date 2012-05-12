@@ -69,7 +69,7 @@ public class OdfOutputChecker {
 	private final XPathFactory factory = XPathFactory.newInstance();
 	private final XPath xpath = factory.newXPath();
 
-	class ErrorBuffer extends Writer {
+	private class ErrorBuffer extends Writer {
 		private StringWriter buffer;
 
 		public ErrorBuffer() {
@@ -103,7 +103,7 @@ public class OdfOutputChecker {
 		public Set<String> entries = new HashSet<String>();
 	}
 
-	static void extract(String target, String path) {
+	static private void extract(String target, String path) {
 		InputStream i = OdfOutputChecker.class.getClassLoader()
 				.getResourceAsStream(path);
 		try {
@@ -119,7 +119,7 @@ public class OdfOutputChecker {
 		}
 	}
 
-	static ValidationDriver createValidationDriver(String tmpdir, String path,
+	static private ValidationDriver createValidationDriver(String tmpdir, String path,
 			ErrorBuffer errorbuffer) {
 		File rng = new File(tmpdir + File.separator + path);
 		if (!rng.exists()) {
@@ -173,7 +173,7 @@ public class OdfOutputChecker {
 		documentBuilder = createDocumentBuilder();
 	}
 
-	class NSMapper implements NamespaceContext {
+	private class NSMapper implements NamespaceContext {
 		Map<String, String> nsmap;
 
 		NSMapper(Map<String, String> map) {
@@ -250,7 +250,7 @@ public class OdfOutputChecker {
 		report(report.getValidation(), type, msg);
 	}
 
-	static private void report(ValidationReportType report,
+	static public void report(ValidationReportType report,
 			ValidationErrorTypeType type, String msg) {
 		ValidationErrorType error = new ValidationErrorType();
 		error.setType(type);
@@ -258,7 +258,7 @@ public class OdfOutputChecker {
 		report.getError().add(error);
 	}
 
-	static private void report(ValidationReportType report,
+	static public void report(ValidationReportType report,
 			ValidationErrorTypeType type) {
 		report(report, type, null);
 	}
