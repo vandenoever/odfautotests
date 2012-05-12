@@ -141,7 +141,7 @@ public class Tester {
 				}
 				cmd[i] = outpath = f.getAbsolutePath();
 			} else if (name.equals("outdir")) {
-				cmd[i] = "tmp";
+				cmd[i] = "tmp/out";
 				String str = (new File(inpath)).getName();
 				outpath = cmd[i] + File.separator
 						+ str.substring(0, str.lastIndexOf('.')) + outsuffix;

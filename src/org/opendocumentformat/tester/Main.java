@@ -159,6 +159,10 @@ public class Main {
 			(new File("tmp")).mkdir();
 		} catch (Exception e) {
 		}
+		try {
+			(new File("tmp/out")).mkdir();
+		} catch (Exception e) {
+		}
 		Tester tester = new Tester();
 		Loader loader;
 		try {

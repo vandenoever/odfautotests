@@ -2,7 +2,6 @@ package org.opendocumentformat.tester.validator;
 
 import java.io.IOException;
 
-import org.example.documenttests.CommandReportType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.ValidationErrorTypeType;
@@ -48,10 +47,7 @@ public class PdfOutputChecker {
 		String cmd[] = { "/usr/bin/pdftoppm", "-png", "-r", "150", pdfpath,
 				pngpath };
 		String env[] = {};
-		CommandReportType r = Tester.runCommand(cmd, env);
-		System.out.println(pngpath);
-		System.out.println(r.getStderr());
-		System.out.println(r.getStdout());
+		Tester.runCommand(cmd, env);
 	}
 
 }

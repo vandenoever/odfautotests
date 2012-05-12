@@ -35,7 +35,7 @@
 	<target name="run" depends="jar" description="run the tests">
 		<java jar="odftester.jar" fork='true'>
 			<arg file="config.xml"/>
-            <arg file="ODF10fragments.xml"/>
+            <arg file="texttests.xml"/>
 		</java>
 	</target>
 	<target name="clean">
