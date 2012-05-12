@@ -101,11 +101,13 @@
 	</xsl:template>
 	<xsl:template match="r:input|r:output">
 		<div class="popup">
-			<pre>
-				<xsl:for-each select="r:fragment">
-					<xsl:call-template name="formatxml" />
-				</xsl:for-each>
-			</pre>
+			<xsl:if test="r:fragment">
+				<pre>
+					<xsl:for-each select="r:fragment">
+						<xsl:call-template name="formatxml" />
+					</xsl:for-each>
+				</pre>
+			</xsl:if>
 			<a>
 				<xsl:attribute name="href">
 				<xsl:value-of select="@path" />
@@ -114,6 +116,28 @@
 			</a>
 			size:
 			<xsl:value-of select="@size" />
+			<xsl:if test="../r:commands">
+				<span>
+					<xsl:value-of
+						select="concat(', duration: ', sum(../r:commands/@durationMs), ' ms ')" />
+				</span>
+				<xsl:if test="../r:commands/@stderr">
+					<span>
+						stderr
+						<pre class="output">
+							<xsl:value-of select="../r:commands/@stderr" />
+						</pre>
+					</span>
+				</xsl:if>
+				<xsl:if test="../r:commands/@stdout">
+					<span>
+						stdout
+						<pre class="output">
+							<xsl:value-of select="../r:commands/@stdout" />
+						</pre>
+					</span>
+				</xsl:if>
+			</xsl:if>
 		</div>
 	</xsl:template>
 	<xsl:template name="xpathresults">
@@ -238,24 +262,28 @@
 			<head>
 				<title>ODF Automatic tests report</title>
 				<style type="text/css">
-					.popup {
+					.popup, .output {
 					display: none;
 					}
-					th:hover .popup, td:hover
-					.popup {
+					th:hover .popup,
+					td:hover
+					.popup, span:hover .output {
 					display:
 					block;
-					position: absolute;
+					position:
+					absolute;
 					background: white;
 					border:
 					1px solid black;
 					}
-					th { font-weight: normal;
+					th {
+					font-weight: normal;
 					background-color:
 					#cccccc;
 					text-align:
 					left; }
-					img.thumb { border: 1px solid black; }
+					img.thumb { border: 1px
+					solid black; }
 				</style>
 			</head>
 			<body>
