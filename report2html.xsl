@@ -133,19 +133,19 @@
 			<table>
 				<tr>
 					<td></td>
-					<td>
+					<th>
 						input
 						<xsl:apply-templates select="r:input" />
-					</td>
+					</th>
 					<xsl:for-each select="r:target[r:output[@type='zip']]">
-						<td>
+						<th>
 							<xsl:value-of select="@name" />
 							<xsl:apply-templates select="r:output" />
-						</td>
+						</th>
 					</xsl:for-each>
 				</tr>
 				<tr>
-					<td>valid ODF</td>
+					<th>valid ODF</th>
 					<td>
 						<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
 						<xsl:apply-templates select="r:input/r:validation" />
@@ -160,15 +160,57 @@
 				<xsl:for-each
 					select="r:target[position()=1]/r:output[@type='zip']/r:file/r:xpath">
 					<tr>
-						<td>
+						<th>
 							<xsl:value-of select="@expr" />
-						</td>
+						</th>
 						<td />
 						<xsl:call-template name="xpathresults">
 							<xsl:with-param name="xpath" select="@expr" />
 						</xsl:call-template>
 					</tr>
 				</xsl:for-each>
+				<tr>
+					<td></td>
+					<xsl:for-each select="r:target[r:output[@type='pdf']]">
+						<th>
+							<xsl:value-of select="@name" />
+							<xsl:apply-templates select="r:output" />
+						</th>
+					</xsl:for-each>
+				</tr>
+				<tr>
+					<th>success</th>
+					<xsl:for-each select="r:target[r:output[@type='pdf']]">
+						<td>
+							<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
+							<xsl:apply-templates select="r:output/r:validation" />
+						</td>
+					</xsl:for-each>
+				</tr>
+				<tr>
+					<th>pages</th>
+					<xsl:for-each select="r:target[r:output[@type='pdf']]">
+						<td>
+							<xsl:value-of select="r:output/r:pdfinfo/@pages" />
+						</td>
+					</xsl:for-each>
+				</tr>
+				<tr>
+					<th>width</th>
+					<xsl:for-each select="r:target[r:output[@type='pdf']]">
+						<td>
+							<xsl:value-of select="r:output/r:pdfinfo/r:page/@width" />
+						</td>
+					</xsl:for-each>
+				</tr>
+				<tr>
+					<th>height</th>
+					<xsl:for-each select="r:target[r:output[@type='pdf']]">
+						<td>
+							<xsl:value-of select="r:output/r:pdfinfo/r:page/@height" />
+						</td>
+					</xsl:for-each>
+				</tr>
 			</table>
 		</div>
 	</xsl:template>
@@ -180,13 +222,16 @@
 					.popup {
 					display: none;
 					}
-					td:hover .popup {
+					th:hover .popup {
 					display:
 					block;
 					position: absolute;
 					background: white;
 					border: 1px solid black;
 					}
+					th { font-weight: normal;
+					background-color: #cccccc;
+					text-align: left; }
 				</style>
 			</head>
 			<body>
