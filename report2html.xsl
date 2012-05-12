@@ -187,75 +187,75 @@
 		</xsl:for-each>
 	</xsl:template>
 	<xsl:template match="r:testreport">
-		<div class="testreport">
-			<h1>
-				<xsl:value-of select="@name" />
-			</h1>
-			<table>
-				<tr>
-					<td></td>
-					<th>
-						input
-						<xsl:apply-templates select="r:input" />
-					</th>
-					<xsl:for-each select="r:target[r:output[@type='zip']]">
-						<th>
-							<xsl:value-of select="@name" />
-							<xsl:apply-templates select="r:output" />
-						</th>
-					</xsl:for-each>
-				</tr>
-				<tr>
-					<th>valid ODF</th>
-					<td>
-						<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
-						<xsl:apply-templates select="r:input/r:validation" />
-					</td>
-					<xsl:for-each select="r:target[r:output[@type='zip']]">
-						<td>
-							<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
-							<xsl:apply-templates select="r:output/r:validation" />
-						</td>
-					</xsl:for-each>
-				</tr>
-				<xsl:for-each
-					select="r:target[position()=1]/r:output[@type='zip']/r:file/r:xpath">
-					<tr>
-						<th>
-							<xsl:value-of select="@expr" />
-						</th>
-						<td />
-						<xsl:call-template name="xpathresults">
-							<xsl:with-param name="xpath" select="@expr" />
-						</xsl:call-template>
-					</tr>
-				</xsl:for-each>
-				<tr>
-					<td></td>
-					<th>
-						input
-						<xsl:apply-templates select="r:input" />
-					</th>
-					<xsl:for-each select="r:target[r:output[@type='pdf']]">
-						<th>
-							<xsl:value-of select="@name" />
-							<xsl:apply-templates select="r:output" />
-						</th>
-					</xsl:for-each>
-				</tr>
-				<tr>
-					<th>success</th>
-					<td></td>
-					<xsl:for-each select="r:target[r:output[@type='pdf']]">
-						<td>
-							<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
-							<xsl:apply-templates select="r:output/r:validation" />
-						</td>
-					</xsl:for-each>
-				</tr>
-				<xsl:call-template name="pdfpages" />
-			</table>
-		</div>
+		<tr>
+			<th class="testreport">
+				<h1>
+					<xsl:value-of select="@name" />
+				</h1>
+			</th>
+		</tr>
+		<tr>
+			<td></td>
+			<th>
+				input
+				<xsl:apply-templates select="r:input" />
+			</th>
+			<xsl:for-each select="r:target[r:output[@type='zip']]">
+				<th>
+					<xsl:value-of select="@name" />
+					<xsl:apply-templates select="r:output" />
+				</th>
+			</xsl:for-each>
+		</tr>
+		<tr>
+			<th>valid ODF</th>
+			<td>
+				<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
+				<xsl:apply-templates select="r:input/r:validation" />
+			</td>
+			<xsl:for-each select="r:target[r:output[@type='zip']]">
+				<td>
+					<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
+					<xsl:apply-templates select="r:output/r:validation" />
+				</td>
+			</xsl:for-each>
+		</tr>
+		<xsl:for-each
+			select="r:target[position()=1]/r:output[@type='zip']/r:file/r:xpath">
+			<tr>
+				<th>
+					<xsl:value-of select="@expr" />
+				</th>
+				<td />
+				<xsl:call-template name="xpathresults">
+					<xsl:with-param name="xpath" select="@expr" />
+				</xsl:call-template>
+			</tr>
+		</xsl:for-each>
+		<tr>
+			<td></td>
+			<th>
+				input
+				<xsl:apply-templates select="r:input" />
+			</th>
+			<xsl:for-each select="r:target[r:output[@type='pdf']]">
+				<th>
+					<xsl:value-of select="@name" />
+					<xsl:apply-templates select="r:output" />
+				</th>
+			</xsl:for-each>
+		</tr>
+		<tr>
+			<th>success</th>
+			<td></td>
+			<xsl:for-each select="r:target[r:output[@type='pdf']]">
+				<td>
+					<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
+					<xsl:apply-templates select="r:output/r:validation" />
+				</td>
+			</xsl:for-each>
+		</tr>
+		<xsl:call-template name="pdfpages" />
 	</xsl:template>
 	<xsl:template match="/r:documenttestsreport">
 		<html>
@@ -287,7 +287,9 @@
 				</style>
 			</head>
 			<body>
-				<xsl:apply-templates select="r:testreport" />
+				<table>
+					<xsl:apply-templates select="r:testreport" />
+				</table>
 			</body>
 		</html>
 	</xsl:template>

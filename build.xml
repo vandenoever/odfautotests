@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="documenttester" default="jar" basedir=".">
-   <target name="checkforxjcchanges">
+   <target name="depjars">
+      <get src="http://downloads.sourceforge.net/project/itext/iText/iText5.2.1/itext-5.2.1.zip" dest="lib/itext.zip" skipexisting="true"/>
+      <unzip src="lib/itext.zip" dest="lib">
+        <patternset>
+          <include name="itextpdf-5.2.1.jar"/>
+        </patternset>
+      </unzip>
+   </target>
+   <target name="checkforxjcchanges" depends="depjars">
 	  <uptodate property="noxjcchanges" targetfile="src/org/example/documenttests/DocumenttestsType.java">
 		 <srcfiles dir="." includes="*.xsd"/>
 	  </uptodate>
