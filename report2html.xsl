@@ -277,6 +277,7 @@
 					1px solid black;
 					}
 					th {
+					vertical-align: top;
 					font-weight: normal;
 					background-color:
 					#cccccc;
@@ -284,6 +285,7 @@
 					left; }
 					img.thumb { border: 1px
 					solid black; }
+					th:nth-child(1) { text-align: right; }
 				</style>
 			</head>
 			<body>

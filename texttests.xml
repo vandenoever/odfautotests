@@ -100,5 +100,50 @@
 		<output type="pdf">
 		</output>
 	</test>
+	<test name="listheader">
+		<input>
+			<o:text>
+				<text:list>
+					<text:list-header>
+						<text:p>hello</text:p>
+					</text:list-header>
+				</text:list>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//text:list)=1" />
+				<xpath expr="count(//text:list-header)=1" />
+				<xpath expr="count(//text:list/*/text:p)=1" />
+			</file>
+		</output>
+		<output type="pdf">
+		</output>
+	</test>
+	<test name="dropcap">
+		<input>
+			<o:automatic-styles>
+				<style:style style:name="d" style:family="paragraph">
+					<style:paragraph-properties>
+						<style:drop-cap style:lines="3" style:length="word" />
+					</style:paragraph-properties>
+				</style:style>
+			</o:automatic-styles>
+			<o:text>
+				<text:p text:style-name="d">This is a paragraph. It contains
+					lines, words. This is a paragraph. It contains lines, words. This
+					is a paragraph. It contains lines, words.</text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//style:drop-cap)=1" />
+				<xpath expr="//style:drop-cap/@style:lines=3" />
+				<xpath expr="//style:drop-cap/@style:length='word'" />
+			</file>
+		</output>
+		<output type="pdf">
+		</output>
+	</test>
 
 </documenttests>
