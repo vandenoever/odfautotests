@@ -139,7 +139,7 @@ public class Tester {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				cmd[i] = outpath = f.getAbsolutePath();
+				cmd[i] = outpath = f.getPath();
 			} else if (name.equals("outdir")) {
 				cmd[i] = "tmp/out";
 				String str = (new File(inpath)).getName();

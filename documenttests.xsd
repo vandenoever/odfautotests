@@ -107,6 +107,7 @@
 					<attribute name="width" type="float" use="required" />
 					<attribute name="height" type="float" use="required" />
 					<attribute name="png" type="anyURI" use="required" />
+					<attribute name="pngthumb" type="anyURI" use="required" />
 				</complexType>
 			</element>
 		</sequence>

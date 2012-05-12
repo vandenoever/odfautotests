@@ -211,7 +211,7 @@ public class InputCreator {
 		String filename = null;
 		try {
 			File f = File.createTempFile("input", ".odt", new File("tmp"));
-			filename = f.getAbsolutePath();
+			filename = f.getPath();
 			FileOutputStream fos = new FileOutputStream(f);
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			zos.setMethod(ZipOutputStream.STORED);

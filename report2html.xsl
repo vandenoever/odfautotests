@@ -132,13 +132,19 @@
 			<th>
 				<xsl:value-of select="concat('page ', $pageNumber)" />
 			</th>
+			<td></td>
 			<xsl:for-each select="$outputs">
 				<td>
 					<xsl:value-of
 						select="concat('width: ', r:pdfinfo/r:page[position()=$pageNumber]/@width, ' ')" />
+					<br />
 					<xsl:value-of
 						select="concat('height: ', r:pdfinfo/r:page[position()=$pageNumber]/@height, ' ')" />
-					<img class="thumb" src="{r:pdfinfo/r:page[position()=$pageNumber]/@png}" />
+					<br />
+					<a href="{r:pdfinfo/r:page[position()=$pageNumber]/@png}">
+						<img class="thumb"
+							src="{r:pdfinfo/r:page[position()=$pageNumber]/@pngthumb}" />
+					</a>
 				</td>
 			</xsl:for-each>
 		</tr>
@@ -202,6 +208,10 @@
 				</xsl:for-each>
 				<tr>
 					<td></td>
+					<th>
+						input
+						<xsl:apply-templates select="r:input" />
+					</th>
 					<xsl:for-each select="r:target[r:output[@type='pdf']]">
 						<th>
 							<xsl:value-of select="@name" />
@@ -211,34 +221,11 @@
 				</tr>
 				<tr>
 					<th>success</th>
+					<td></td>
 					<xsl:for-each select="r:target[r:output[@type='pdf']]">
 						<td>
 							<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
 							<xsl:apply-templates select="r:output/r:validation" />
-						</td>
-					</xsl:for-each>
-				</tr>
-				<tr>
-					<th>pages</th>
-					<xsl:for-each select="r:target[r:output[@type='pdf']]">
-						<td>
-							<xsl:value-of select="r:output/r:pdfinfo/@pages" />
-						</td>
-					</xsl:for-each>
-				</tr>
-				<tr>
-					<th>width</th>
-					<xsl:for-each select="r:target[r:output[@type='pdf']]">
-						<td>
-							<xsl:value-of select="r:output/r:pdfinfo/r:page/@width" />
-						</td>
-					</xsl:for-each>
-				</tr>
-				<tr>
-					<th>height</th>
-					<xsl:for-each select="r:target[r:output[@type='pdf']]">
-						<td>
-							<xsl:value-of select="r:output/r:pdfinfo/r:page/@height" />
 						</td>
 					</xsl:for-each>
 				</tr>
@@ -254,18 +241,21 @@
 					.popup {
 					display: none;
 					}
-					th:hover .popup {
+					th:hover .popup, td:hover
+					.popup {
 					display:
 					block;
 					position: absolute;
 					background: white;
-					border: 1px solid black;
+					border:
+					1px solid black;
 					}
 					th { font-weight: normal;
-					background-color: #cccccc;
+					background-color:
+					#cccccc;
 					text-align:
 					left; }
-					img.thumb {max-width: 10em; border: 1px solid black;}
+					img.thumb { border: 1px solid black; }
 				</style>
 			</head>
 			<body>

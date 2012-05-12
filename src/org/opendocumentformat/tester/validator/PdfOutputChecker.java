@@ -37,15 +37,18 @@ public class PdfOutputChecker {
 			p.setHeight(r.getHeight());
 			p.setWidth(r.getWidth());
 			info.getPage().add(p);
-			String pngpath = pathbase + String.format(format, i);
-			p.setPng(pngpath);
+			String png = String.format(format, i);
+			p.setPng(pathbase + png);
+			p.setPngthumb(pathbase + "-thumb" + png);
+
 		}
-		createPngs(pdfpath, pathbase);
+		createPngs(pdfpath, pathbase, 150);
+		createPngs(pdfpath, pathbase + "-thumb", 15);
 	}
 
-	private void createPngs(String pdfpath, String pngpath) {
-		String cmd[] = { "/usr/bin/pdftoppm", "-png", "-r", "150", pdfpath,
-				pngpath };
+	private void createPngs(String pdfpath, String pngpath, int resolution) {
+		String cmd[] = { "/usr/bin/pdftoppm", "-png", "-r",
+				String.valueOf(resolution), pdfpath, pngpath };
 		String env[] = {};
 		Tester.runCommand(cmd, env);
 	}
