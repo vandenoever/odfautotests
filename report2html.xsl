@@ -125,6 +125,37 @@
 			</td>
 		</xsl:for-each>
 	</xsl:template>
+	<xsl:template name="pdfpage">
+		<xsl:param name="pageNumber" />
+		<xsl:param name="outputs" />
+		<tr>
+			<th>
+				<xsl:value-of select="concat('page ', $pageNumber)" />
+			</th>
+			<xsl:for-each select="$outputs">
+				<td>
+					<xsl:value-of
+						select="concat('width: ', r:pdfinfo/r:page[position()=$pageNumber]/@width, ' ')" />
+					<xsl:value-of
+						select="concat('height: ', r:pdfinfo/r:page[position()=$pageNumber]/@height, ' ')" />
+					<img class="thumb" src="{r:pdfinfo/r:page[position()=$pageNumber]/@png}" />
+				</td>
+			</xsl:for-each>
+		</tr>
+	</xsl:template>
+	<xsl:template name="pdfpages">
+		<xsl:for-each select="r:target/r:output[@type='pdf']">
+			<xsl:sort select="r:pdfinfo/@pages" data-type="number"
+				order="descending" />
+			<xsl:if test="position() = 1">
+				<xsl:call-template name="pdfpage">
+					<xsl:with-param name="pageNumber" select="position()" />
+					<xsl:with-param name="outputs"
+						select="../../r:target/r:output[@type='pdf']" />
+				</xsl:call-template>
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 	<xsl:template match="r:testreport">
 		<div class="testreport">
 			<h1>
@@ -211,6 +242,7 @@
 						</td>
 					</xsl:for-each>
 				</tr>
+				<xsl:call-template name="pdfpages" />
 			</table>
 		</div>
 	</xsl:template>
@@ -231,7 +263,9 @@
 					}
 					th { font-weight: normal;
 					background-color: #cccccc;
-					text-align: left; }
+					text-align:
+					left; }
+					img.thumb {max-width: 10em; border: 1px solid black;}
 				</style>
 			</head>
 			<body>
