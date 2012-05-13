@@ -159,16 +159,18 @@
 			<td></td>
 			<xsl:for-each select="$outputs">
 				<td>
-					<xsl:value-of
-						select="concat('width: ', r:pdfinfo/r:page[position()=$pageNumber]/@width, ' ')" />
-					<br />
-					<xsl:value-of
-						select="concat('height: ', r:pdfinfo/r:page[position()=$pageNumber]/@height, ' ')" />
-					<br />
-					<a href="{r:pdfinfo/r:page[position()=$pageNumber]/@png}">
-						<img class="thumb"
-							src="{r:pdfinfo/r:page[position()=$pageNumber]/@pngthumb}" />
-					</a>
+					<xsl:if test="r:pdfinfo/r:page[position()=$pageNumber]">
+						<xsl:value-of
+							select="concat('width: ', r:pdfinfo/r:page[position()=$pageNumber]/@width, ' ')" />
+						<br />
+						<xsl:value-of
+							select="concat('height: ', r:pdfinfo/r:page[position()=$pageNumber]/@height, ' ')" />
+						<br />
+						<a href="{r:pdfinfo/r:page[position()=$pageNumber]/@png}">
+							<img class="thumb"
+								src="{r:pdfinfo/r:page[position()=$pageNumber]/@pngthumb}" />
+						</a>
+					</xsl:if>
 				</td>
 			</xsl:for-each>
 		</tr>
