@@ -135,7 +135,8 @@ public class Tester {
 			} else if (name.equals("outfile")) {
 				File f = null;
 				try {
-					f = File.createTempFile("output", outsuffix, new File("tmp"));
+					f = File.createTempFile("output", outsuffix,
+							new File("tmp"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -171,34 +172,73 @@ public class Tester {
 		cr.setExe(cmd[0]);
 		cr.setExitCode(-255);
 		long start = System.nanoTime();
+		Process p = null;
+		String line;
 		try {
-			String line;
-			Process p = Runtime.getRuntime().exec(cmd, env);
-			BufferedReader bri = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
-			BufferedReader bre = new BufferedReader(new InputStreamReader(
-					p.getErrorStream()));
-			String stdout = "", stderr = "";
+			p = Runtime.getRuntime().exec(cmd, env);
+		} catch (IOException e) {
+			cr.setExitCode(-1);
+			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
+			return cr;
+		}
+		Waiter waiter = new Waiter(p, cr);
+		waiter.start();
+		BufferedReader bri = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
+		BufferedReader bre = new BufferedReader(new InputStreamReader(
+				p.getErrorStream()));
+		String stdout = "", stderr = "";
+		try {
 			while ((line = bri.readLine()) != null) {
 				stdout += line + "\n";
 			}
 			bri.close();
-			while ((line = bre.readLine()) != null) {
+			while (bre.ready()) {
+			    line = bre.readLine();
 				stderr += line + "\n";
 			}
 			bre.close();
+		} catch (IOException err) {
+		}
+		try {
 			p.waitFor();
-			cr.setExitCode(p.exitValue());
-			if (stdout.length() > 0) {
-				cr.setStdout(stdout);
-			}
-			if (stderr.length() > 0) {
-				cr.setStderr(stderr);
-			}
-		} catch (Exception err) {
-			err.printStackTrace();
+			waiter.report = null;
+		} catch (InterruptedException e) {
+		}
+		cr.setExitCode(p.exitValue());
+		if (stdout.length() > 0) {
+			cr.setStdout(stdout);
+		}
+		if (stderr.length() > 0) {
+			cr.setStderr(stderr);
 		}
 		cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		return cr;
+	}
+}
+
+class Waiter extends Thread {
+	private final Process process;
+	CommandReportType report;
+
+	public Waiter(Process process, CommandReportType report) {
+		this.process = process;
+		this.report = report;
+	}
+
+	public void run() {
+		try {
+			// wait 60 seconds
+			for (int i = 0; i < 60; ++i) {
+			    sleep(1000);
+			    if (report == null) {
+			    	return;
+			    }
+			}
+			report.setTimedout(true);
+			process.destroy();
+		} catch (InterruptedException ignore) {
+			return;
+		}
 	}
 }

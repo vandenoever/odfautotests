@@ -58,7 +58,7 @@ public class OdfOutputChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
-	// private final ValidationDriver odf11Validator;
+	private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
 	private final ValidationDriver odf12Validator;
@@ -119,8 +119,8 @@ public class OdfOutputChecker {
 		}
 	}
 
-	static private ValidationDriver createValidationDriver(String tmpdir, String path,
-			ErrorBuffer errorbuffer) {
+	static private ValidationDriver createValidationDriver(String tmpdir,
+			String path, ErrorBuffer errorbuffer) {
 		File rng = new File(tmpdir + File.separator + path);
 		if (!rng.exists()) {
 			extract(rng.getAbsolutePath(), path);
@@ -157,8 +157,8 @@ public class OdfOutputChecker {
 				"OpenDocument-schema-v1.0-os.rng", errorbuffer);
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer);
-		// odf11Validator = createValidationDriver(tmpdir,
-		// "OpenDocument-schema-v1.1.rng", errorbuffer);
+		odf11Validator = createValidationDriver(tmpdir,
+				"OpenDocument-schema-v1.1.rng", errorbuffer);
 		odf11strictValidator = createValidationDriver(tmpdir,
 				"OpenDocument-strict-schema-v1.1.rng", errorbuffer);
 		odf11manifestValidator = createValidationDriver(tmpdir,
@@ -314,7 +314,7 @@ public class OdfOutputChecker {
 		Node n = e.getFirstChild();
 		while (n != null) {
 			if (n instanceof Element) {
-				e = (Element)n;
+				e = (Element) n;
 				if (e.getLocalName().equals(localname)) {
 					return e;
 				} else {
@@ -328,7 +328,7 @@ public class OdfOutputChecker {
 		}
 		return null;
 	}
-	
+
 	private Document checkXml(ZipFile zip, OutputReportType report,
 			OdfData data, ValidationErrorTypeType invalid,
 			ValidationErrorTypeType missing, String path, OutputType out)
@@ -351,7 +351,7 @@ public class OdfOutputChecker {
 		if (path.equals("content.xml")) {
 			Element e = getChild("text", doc.getDocumentElement());
 			if (e != null) {
-			report.getFragment().getAny().add(e);
+				report.getFragment().getAny().add(e);
 			}
 		}
 

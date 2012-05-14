@@ -166,6 +166,7 @@
 		<attribute name="exe" type="string" use="required" />
 		<attribute name="durationMs" type="int" use="required" />
 		<attribute name="exitCode" type="int" use="required" />
+		<attribute name="timedout" type="boolean" use="required" />
 		<attribute name="stderr" type="string" />
 		<attribute name="stdout" type="string" />
 	</complexType>

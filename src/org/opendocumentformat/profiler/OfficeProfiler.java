@@ -16,20 +16,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.example.documenttests.CommandReportType;
+import org.example.documenttests.OutputReportType;
+import org.example.documenttests.ValidationErrorType;
+import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.Tester;
+import org.opendocumentformat.tester.validator.OdfOutputChecker;
 
 public class OfficeProfiler {
 
 	final static Map<String, List<String>> applications;
 	final static Map<String, String> extensions;
-	final static String env[];
+	// final static String env[];
 
 	static {
 		applications = new HashMap<String, List<String>>();
 		applications.put("calligrawords", Arrays.asList("odt", "doc", "docx"));
 		applications.put("calligrastage", Arrays.asList("odp", "ppt", "pptx"));
 		applications.put("calligrasheets", Arrays.asList("ods", "xls", "xlsx"));
-		env = new String[3];
+		String env[] = new String[3];
 		env[0] = "HOME=" + System.getenv("HOME");
 		env[1] = "KDEDIRS=" + System.getenv("KDEDIRS");
 		env[2] = "DISPLAY=" + System.getenv("DISPLAY");
@@ -53,7 +57,7 @@ public class OfficeProfiler {
 			if (f.isFile()) {
 				String path = f.getCanonicalPath();
 				if (extensions.containsKey(getExt(path))) {
-					files.add(f.getCanonicalPath());
+					files.add(path);
 				}
 			} else if (f.isDirectory()) {
 				files.addAll(scanDirectory(f.getCanonicalPath(), exts));
@@ -67,7 +71,9 @@ public class OfficeProfiler {
 		for (String f : officefiles) {
 			exts.add(getExt(f));
 		}
-		return exts;
+		List<String> e = new ArrayList<String>(exts);
+		java.util.Collections.sort(e);
+		return e;
 	}
 
 	static String getExt(String path) {
@@ -133,12 +139,15 @@ public class OfficeProfiler {
 				profilefilename, "--nocrashhandler", file));
 		System.out.println(args);
 		String argarray[] = new String[0];
+		String env[] = null;
 		CommandReportType crt = Tester.runCommand(args.toArray(argarray), env);
 		Result r = new Result();
 		r.lines = readLines(profilefile);
 		r.returnValue = crt.getExitCode();
 		CommandReportType convert = null;
-		if (r.returnValue != 0) {
+		if (crt.isTimedout()) {
+			logger.failTest("Timeout!");
+		} else if (r.returnValue != 0) {
 			if (maxbacktraces > 0) {
 				maxbacktraces -= 1;
 				// generate a backtrace
@@ -339,8 +348,21 @@ class Result {
 }
 
 class ODFValidator {
+	final static OdfOutputChecker odfvalidator = new OdfOutputChecker();
+
 	String validate(String path) {
-		return null;
+		OutputReportType report = new OutputReportType();
+		ValidationReportType v = new ValidationReportType();
+		report.setValidation(v);
+		odfvalidator.check(path, report, null, null);
+		if (v.getError().size() == 0) {
+			return null;
+		}
+		String error = "";
+		for (ValidationErrorType e : v.getError()) {
+			error += e.getType() + " " + e.getMessage() + "\n";
+		}
+		return error;
 	}
 
 }
@@ -382,13 +404,18 @@ class Logger {
 	}
 
 	String escape(String s) {
-		return s.replaceAll("|", "||").replaceAll("'", "|'")
+		return s.replaceAll("\\|", "||").replaceAll("'", "|'")
 				.replaceAll("]", "|]").replaceAll("\n", "|n")
 				.replaceAll("\r", "|n");
 	}
 
 	void failTest(String err) {
 		if (suitename != null && testname != null) {
+			if (err == null) {
+				err = "";
+			} else {
+				err = escape(err);
+			}
 			System.out.println("##teamcity[testFailed name='" + testname
 					+ "' details='" + err + "']");
 			System.out.flush();
