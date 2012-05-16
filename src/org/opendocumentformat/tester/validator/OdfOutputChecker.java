@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -39,12 +40,15 @@ import org.example.documenttests.XpathReportType;
 import org.example.documenttests.XpathResultType;
 import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.thaiopensource.util.PropertyMapBuilder;
 import com.thaiopensource.validate.SchemaReader;
@@ -96,6 +100,28 @@ public class OdfOutputChecker {
 			return buffer.toString();
 		}
 
+		class ExtendedODFErrorHandler extends ErrorHandlerImpl {
+			ExtendedODFErrorHandler(ErrorBuffer errorbuffer) {
+				super(errorbuffer);
+			}
+
+			@Override
+			public void error(SAXParseException e) {
+				String msg = e.getMessage();
+				if (msg == null || msg.indexOf("calligra:") == -1) {
+					super.error(e);
+				}
+			}
+
+			@Override
+			public void fatalError(SAXParseException e)
+					throws SAXParseException {
+				String msg = e.getMessage();
+				if (msg == null || msg.indexOf("calligra:") == -1) {
+					super.fatalError(e);
+				}
+			}
+		}
 	}
 
 	private class OdfData {
@@ -120,14 +146,19 @@ public class OdfOutputChecker {
 	}
 
 	static private ValidationDriver createValidationDriver(String tmpdir,
-			String path, ErrorBuffer errorbuffer) {
+			String path, ErrorBuffer errorbuffer, boolean extendedODF) {
 		File rng = new File(tmpdir + File.separator + path);
 		if (!rng.exists()) {
 			extract(rng.getAbsolutePath(), path);
 		}
 		String rngpath = rng.getAbsolutePath();
 
-		ErrorHandlerImpl eh = new ErrorHandlerImpl(errorbuffer);
+		ErrorHandlerImpl eh;
+		if (extendedODF) {
+			eh = errorbuffer.new ExtendedODFErrorHandler(errorbuffer);
+		} else {
+			eh = new ErrorHandlerImpl(errorbuffer);
+		}
 		SchemaReader schemaReader = SAXSchemaReader.getInstance();
 		PropertyMapBuilder properties = new PropertyMapBuilder();
 		properties.put(ValidateProperty.ERROR_HANDLER, eh);
@@ -148,27 +179,30 @@ public class OdfOutputChecker {
 		return driver;
 	}
 
-	public OdfOutputChecker() {
+	public OdfOutputChecker(boolean extendedODF) {
 		errorbuffer = new ErrorBuffer();
 		String tmpdir = "rng";
 		(new File(tmpdir)).mkdir();
 
 		odf10Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.0-os.rng", errorbuffer);
+				"OpenDocument-schema-v1.0-os.rng", errorbuffer, extendedODF);
 		odf10manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer);
+				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer,
+				extendedODF);
 		odf11Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.1.rng", errorbuffer);
+				"OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
 		odf11strictValidator = createValidationDriver(tmpdir,
-				"OpenDocument-strict-schema-v1.1.rng", errorbuffer);
+				"OpenDocument-strict-schema-v1.1.rng", errorbuffer, extendedODF);
 		odf11manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer);
+				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer,
+				extendedODF);
 		odf12manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer);
+				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer,
+				extendedODF);
 		// odf12dsigValidator = createValidationDriver(tmpdir,
 		// "OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
 		odf12Validator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-schema.rng", errorbuffer);
+				"OpenDocument-v1.2-os-schema.rng", errorbuffer, extendedODF);
 
 		documentBuilder = createDocumentBuilder();
 	}
@@ -181,7 +215,7 @@ public class OdfOutputChecker {
 		}
 
 		public String getNamespaceURI(String prefix) {
-			return nsmap.get(prefix);
+			return (nsmap == null) ? null : nsmap.get(prefix);
 		}
 
 		public String getPrefix(String nsuri) {
@@ -471,6 +505,23 @@ public class OdfOutputChecker {
 		}
 	}
 
+	void removeForeignXml(Element e) {
+		// just remove attributes from calligra ns for now
+		XPathExpression x = null;
+		NodeList list = null;
+		try {
+			x = xpath
+					.compile("//@*[namespace-uri(.)='http://www.calligra.org/2005/']");
+			list = (NodeList) x.evaluate(e, XPathConstants.NODESET);
+		} catch (XPathExpressionException err) {
+		}
+		for (int i = 0; i < list.getLength(); ++i) {
+			Attr a = (Attr) list.item(i);
+			a.getOwnerElement().getAttributes()
+					.removeNamedItemNS(a.getNamespaceURI(), a.getLocalName());
+		}
+	}
+
 	private void checkManifestXml(ZipFile zip, ValidationReportType report,
 			OdfData data) throws IOException {
 		ZipEntry ze = zip.getEntry("META-INF/manifest.xml");
@@ -486,6 +537,7 @@ public class OdfOutputChecker {
 					e.getMessage());
 			return;
 		}
+
 		checkVersion(data, manifest, report, InputCreator.manifestns,
 				"META-INF/manifest.xml");
 		checkManifestXml(zip.getInputStream(ze), data.version, report,
@@ -516,7 +568,7 @@ public class OdfOutputChecker {
 		errorbuffer.reset();
 		InputSource source = new InputSource(in);
 		try {
-			if (!driver.validate(source)) {
+			if (!driver.validate(source) && errorbuffer.toString().length() > 0) {
 				report(report, errorIfInvalid, errorbuffer.toString());
 			}
 		} catch (Exception e) {

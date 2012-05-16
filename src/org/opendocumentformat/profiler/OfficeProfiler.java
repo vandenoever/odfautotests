@@ -57,7 +57,13 @@ public class OfficeProfiler {
 			if (f.isFile()) {
 				String path = f.getCanonicalPath();
 				if (extensions.containsKey(getExt(path))) {
-					files.add(path);
+					if (path.indexOf("_8mb_") == -1
+							&& path.indexOf("me07_data_at_last_row") == -1) {
+						// temporary workaround for build server memory
+						// limitations, the files matching that patterns are too
+						// large to parse in java dom
+						files.add(path);
+					}
 				}
 			} else if (f.isDirectory()) {
 				files.addAll(scanDirectory(f.getCanonicalPath(), exts));
@@ -348,7 +354,7 @@ class Result {
 }
 
 class ODFValidator {
-	final static OdfOutputChecker odfvalidator = new OdfOutputChecker();
+	final static OdfOutputChecker odfvalidator = new OdfOutputChecker(true);
 
 	String validate(String path) {
 		OutputReportType report = new OutputReportType();
@@ -360,7 +366,10 @@ class ODFValidator {
 		}
 		String error = "";
 		for (ValidationErrorType e : v.getError()) {
-			error += e.getType() + " " + e.getMessage() + "\n";
+			error += e.getType();
+			if (e.getMessage() != null) {
+				error += ": " + e.getMessage() + "\n";
+			}
 		}
 		return error;
 	}

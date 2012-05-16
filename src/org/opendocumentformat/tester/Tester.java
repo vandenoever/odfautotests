@@ -73,7 +73,7 @@ public class Tester {
 		OutputReportType inputReport = new OutputReportType();
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
-		outputchecker.check(path, inputReport, null, nsmap);
+		outputchecker.check(path, inputReport, null, nsmap, false);
 		File inputfile = new File(path);
 		inputReport.setPath(path);
 		inputReport.setSize(inputfile.length());
@@ -111,7 +111,7 @@ public class Tester {
 		output.setValidation(vreport);
 		if (out.getType() == FiletypeType.ZIP
 				|| out.getType() == FiletypeType.XML) {
-			outputchecker.check(path, output, out, nsmap);
+			outputchecker.check(path, output, out, nsmap, false);
 		} else if (out.getType() == FiletypeType.PDF) {
 			PdfOutputChecker pdf = new PdfOutputChecker();
 			pdf.check(path, output);
