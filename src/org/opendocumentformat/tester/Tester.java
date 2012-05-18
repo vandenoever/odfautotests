@@ -1,9 +1,9 @@
 package org.opendocumentformat.tester;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ public class Tester {
 	private final Map<DocumenttestsType, Map<String, String>> tests;
 	private final List<DocumenttestsconfigType> configs;
 
-	private final OdfOutputChecker outputchecker = new OdfOutputChecker();
+	private final OdfOutputChecker outputchecker = new OdfOutputChecker(false);
 
 	public Tester() {
 		tests = new HashMap<DocumenttestsType, Map<String, String>>();
@@ -73,7 +73,7 @@ public class Tester {
 		OutputReportType inputReport = new OutputReportType();
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
-		outputchecker.check(path, inputReport, null, nsmap, false);
+		outputchecker.check(path, inputReport, null, nsmap);
 		File inputfile = new File(path);
 		inputReport.setPath(path);
 		inputReport.setSize(inputfile.length());
@@ -111,7 +111,7 @@ public class Tester {
 		output.setValidation(vreport);
 		if (out.getType() == FiletypeType.ZIP
 				|| out.getType() == FiletypeType.XML) {
-			outputchecker.check(path, output, out, nsmap, false);
+			outputchecker.check(path, output, out, nsmap);
 		} else if (out.getType() == FiletypeType.PDF) {
 			PdfOutputChecker pdf = new PdfOutputChecker();
 			pdf.check(path, output);
@@ -172,73 +172,128 @@ public class Tester {
 		cr.setExe(cmd[0]);
 		cr.setExitCode(-255);
 		long start = System.nanoTime();
-		Process p = null;
-		String line;
-		try {
-			p = Runtime.getRuntime().exec(cmd, env);
-		} catch (IOException e) {
-			cr.setExitCode(-1);
-			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
+		if (!(new File(cmd[0])).isFile()) {
 			return cr;
 		}
-		Waiter waiter = new Waiter(p, cr);
-		waiter.start();
-		BufferedReader bri = new BufferedReader(new InputStreamReader(
-				p.getInputStream()));
-		BufferedReader bre = new BufferedReader(new InputStreamReader(
-				p.getErrorStream()));
-		String stdout = "", stderr = "";
+		ProcessBuilder pb = new ProcessBuilder(cmd);
+		Process p = null;
 		try {
-			while ((line = bri.readLine()) != null) {
-				stdout += line + "\n";
-			}
-			bri.close();
-			while (bre.ready()) {
-			    line = bre.readLine();
-				stderr += line + "\n";
-			}
-			bre.close();
-		} catch (IOException err) {
+			p = pb.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return cr;
 		}
 		try {
+			p.getOutputStream().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Reader stdout = new Reader(p.getInputStream());
+		stdout.start();
+		Reader stderr = new Reader(p.getErrorStream());
+		stderr.start();
+		try {
+			Waiter w = new Waiter(Thread.currentThread());
 			p.waitFor();
-			waiter.report = null;
+			w.clear();
 		} catch (InterruptedException e) {
+			cr.setTimedout(true);
+		} finally {
+			stdout.stopReading();
+			stderr.stopReading();
+			p.destroy();
+			if (!cr.isTimedout()) {
+				cr.setExitCode(p.exitValue());
+			}
+			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		}
-		cr.setExitCode(p.exitValue());
-		if (stdout.length() > 0) {
-			cr.setStdout(stdout);
-		}
-		if (stderr.length() > 0) {
-			cr.setStderr(stderr);
-		}
-		cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		return cr;
 	}
 }
 
-class Waiter extends Thread {
-	private final Process process;
-	CommandReportType report;
+class Reader extends Thread {
 
-	public Waiter(Process process, CommandReportType report) {
-		this.process = process;
-		this.report = report;
+	InputStream in;
+	ByteArrayOutputStream out;
+	boolean keepRunning;
+
+	Reader(InputStream in) {
+		this.in = in;
+		out = new ByteArrayOutputStream();
+		keepRunning = true;
+	}
+
+	public void stopReading() {
+		setKeepRunning(false);
+		this.interrupt();
+		try {
+			join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	synchronized private void setKeepRunning(boolean value) {
+		keepRunning = value;
+	}
+
+	synchronized private boolean keepRunning() {
+		return keepRunning;
+	}
+
+	public void run() {
+		int c;
+		try {
+			while (keepRunning()) {
+				while (in.available() > 0) {
+					c = in.read();
+					out.write((byte) c);
+				}
+				try {
+					sleep(1);
+				} catch (InterruptedException e) {
+				}
+			}
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+class Waiter extends Thread {
+	private Thread thread;
+
+	Waiter(Thread t) {
+		this.thread = t;
+	}
+
+	void clear() {
+		stopWaiting();
+		thread = null;
+		interrupt();
+		try {
+			join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private synchronized void stopWaiting() {
+		thread = null;
+	}
+
+	private synchronized void interruptThread() {
+		if (thread != null) {
+			thread.interrupt();
+		}
 	}
 
 	public void run() {
 		try {
-			// wait 60 seconds
-			for (int i = 0; i < 60; ++i) {
-			    sleep(1000);
-			    if (report == null) {
-			    	return;
-			    }
-			}
-			report.setTimedout(true);
-			process.destroy();
-		} catch (InterruptedException ignore) {
-			return;
+			sleep(60000);
+			interruptThread();
+		} catch (InterruptedException e) {
 		}
 	}
 }

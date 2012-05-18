@@ -26,17 +26,23 @@ public class OfficeProfiler {
 
 	final static Map<String, List<String>> applications;
 	final static Map<String, String> extensions;
-	// final static String env[];
+	static String env[] = null;
+
+	static void addEnv(String name, List<String> list) {
+		list.add(name + "=" + System.getenv(name));
+	}
 
 	static {
 		applications = new HashMap<String, List<String>>();
 		applications.put("calligrawords", Arrays.asList("odt", "doc", "docx"));
 		applications.put("calligrastage", Arrays.asList("odp", "ppt", "pptx"));
 		applications.put("calligrasheets", Arrays.asList("ods", "xls", "xlsx"));
-		String env[] = new String[3];
-		env[0] = "HOME=" + System.getenv("HOME");
-		env[1] = "KDEDIRS=" + System.getenv("KDEDIRS");
-		env[2] = "DISPLAY=" + System.getenv("DISPLAY");
+		List<String> envlist = new ArrayList<String>();
+		addEnv("HOME", envlist);
+		addEnv("KDEDIRS", envlist);
+		addEnv("DISPLAY", envlist);
+		addEnv("DBUS_SESSION_BUS_ADDRESS", envlist);
+		env = envlist.toArray(new String[envlist.size()]);
 		extensions = new HashMap<String, String>();
 		extensions.put("odt", "odt");
 		extensions.put("doc", "odt");
@@ -53,7 +59,11 @@ public class OfficeProfiler {
 			throws IOException {
 		Set<String> files = new HashSet<String>();
 		File d = new File(dir);
-		for (File f : d.listFiles()) {
+		File list[] = d.listFiles();
+		if (list == null) {
+			return files;
+		}
+		for (File f : list) {
 			if (f.isFile()) {
 				String path = f.getCanonicalPath();
 				if (extensions.containsKey(getExt(path))) {
@@ -136,6 +146,7 @@ public class OfficeProfiler {
 		boolean isOdfFile = "odt".equals(ext) || "ods".equals(ext)
 				|| "odp".equals(ext);
 		List<String> args = new ArrayList<String>();
+		//args.add("/usr/bin/strace");
 		args.add(exepath);
 		if (isOdfFile) {
 			args.addAll(Arrays
@@ -145,7 +156,6 @@ public class OfficeProfiler {
 				profilefilename, "--nocrashhandler", file));
 		System.out.println(args);
 		String argarray[] = new String[0];
-		String env[] = null;
 		CommandReportType crt = Tester.runCommand(args.toArray(argarray), env);
 		Result r = new Result();
 		r.lines = readLines(profilefile);

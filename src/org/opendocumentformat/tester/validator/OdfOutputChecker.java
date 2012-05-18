@@ -1,6 +1,5 @@
 package org.opendocumentformat.tester.validator;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -582,8 +581,7 @@ public class OdfOutputChecker {
 		int n;
 		InputStream in = null;
 		try {
-			in = new BufferedInputStream(new FileInputStream(odfpath));
-			in.mark(128);
+			in = new FileInputStream(odfpath);
 			n = in.read(b);
 		} catch (IOException e) {
 			report(report, ValidationErrorTypeType.INVALIDMIMETYPE);
