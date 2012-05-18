@@ -26,10 +26,13 @@ public class OfficeProfiler {
 
 	final static Map<String, List<String>> applications;
 	final static Map<String, String> extensions;
-	static String env[] = null;
+	final static Map<String, String> env = new HashMap<String, String>();
 
-	static void addEnv(String name, List<String> list) {
-		list.add(name + "=" + System.getenv(name));
+	static void addEnv(String name) {
+		String value = System.getenv(name);
+		if (value != null) {
+			env.put(name, value);
+		}
 	}
 
 	static {
@@ -37,12 +40,10 @@ public class OfficeProfiler {
 		applications.put("calligrawords", Arrays.asList("odt", "doc", "docx"));
 		applications.put("calligrastage", Arrays.asList("odp", "ppt", "pptx"));
 		applications.put("calligrasheets", Arrays.asList("ods", "xls", "xlsx"));
-		List<String> envlist = new ArrayList<String>();
-		addEnv("HOME", envlist);
-		addEnv("KDEDIRS", envlist);
-		addEnv("DISPLAY", envlist);
-		addEnv("DBUS_SESSION_BUS_ADDRESS", envlist);
-		env = envlist.toArray(new String[envlist.size()]);
+		addEnv("HOME");
+		addEnv("KDEDIRS");
+		addEnv("DISPLAY");
+		addEnv("DBUS_SESSION_BUS_ADDRESS");
 		extensions = new HashMap<String, String>();
 		extensions.put("odt", "odt");
 		extensions.put("doc", "odt");
@@ -146,7 +147,7 @@ public class OfficeProfiler {
 		boolean isOdfFile = "odt".equals(ext) || "ods".equals(ext)
 				|| "odp".equals(ext);
 		List<String> args = new ArrayList<String>();
-		//args.add("/usr/bin/strace");
+		// args.add("/usr/bin/strace");
 		args.add(exepath);
 		if (isOdfFile) {
 			args.addAll(Arrays

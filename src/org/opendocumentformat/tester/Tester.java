@@ -149,25 +149,23 @@ public class Tester {
 			}
 			++i;
 		}
-		String env[] = new String[command.getEnv().size()];
-		i = 0;
+		Map<String, String> env = new HashMap<String, String>();
 		for (EnvType e : command.getEnv()) {
 			String value = System.getenv(e.getName());
 			if (e.getValue() != null) {
 				value = e.getValue();
 			}
-			if (value == null) {
-				value = "";
+			if (value != null) {
+				env.put(e.getName(), value);
 			}
-			env[i] = e.getName() + "=" + value;
-			++i;
 		}
 		CommandReportType cr = runCommand(cmd, env);
 		report.getCommands().add(cr);
 		return outpath;
 	}
 
-	public static CommandReportType runCommand(String cmd[], String env[]) {
+	public static CommandReportType runCommand(String cmd[],
+			Map<String, String> env) {
 		CommandReportType cr = new CommandReportType();
 		cr.setExe(cmd[0]);
 		cr.setExitCode(-255);
@@ -176,6 +174,8 @@ public class Tester {
 			return cr;
 		}
 		ProcessBuilder pb = new ProcessBuilder(cmd);
+		pb.environment().clear();
+		pb.environment().putAll(env);
 		Process p = null;
 		try {
 			p = pb.start();
