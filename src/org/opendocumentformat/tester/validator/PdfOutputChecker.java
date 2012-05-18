@@ -1,6 +1,8 @@
 package org.opendocumentformat.tester.validator;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.PdfinfoType;
@@ -49,7 +51,7 @@ public class PdfOutputChecker {
 	private void createPngs(String pdfpath, String pngpath, int resolution) {
 		String cmd[] = { "/usr/bin/pdftoppm", "-png", "-r",
 				String.valueOf(resolution), pdfpath, pngpath };
-		String env[] = {};
+		Map<String, String> env = new HashMap<String, String>();
 		Tester.runCommand(cmd, env);
 	}
 

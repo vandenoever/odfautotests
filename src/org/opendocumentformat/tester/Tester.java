@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -194,6 +195,7 @@ public class Tester {
 		stderr.start();
 		try {
 			Waiter w = new Waiter(Thread.currentThread());
+			w.start();
 			p.waitFor();
 			w.clear();
 		} catch (InterruptedException e) {
@@ -204,6 +206,12 @@ public class Tester {
 			p.destroy();
 			if (!cr.isTimedout()) {
 				cr.setExitCode(p.exitValue());
+			}
+			try {
+				cr.setStderr(stdout.out.toString("UTF-8"));
+				cr.setStdout(stderr.out.toString("UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
 			}
 			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		}
@@ -270,7 +278,6 @@ class Waiter extends Thread {
 
 	void clear() {
 		stopWaiting();
-		thread = null;
 		interrupt();
 		try {
 			join();
@@ -283,17 +290,18 @@ class Waiter extends Thread {
 		thread = null;
 	}
 
-	private synchronized void interruptThread() {
-		if (thread != null) {
-			thread.interrupt();
-		}
+	private synchronized Thread getThread() {
+		return thread;
 	}
 
 	public void run() {
 		try {
 			sleep(60000);
-			interruptThread();
 		} catch (InterruptedException e) {
+		}
+		Thread thread = getThread();
+		if (thread != null) {
+			thread.interrupt();
 		}
 	}
 }
