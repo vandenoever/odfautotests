@@ -212,6 +212,8 @@ public class Tester {
 				cr.setStdout(stderr.out.toString("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
+			} catch (OutOfMemoryError e) {
+				// happens when there a lot of output on stderr or stdout
 			}
 			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		}
@@ -250,12 +252,18 @@ class Reader extends Thread {
 	}
 
 	public void run() {
-		int c;
+		final int l = 1024;
+		byte b[] = new byte[l];
 		try {
 			while (keepRunning()) {
-				while (in.available() > 0) {
-					c = in.read();
-					out.write((byte) c);
+				int n = in.available();
+				while (n > 0) {
+					if (n > l) {
+						n = l;
+					}
+					in.read(b, 0, n);
+					out.write(b, 0, n);
+					n = in.available();
 				}
 				try {
 					sleep(1);
