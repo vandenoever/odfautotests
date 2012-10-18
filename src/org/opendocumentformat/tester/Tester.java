@@ -121,6 +121,22 @@ public class Tester {
 		return report;
 	}
 
+	static String join(String a[]) {
+		String str = a[0];
+		for (int i = 1; i < a.length; ++i) {
+			str += " " + a[i];
+		}
+		return str;
+	}
+
+	static String join(Map<String, String> m) {
+		String str = "";
+		for (Entry<String, String> e : m.entrySet()) {
+			str += e.getKey() + "=" + e.getValue() + " ";
+		}
+		return str;
+	}
+
 	public String runCommand(CommandType command, String inpath,
 			TargetReportType report, String outsuffix) {
 		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
@@ -167,6 +183,7 @@ public class Tester {
 
 	public static CommandReportType runCommand(String cmd[],
 			Map<String, String> env) {
+		System.err.println("Running '" + join(env) + " " + join(cmd) + "'.");
 		CommandReportType cr = new CommandReportType();
 		cr.setExe(cmd[0]);
 		cr.setExitCode(-255);
