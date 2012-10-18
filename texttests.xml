@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
 	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
@@ -145,5 +146,45 @@
 		<output type="pdf">
 		</output>
 	</test>
-
+	<test name="annotation">
+		<input>
+			<o:text>
+				<text:p>hello<o:annotation>
+						<dc:creator>abc</dc:creator>
+						<dc:date>2012-10-18</dc:date>
+						<text:p>world</text:p>
+					</o:annotation></text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//o:annotation)=1" />
+				<xpath expr="count(//dc:creator)=1" />
+				<xpath expr="count(//o:annotation/text:p)=1" />
+			</file>
+		</output>
+		<output type="pdf">
+		</output>
+	</test>
+	<test name="annotation-end">
+		<input>
+			<o:text>
+				<text:p>hello<o:annotation o:name="foo">
+						<dc:creator>abc</dc:creator>
+						<dc:date>2012-10-18</dc:date>
+						<text:p>world</text:p>
+					</o:annotation>test<o:annotation-end o:name="foo"/></text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//o:annotation)=1" />
+				<xpath expr="count(//dc:creator)=1" />
+				<xpath expr="count(//o:annotation/text:p)=1" />
+				<xpath expr="count(//o:annotation-end)=1" />
+			</file>
+		</output>
+		<output type="pdf">
+		</output>
+	</test>
 </documenttests>
