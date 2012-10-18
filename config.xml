@@ -60,6 +60,7 @@
 		outputType="xml">
 		<command exe="/usr/bin/soffice">
 			<argument value="--headless" />
+			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
 			<argument value="odt" />
 			<argument value="--outdir" />
@@ -73,6 +74,7 @@
 		<command exe="/usr/bin/soffice">
 			<env name="DISPLAY" />
 			<argument value="--headless" />
+			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
 			<argument value="pdf" />
 			<argument value="--outdir" />
