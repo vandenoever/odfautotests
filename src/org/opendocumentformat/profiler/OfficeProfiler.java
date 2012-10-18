@@ -117,6 +117,7 @@ public class OfficeProfiler {
 			lines.add(line);
 			line = br.readLine();
 		}
+		br.close();
 		return lines;
 	}
 
