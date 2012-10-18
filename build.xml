@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="documenttester" default="jar" basedir=".">
    <target name="depjars">
-      <get src="http://downloads.sourceforge.net/project/itext/iText/iText5.2.1/itext-5.2.1.zip" dest="lib/itext.zip" skipexisting="true"/>
+      <get src="http://netcologne.dl.sourceforge.net/project/itext/iText/iText5.3.3/itext-5.3.3.zip" dest="lib/itext.zip" skipexisting="true"/>
       <unzip src="lib/itext.zip" dest="lib">
         <patternset>
           <include name="itextpdf-5.2.1.jar"/>
