@@ -189,6 +189,7 @@ public class Tester {
 		cr.setExitCode(-255);
 		long start = System.nanoTime();
 		if (!(new File(cmd[0])).isFile()) {
+			System.err.println("Executable " + cmd[0] + " cannot be found.");
 			return cr;
 		}
 		ProcessBuilder pb = new ProcessBuilder(cmd);
