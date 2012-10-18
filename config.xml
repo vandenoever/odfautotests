@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 	<target name="Calligra" odftypes="text" inputVersions="1.0 1.1 1.2"
 		odfOutputVersion="1.2" inputTypes="zip" outputType="zip">
-		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
+		<command exe="/usr/bin/calligrawords">
 			<env name="DISPLAY" />
 			<env name="KDEDIRS" />
 			<env name="HOME" />
@@ -13,7 +13,7 @@
 	</target>
 	<target name="CalligraPdf" odftypes="text" inputVersions="1.0 1.1 1.2"
 		inputTypes="zip" outputType="pdf">
-		<command exe="/home/oever/work/nokia/inst/bin/calligrawords">
+		<command exe="/usr/bin/calligrawords">
 			<env name="DISPLAY" />
 			<env name="KDEDIRS" />
 			<env name="HOME" />
@@ -46,7 +46,7 @@
 	<target name="LibreOffice" odftypes="text spreadsheet presentation"
 		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="zip">
-		<command exe="/opt/libreoffice3.5/program/soffice">
+		<command exe="/usr/bin/soffice">
 			<argument value="--headless" />
 			<argument value="--convert-to" />
 			<argument value="odt:writer8" />
@@ -58,7 +58,7 @@
 	<target name="LibreOffice" odftypes="text spreadsheet presentation"
 		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="xml">
-		<command exe="/opt/libreoffice3.5/program/soffice">
+		<command exe="/usr/bin/soffice">
 			<argument value="--headless" />
 			<argument value="--convert-to" />
 			<argument value="odt" />
@@ -70,7 +70,8 @@
 	<target name="LibreOfficePdf" odftypes="text spreadsheet presentation"
 		inputVersions="1.0 1.1 1.2" inputTypes="xml zip"
 		outputType="pdf">
-		<command exe="/opt/libreoffice3.5/program/soffice">
+		<command exe="/usr/bin/soffice">
+			<env name="DISPLAY" />
 			<argument value="--headless" />
 			<argument value="--convert-to" />
 			<argument value="pdf" />
