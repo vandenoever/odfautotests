@@ -151,7 +151,7 @@
 			<o:text>
 				<text:p>hello<o:annotation>
 						<dc:creator>abc</dc:creator>
-						<dc:date>2012-10-18</dc:date>
+						<dc:date>2012-03-16T08:08:00Z</dc:date>
 						<text:p>world</text:p>
 					</o:annotation></text:p>
 			</o:text>
@@ -171,7 +171,7 @@
 			<o:text>
 				<text:p>hello<o:annotation o:name="foo">
 						<dc:creator>abc</dc:creator>
-						<dc:date>2012-10-18</dc:date>
+						<dc:date>2012-03-16T08:08:00Z</dc:date>
 						<text:p>world</text:p>
 					</o:annotation>test<o:annotation-end o:name="foo"/></text:p>
 			</o:text>
