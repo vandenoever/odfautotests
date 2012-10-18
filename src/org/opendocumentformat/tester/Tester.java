@@ -234,6 +234,9 @@ public class Tester {
 			}
 			cr.setDurationMs((int) ((System.nanoTime() - start) / 1000000));
 		}
+		if (cr.getExitCode() != 0) {
+			System.err.print(cr.getStderr());
+		}
 		return cr;
 	}
 }
