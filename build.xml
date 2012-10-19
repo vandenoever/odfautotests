@@ -29,7 +29,7 @@
             <fileset dir="rng"/>
         </copy>
         <copy todir="bin" file="report2html.xsl"/>
-		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.3.3.jar" debug="on" debuglevel="source" />
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.3.3.jar:lib/pdfbox-1.7.1.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
 		<jar destfile="odftester.jar" basedir="bin" level="9">
@@ -38,6 +38,9 @@
 			</manifest>
             <zipfileset src="lib/jing.jar" includes="**/*"/>
             <zipfileset src="lib/itextpdf-5.3.3.jar" includes="**/*"/>
+            <zipfileset src="lib/pdfbox-1.7.1.jar" includes="**/*"/>
+            <zipfileset src="lib/commons-logging-1.1.1.jar" includes="**/*"/>
+            <zipfileset src="lib/fontbox-1.7.1.jar" includes="**/*"/>
 		</jar>
 	</target>
 	<target name="run" depends="jar" description="run the tests">

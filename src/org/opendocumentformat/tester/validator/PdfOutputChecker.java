@@ -1,9 +1,13 @@
 package org.opendocumentformat.tester.validator;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFImageWriter;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.ValidationErrorTypeType;
@@ -49,10 +53,18 @@ public class PdfOutputChecker {
 	}
 
 	private void createPngs(String pdfpath, String pngpath, int resolution) {
-		String cmd[] = { "/usr/bin/pdftoppm", "-png", "-r",
-				String.valueOf(resolution), pdfpath, pngpath };
-		Map<String, String> env = new HashMap<String, String>();
-		Tester.runCommand(cmd, env);
-	}
-
+		PDDocument document = null;
+		try {
+			document = PDDocument.loadNonSeq(new File(pdfpath), null, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pngpath = pngpath + "-";
+		PDFImageWriter imageWriter = new PDFImageWriter();
+		try {
+			imageWriter.writeImage(document, "png", null, 1, 1, pngpath, BufferedImage.TYPE_INT_ARGB, resolution);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}	
 }
