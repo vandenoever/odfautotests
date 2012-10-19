@@ -29,7 +29,7 @@
             <fileset dir="rng"/>
         </copy>
         <copy todir="bin" file="report2html.xsl"/>
-		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.3.3.jar:lib/pdfbox-1.7.1.jar" debug="on" debuglevel="source" />
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.3.3.jar:lib/pdfbox-1.7.1.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
 		<jar destfile="odftester.jar" basedir="bin" level="9">
@@ -40,7 +40,22 @@
             <zipfileset src="lib/itextpdf-5.3.3.jar" includes="**/*"/>
             <zipfileset src="lib/pdfbox-1.7.1.jar" includes="**/*"/>
             <zipfileset src="lib/commons-logging-1.1.1.jar" includes="**/*"/>
+            <zipfileset src="lib/xml-apis-ext.jar" includes="**/*"/>
             <zipfileset src="lib/fontbox-1.7.1.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-anim.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-awt-util.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-bridge.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-codec.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-css.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-dom.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-ext.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-gvt.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-parser.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-script.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-svg-dom.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-transcoder.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-util.jar" includes="**/*"/>
+            <zipfileset src="lib/batik-xml.jar" includes="**/*"/>
 		</jar>
 	</target>
 	<target name="run" depends="jar" description="run the tests">
