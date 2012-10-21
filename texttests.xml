@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
 	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
@@ -133,7 +133,8 @@
 			<o:text>
 				<text:p text:style-name="d">This is a paragraph. It contains
 					lines, words. This is a paragraph. It contains lines, words. This
-					is a paragraph. It contains lines, words.</text:p>
+					is a paragraph. It contains lines, words.
+				</text:p>
 			</o:text>
 		</input>
 		<output type="zip">
@@ -149,11 +150,14 @@
 	<test name="annotation">
 		<input>
 			<o:text>
-				<text:p>hello<o:annotation>
+				<text:p>
+					hello
+					<o:annotation>
 						<dc:creator>abc</dc:creator>
 						<dc:date>2012-03-16T08:08:00Z</dc:date>
 						<text:p>world</text:p>
-					</o:annotation></text:p>
+					</o:annotation>
+				</text:p>
 			</o:text>
 		</input>
 		<output type="zip">
@@ -169,11 +173,16 @@
 	<test name="annotation-end">
 		<input>
 			<o:text>
-				<text:p>hello<o:annotation o:name="foo">
+				<text:p>
+					hello
+					<o:annotation o:name="foo">
 						<dc:creator>abc</dc:creator>
 						<dc:date>2012-03-16T08:08:00Z</dc:date>
 						<text:p>world</text:p>
-					</o:annotation>test<o:annotation-end o:name="foo"/></text:p>
+					</o:annotation>
+					test
+					<o:annotation-end o:name="foo" />
+				</text:p>
 			</o:text>
 		</input>
 		<output type="zip">
@@ -185,6 +194,33 @@
 			</file>
 		</output>
 		<output type="pdf">
+		</output>
+	</test>
+	<test name="backgroundimage">
+		<input>
+			<o:automatic-styles>
+				<style:style style:name="P1" style:family="paragraph">
+					<style:paragraph-properties
+						fo:background-color="transparent">
+						<style:background-image>
+							<o:binary-data>iVBORw0KGgoAAAANSUhEUgAAAAEAAAADCAIAAADdv/LVAAAAFElEQVQI12P4z8DAxPD/PwODxH8AFzUEFwvj55wAAAAASUVORK5CYII=
+							</o:binary-data>
+						</style:background-image>
+					</style:paragraph-properties>
+					<style:text-properties fo:language="nl"
+						fo:country="NL" />
+				</style:style>
+			</o:automatic-styles>
+			<o:text>
+				<text:p text:style-name="P1">Hebban olla uogala nestas hagunnan
+					hinase hi(c) (a)nda thu uuat unbidan uue nu.
+				</text:p>
+			</o:text>
+		</input>
+		<output type="zip">
+			<file path="content.xml">
+				<xpath expr="count(//style:background-image)=1" />
+			</file>
 		</output>
 	</test>
 </documenttests>
