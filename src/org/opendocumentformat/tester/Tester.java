@@ -115,7 +115,7 @@ public class Tester {
 			outputchecker.check(path, output, out, nsmap);
 		} else if (out.getType() == FiletypeType.PDF) {
 			PdfOutputChecker pdf = new PdfOutputChecker();
-			pdf.check(path, output);
+			pdf.check(path, output, out.getMask());
 		}
 		output.setType(out.getType());
 		return report;

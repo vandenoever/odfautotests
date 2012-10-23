@@ -32,11 +32,11 @@ import org.example.documenttests.FileType;
 import org.example.documenttests.FragmentType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
+import org.example.documenttests.SimpleResultType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationErrorTypeType;
 import org.example.documenttests.ValidationReportType;
 import org.example.documenttests.XpathReportType;
-import org.example.documenttests.XpathResultType;
 import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
 import org.w3c.dom.Attr;
@@ -424,7 +424,7 @@ public class OdfOutputChecker {
 			x = xpath.compile(xpathstring);
 		} catch (XPathExpressionException e) {
 			report.setError(e.getMessage());
-			report.setResult(XpathResultType.INVALID);
+			report.setResult(SimpleResultType.INVALID);
 			return report;
 		}
 		Object o = null;
@@ -432,16 +432,16 @@ public class OdfOutputChecker {
 			o = x.evaluate(doc);
 		} catch (XPathExpressionException e) {
 			report.setError(e.getMessage());
-			report.setResult(XpathResultType.INVALID);
+			report.setResult(SimpleResultType.INVALID);
 			return report;
 		}
 		if ("true".equals(o)) {
-			report.setResult(XpathResultType.TRUE);
+			report.setResult(SimpleResultType.TRUE);
 		} else if ("false".equals(o)) {
-			report.setResult(XpathResultType.FALSE);
+			report.setResult(SimpleResultType.FALSE);
 		} else {
 			report.setError("Result of XPath is not boolean but " + o);
-			report.setResult(XpathResultType.INVALID);
+			report.setResult(SimpleResultType.INVALID);
 		}
 		return report;
 	}

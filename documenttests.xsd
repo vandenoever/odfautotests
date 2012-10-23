@@ -48,6 +48,14 @@
 		<sequence>
 			<element name="file" type="tns:fileType" minOccurs="0"
 				maxOccurs="unbounded" />
+			<element name="mask" minOccurs="0" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</sequence>
+					<attribute name="name" type="NCName" use="required" />
+				</complexType>
+			</element>
 		</sequence>
 		<attribute name="type" use="required" type="tns:filetypeType" />
 	</complexType>
@@ -110,6 +118,14 @@
 					<attribute name="pngthumb" type="anyURI" use="required" />
 				</complexType>
 			</element>
+			<element name="maskResult" maxOccurs="unbounded">
+				<complexType>
+					<attribute name="name" type="NCName" use="required" />
+					<attribute name="result" type="tns:simpleResultType" use="required" />
+					<attribute name="png" type="anyURI" />
+					<attribute name="pngthumb" type="anyURI" />
+				</complexType>
+			</element>
 		</sequence>
 		<attribute name="pages" type="int" use="required" />
 	</complexType>
@@ -131,7 +147,7 @@
 				minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
-	<simpleType name="xpathResultType">
+	<simpleType name="simpleResultType">
 		<restriction base="NCName">
 			<enumeration value="true" />
 			<enumeration value="false" />
@@ -140,7 +156,7 @@
 	</simpleType>
 	<complexType name="xpathReportType">
 		<attribute name="expr" use="required" type="string" />
-		<attribute name="result" use="required" type="tns:xpathResultType" />
+		<attribute name="result" use="required" type="tns:simpleResultType" />
 		<attribute name="error" type="string" />
 	</complexType>
 	<complexType name="fileTestReportType">

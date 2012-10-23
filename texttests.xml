@@ -222,5 +222,12 @@
 				<xpath expr="count(//style:background-image)=1" />
 			</file>
 		</output>
+		<output type="pdf">
+			<mask name="rect">
+				<rect style="opacity:1;fill:white;fill-opacity:1;stroke-opacity:0"
+					height="100mm" width="200mm" x="0" xmlns="http://www.w3.org/2000/svg"
+					y="0" />
+			</mask>
+		</output>
 	</test>
 </documenttests>

@@ -63,8 +63,14 @@ public class Main {
 		Loader() throws JAXBException {
 			final SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Source source = new StreamSource(Loader.class.getClassLoader()
-					.getResourceAsStream("documenttests.xsd"));
+			File f = new File("documenttests.xsd");
+			Source source;
+			if (!f.exists()) {
+				source = new StreamSource(Loader.class.getClassLoader()
+						.getResourceAsStream("documenttests.xsd"));
+			} else {
+				source = new StreamSource(f);
+			}
 			Schema schema = null;
 			try {
 				schema = schemaFactory.newSchema(source);
@@ -140,8 +146,14 @@ public class Main {
 	}
 
 	private static void writeHTML(String inpath, String outpath) {
-		Source source = new StreamSource(Loader.class.getClassLoader()
-				.getResourceAsStream("report2html.xsl"));
+		Source source;
+		File f = new File("report2html.xsl");
+		if (!f.exists()) {
+			source = new StreamSource(Loader.class.getClassLoader()
+					.getResourceAsStream("report2html.xsl"));
+		} else {
+			source = new StreamSource(f);
+		}
 		TransformerFactory transFact = TransformerFactory.newInstance();
 		try {
 			Transformer trans = transFact.newTransformer(source);

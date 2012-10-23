@@ -47,7 +47,9 @@
 		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="zip">
 		<command exe="/usr/bin/soffice">
+			<env name="DISPLAY" />
 			<argument value="--headless" />
+			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
 			<argument value="odt:writer8" />
 			<argument value="--outdir" />
@@ -59,6 +61,7 @@
 		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
 		outputType="xml">
 		<command exe="/usr/bin/soffice">
+			<env name="DISPLAY" />
 			<argument value="--headless" />
 			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
