@@ -8,6 +8,9 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
@@ -67,6 +70,8 @@ public class InputCreator {
 
 	final Transformer xformer;
 
+	final DOMImplementation domimplementation;
+
 	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
 	public final static String stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
@@ -102,18 +107,28 @@ public class InputCreator {
 			e.printStackTrace();
 		}
 		this.xformer = xformer;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder = null;
+		try {
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		domimplementation = builder.getDOMImplementation();
 	}
 
-	private void createNewDocument(DOMImplementation impl) {
-		createNewContent(impl);
-		createNewStyles(impl);
-		manifest = createNewManifest(impl);
-		meta = createNewMeta(impl);
-		settings = createNewSettings(impl);
+	private void createNewDocument() {
+		createNewContent();
+		createNewStyles();
+		manifest = createNewManifest();
+		meta = createNewMeta();
+		settings = createNewSettings();
 	}
 
-	private void createNewContent(DOMImplementation impl) {
-		content = impl.createDocument(officens, "document-content", null);
+	private void createNewContent() {
+		content = domimplementation.createDocument(officens,
+				"document-content", null);
 		content.setXmlStandalone(true);
 		documentContentElement = content.getDocumentElement();
 		setAttribute(documentContentElement, "office", officens, "version",
@@ -128,8 +143,9 @@ public class InputCreator {
 		bodyElement.appendChild(bodyChildElement);
 	}
 
-	private void createNewStyles(DOMImplementation impl) {
-		styles = impl.createDocument(officens, "document-styles", null);
+	private void createNewStyles() {
+		styles = domimplementation.createDocument(officens, "document-styles",
+				null);
 		styles.setXmlStandalone(true);
 		documentStylesElement = styles.getDocumentElement();
 		setAttribute(documentStylesElement, "office", officens, "version",
@@ -141,8 +157,9 @@ public class InputCreator {
 		documentStylesElement.appendChild(masterStylesElement);
 	}
 
-	private Document createNewManifest(DOMImplementation impl) {
-		Document doc = impl.createDocument(manifestns, "manifest", null);
+	private Document createNewManifest() {
+		Document doc = domimplementation.createDocument(manifestns, "manifest",
+				null);
 		doc.setXmlStandalone(true);
 		Element e = doc.getDocumentElement();
 		e.setPrefix("manifest");
@@ -168,8 +185,9 @@ public class InputCreator {
 		doc.getDocumentElement().appendChild(fileentry);
 	}
 
-	private Document createNewMeta(DOMImplementation impl) {
-		Document doc = impl.createDocument(officens, "document-meta", null);
+	private Document createNewMeta() {
+		Document doc = domimplementation.createDocument(officens,
+				"document-meta", null);
 		doc.setXmlStandalone(true);
 		Element e = doc.getDocumentElement();
 		setAttribute(e, "office", officens, "version", version.toString());
@@ -184,8 +202,9 @@ public class InputCreator {
 		e.setAttributeNode(a);
 	}
 
-	private Document createNewSettings(DOMImplementation impl) {
-		Document doc = impl.createDocument(officens, "document-settings", null);
+	private Document createNewSettings() {
+		Document doc = domimplementation.createDocument(officens,
+				"document-settings", null);
 		doc.setXmlStandalone(true);
 		Element e = doc.getDocumentElement();
 		setAttribute(e, "office", officens, "version", version.toString());
@@ -260,14 +279,14 @@ public class InputCreator {
 	}
 
 	private void createDocument(FragmentType input) {
-		Element first = (Element) input.getAny().get(0);
-		if (content == null) {
-			createNewDocument(first.getOwnerDocument().getImplementation());
-		}
+		createNewDocument();
 		for (Object o : input.getAny()) {
 			Element e = (Element) o;
 			setDocumentPart(e);
 		}
+		NamespaceCleaner nc = new NamespaceCleaner();
+		nc.cleanNamespaces(content);
+		nc.cleanNamespaces(styles);
 	}
 
 	String createInput(FragmentType input) {
