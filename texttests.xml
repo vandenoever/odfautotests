@@ -230,4 +230,134 @@
 			</mask>
 		</output>
 	</test>
+	<test name="twocolumns">
+		<input>
+			<o:document-styles>
+				<o:automatic-styles>
+					<style:style style:name="cols" style:family="section">
+						<style:section-properties style:editable="false">
+							<style:columns fo:column-count="2" fo:column-gap="1cm" />
+						</style:section-properties>
+					</style:style>
+					<style:page-layout style:name="cols">
+						<style:page-layout-properties
+							fo:page-width="10cm" fo:page-height="20cm" fo:margin="2cm"
+							fo:margin-top="2cm" fo:margin-bottom="2cm" fo:margin-left="2cm"
+							fo:margin-right="2cm">
+							<style:columns fo:column-count="2" fo:column-gap="1cm">
+								<style:column style:rel-width="1*" fo:start-indent="0cm"
+									fo:end-indent="5mm" />
+								<style:column style:rel-width="1*" fo:start-indent="5mm"
+									fo:end-indent="0cm" />
+							</style:columns>
+						</style:page-layout-properties>
+					</style:page-layout>
+				</o:automatic-styles>
+				<o:master-styles>
+					<style:master-page style:name="Standard"
+						style:page-layout-name="cols" />
+				</o:master-styles>
+			</o:document-styles>
+			<o:text>
+				<text:p>
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+					sed
+					diam nonumy eirmod tempor invidunt ut labore et dolore magna
+					aliquyam erat, sed diam voluptua. At vero eos et accusam et justo
+					duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+					takimata
+					sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+					sit amet,
+					consetetur sadipscing elitr, sed diam nonumy eirmod
+					tempor invidunt
+					ut labore et dolore magna aliquyam erat, sed diam
+					voluptua. At vero
+					eos et accusam et justo duo dolores et ea
+					rebum.
+					Stet clita kasd
+					gubergren, no sea
+					takimata sanctus est Lorem ipsum
+					dolor sit amet.
+					Lorem ipsum dolor
+					sit amet, consetetur sadipscing
+					elitr,
+					sed diam
+					nonumy eirmod
+					tempor invidunt ut labore et dolore
+					magna aliquyam
+					erat, sed diam
+					voluptua. At vero eos et accusam et
+					justo duo
+					dolores
+					et
+					ea rebum.
+					Stet clita kasd gubergren, no sea
+					takimata
+					sanctus est
+					Lorem
+					ipsum
+					dolor sit amet.
+				</text:p>
+				<text:p>Duis autem vel eum iriure dolor in
+					hendrerit in vulputate
+					velit esse molestie consequat, vel illum
+					dolore eu feugiat nulla
+					facilisis at vero eros et accumsan et
+					iusto odio dignissim qui
+					blandit praesent luptatum zzril delenit
+					augue duis dolore te
+					feugait
+					nulla facilisi. Lorem ipsum dolor sit
+					amet, consectetuer
+					adipiscing
+					elit, sed diam nonummy nibh euismod
+					tincidunt ut laoreet
+					dolore magna
+					aliquam erat volutpat.
+				</text:p>
+				<text:p>Ut wisi enim ad minim veniam, quis
+					nostrud exerci tation
+					ullamcorper suscipit lobortis nisl ut
+					aliquip ex ea commodo
+					consequat. Duis autem vel eum iriure dolor
+					in hendrerit in
+					vulputate
+					velit esse molestie consequat, vel illum
+					dolore eu
+					feugiat nulla
+					facilisis at vero eros et accumsan et
+					iusto odio
+					dignissim qui
+					blandit praesent luptatum zzril delenit
+					augue duis
+					dolore te feugait
+					nulla facilisi.
+				</text:p>
+				<text:p>Nam liber tempor cum soluta nobis
+					eleifend option congue
+					nihil imperdiet doming id quod mazim
+					placerat facer possim assum.
+					Lorem ipsum dolor sit amet,
+					consectetuer adipiscing elit, sed diam
+					nonummy nibh euismod
+					tincidunt ut laoreet dolore magna aliquam erat
+					volutpat. Ut wisi
+					enim ad minim veniam, quis nostrud exerci tation
+					ullamcorper
+					suscipit lobortis nisl ut aliquip ex ea commodo
+					consequat.
+				</text:p>
+			</o:text>
+		</input>
+		<output type="pdf">
+			<mask name="columns">
+				<rect style="opacity:1;fill:white;fill-opacity:1;stroke-opacity:0"
+					height="162mm" width="27mm" x="19mm" xmlns="http://www.w3.org/2000/svg"
+					y="19mm" />
+				<rect style="opacity:1;fill:white;fill-opacity:1;stroke-opacity:0"
+					height="162mm" width="27mm" x="54mm" xmlns="http://www.w3.org/2000/svg"
+					y="19mm" />
+			</mask>
+		</output>
+	</test>
 </documenttests>

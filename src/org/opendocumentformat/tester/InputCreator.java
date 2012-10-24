@@ -23,10 +23,12 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class InputCreator {
 
 	final OdfTypeType type;
+
 	public enum ODFVersion {
 		v1_0 {
 			public String toString() {
@@ -44,6 +46,7 @@ public class InputCreator {
 			}
 		}
 	}
+
 	final ODFVersion version;
 
 	Document content;
@@ -51,11 +54,21 @@ public class InputCreator {
 	Document meta;
 	Document settings;
 	Document manifest;
-	Element bodyChild;
-	Element contentAutomaticStyles;
+
+	Element documentStylesElement;
+	Element stylesElement;
+	Element stylesAutomaticStylesElement;
+	Element masterStylesElement;
+
+	Element documentContentElement;
+	Element contentAutomaticStylesElement;
+	Element bodyElement;
+	Element bodyChildElement;
+
 	final Transformer xformer;
 
 	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+	public final static String stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
 	InputCreator(OdfTypeType type, ODFVersion version) {
@@ -92,39 +105,40 @@ public class InputCreator {
 	}
 
 	private void createNewDocument(DOMImplementation impl) {
-		content = createNewContent(impl);
-		styles = createNewStyles(impl);
+		createNewContent(impl);
+		createNewStyles(impl);
 		manifest = createNewManifest(impl);
 		meta = createNewMeta(impl);
 		settings = createNewSettings(impl);
 	}
 
-	private Document createNewContent(DOMImplementation impl) {
-		Document doc = impl.createDocument(officens, "document-content", null);
-		doc.setXmlStandalone(true);
-		Element e = doc.getDocumentElement();
-		e.setPrefix("office");
-		setAttribute(e, "office", officens, "version", version.toString());
-		contentAutomaticStyles = doc.createElementNS(officens,
+	private void createNewContent(DOMImplementation impl) {
+		content = impl.createDocument(officens, "document-content", null);
+		content.setXmlStandalone(true);
+		documentContentElement = content.getDocumentElement();
+		setAttribute(documentContentElement, "office", officens, "version",
+				version.toString());
+		contentAutomaticStylesElement = content.createElementNS(officens,
 				"automatic-styles");
-		contentAutomaticStyles.setPrefix("office");
-		e.appendChild(contentAutomaticStyles);
-		Element body = doc.createElementNS(officens, "body");
-		body.setPrefix("office");
-		e.appendChild(body);
-		bodyChild = doc.createElementNS(officens, type.toString().toLowerCase());
-		bodyChild.setPrefix("office");
-		body.appendChild(bodyChild);
-		return doc;
+		documentContentElement.appendChild(contentAutomaticStylesElement);
+		bodyElement = content.createElementNS(officens, "body");
+		documentContentElement.appendChild(bodyElement);
+		bodyChildElement = content.createElementNS(officens, type.toString()
+				.toLowerCase());
+		bodyElement.appendChild(bodyChildElement);
 	}
 
-	private Document createNewStyles(DOMImplementation impl) {
-		Document doc = impl.createDocument(officens, "document-styles", null);
-		doc.setXmlStandalone(true);
-		Element e = doc.getDocumentElement();
-		e.setPrefix("office");
-		setAttribute(e, "office", officens, "version", version.toString());
-		return doc;
+	private void createNewStyles(DOMImplementation impl) {
+		styles = impl.createDocument(officens, "document-styles", null);
+		styles.setXmlStandalone(true);
+		documentStylesElement = styles.getDocumentElement();
+		setAttribute(documentStylesElement, "office", officens, "version",
+				version.toString());
+		stylesAutomaticStylesElement = styles.createElementNS(officens,
+				"automatic-styles");
+		documentStylesElement.appendChild(stylesAutomaticStylesElement);
+		masterStylesElement = styles.createElementNS(officens, "master-styles");
+		documentStylesElement.appendChild(masterStylesElement);
 	}
 
 	private Document createNewManifest(DOMImplementation impl) {
@@ -136,8 +150,8 @@ public class InputCreator {
 			setAttribute(e, "manifest", manifestns, "version",
 					version.toString());
 		}
-		addFileEntry(doc,
-				"application/vnd.oasis.opendocument." + type.toString().toLowerCase(), "/");
+		addFileEntry(doc, "application/vnd.oasis.opendocument."
+				+ type.toString().toLowerCase(), "/");
 		addFileEntry(doc, "text/xml", "content.xml");
 		addFileEntry(doc, "text/xml", "styles.xml");
 		addFileEntry(doc, "text/xml", "meta.xml");
@@ -178,15 +192,66 @@ public class InputCreator {
 		return doc;
 	}
 
+	private void merge(Element source, Element target) {
+		while (source.getFirstChild() != null) {
+			target.appendChild(source.getFirstChild());
+		}
+	}
+
+	private void setStylesPart(Element e) {
+		String ns = e.getNamespaceURI();
+		String name = e.getLocalName();
+		e = (Element) styles.importNode(e, true);
+		if (ns.equals(officens)) {
+			if (name.equals("automatic-styles")) {
+				merge(e, stylesAutomaticStylesElement);
+			} else if (name.equals("master-styles")) {
+				merge(e, masterStylesElement);
+			}
+		}
+	}
+
+	private boolean setContentPart(Element e) {
+		String ns = e.getNamespaceURI();
+		String name = e.getLocalName();
+		e = (Element) content.importNode(e, true);
+		if (ns.equals(officens)) {
+			if (name.equals(type.toString().toLowerCase())) {
+				bodyChildElement.getParentNode().replaceChild(e,
+						bodyChildElement);
+				return true;
+			} else if (name.equals("automatic-styles")) {
+				merge(e, contentAutomaticStylesElement);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void setDocumentPart(Element e) {
-		if (e.getNamespaceURI().equals(officens)) {
-			e = (Element) content.importNode(e, true);
-			e.setPrefix("office");
-			if (e.getLocalName().equals(type.toString().toLowerCase())) {
-				bodyChild.getParentNode().replaceChild(e, bodyChild);
-			} else if (e.getLocalName().equals("automatic-styles")) {
-				contentAutomaticStyles.getParentNode().replaceChild(e,
-						contentAutomaticStyles);
+		String ns = e.getNamespaceURI();
+		String name = e.getLocalName();
+		if (ns.equals(officens)) {
+			if (name.equals("document-content")) {
+				Node n = e.getFirstChild();
+				while (n != null) {
+					if (n instanceof Element) {
+						setContentPart((Element) n);
+					}
+					n = n.getNextSibling();
+				}
+			} else if (name.equals("document-styles")) {
+				Node n = e.getFirstChild();
+				while (n != null) {
+					if (n instanceof Element) {
+						setStylesPart((Element) n);
+					}
+					n = n.getNextSibling();
+				}
+			} else {
+				if (!setContentPart(e)) {
+					setStylesPart(e);
+				}
 			}
 		} else {
 			System.err.println("No support for setting element {"

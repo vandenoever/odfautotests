@@ -118,7 +118,7 @@
 					<attribute name="pngthumb" type="anyURI" use="required" />
 				</complexType>
 			</element>
-			<element name="maskResult" maxOccurs="unbounded">
+			<element name="maskResult" minOccurs="0" maxOccurs="unbounded">
 				<complexType>
 					<attribute name="name" type="NCName" use="required" />
 					<attribute name="result" type="tns:simpleResultType" use="required" />
