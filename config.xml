@@ -4,6 +4,7 @@
 		odfOutputVersion="1.2" inputTypes="zip" outputType="zip">
 		<command exe="/usr/bin/calligrawords">
 			<env name="DISPLAY" />
+			<env name="XAUTHORITY" />
 			<env name="KDEDIRS" />
 			<env name="HOME" />
 			<argument value="--roundtrip-filename" />
@@ -15,6 +16,7 @@
 		inputTypes="zip" outputType="pdf">
 		<command exe="/usr/bin/calligrawords">
 			<env name="DISPLAY" />
+			<env name="XAUTHORITY" />
 			<env name="KDEDIRS" />
 			<env name="HOME" />
 			<argument value="--export-pdf" />
@@ -48,6 +50,7 @@
 		outputType="zip">
 		<command exe="/usr/bin/soffice">
 			<env name="DISPLAY" />
+			<env name="XAUTHORITY" />
 			<argument value="--headless" />
 			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
@@ -62,6 +65,7 @@
 		outputType="xml">
 		<command exe="/usr/bin/soffice">
 			<env name="DISPLAY" />
+			<env name="XAUTHORITY" />
 			<argument value="--headless" />
 			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
@@ -76,6 +80,7 @@
 		outputType="pdf">
 		<command exe="/usr/bin/soffice">
 			<env name="DISPLAY" />
+			<env name="XAUTHORITY" />
 			<argument value="--headless" />
 			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
 			<argument value="--convert-to" />
