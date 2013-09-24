@@ -84,10 +84,9 @@ public class PdfOutputChecker {
 			}
 		}
 		try {
-			ImageIO.write(combined, "png", new File(pngpath + ".png"));
+			ImageIO.write(combined, "png", new File(pngpath));
 			// TODO : write thumb
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return white;
@@ -109,6 +108,8 @@ public class PdfOutputChecker {
 		return ImageIO.read(in);
 	}
 
+	final String pngNumberFormat = "-%01d.png";
+
 	public void check(String pdfpath, OutputReportType report, List<Mask> masks) {
 		PdfReader reader = null;
 		try {
@@ -123,21 +124,21 @@ public class PdfOutputChecker {
 		int n = reader.getNumberOfPages();
 		info.setPages(n);
 		String pathbase = pdfpath.substring(0, pdfpath.lastIndexOf('.'));
-		String format = "-%01d.png";
+
 		for (int i = 1; i <= n; ++i) {
 			PdfinfoType.Page p = new PdfinfoType.Page();
 			Rectangle r = reader.getPageSize(i);
 			p.setHeight(r.getHeight());
 			p.setWidth(r.getWidth());
 			info.getPage().add(p);
-			String png = String.format(format, i);
+			String png = String.format(pngNumberFormat, i);
 			p.setPng(pathbase + png);
 			p.setPngthumb(pathbase + "-thumb" + png);
-
 		}
 		int resolutiondpi = 150;
-		String pdfpngpath = createPngs(pdfpath, pathbase, resolutiondpi);
-		createPngs(pdfpath, pathbase + "-thumb", resolutiondpi / 10);
+		String pdfpngpath = pathbase + String.format(pngNumberFormat, 1);
+		createPngs(pdfpath, pathbase + "-", resolutiondpi, n);
+		createPngs(pdfpath, pathbase + "-thumb-", resolutiondpi / 10, n);
 
 		BufferedImage pdfimage = null;
 		try {
@@ -166,27 +167,28 @@ public class PdfOutputChecker {
 		}
 	}
 
-	private String createPngs(String pdfpath, String pngpath, int resolutiondpi) {
+	private void createPngs(String pdfpath, String pngpath, int resolutiondpi,
+			int numberOfPages) {
 		PDDocument document = null;
 		try {
 			document = PDDocument.loadNonSeq(new File(pdfpath), null, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		pngpath = pngpath + "-";
 		PDFImageWriter imageWriter = new PDFImageWriter();
 		try {
-			imageWriter.writeImage(document, "png", null, 1, 1, pngpath,
-					BufferedImage.TYPE_INT_ARGB, resolutiondpi);
+			for (int i = 1; i <= numberOfPages; ++i) {
+				String path = String.format(pngpath, i);
+				imageWriter.writeImage(document, "png", null, i, i, path,
+						BufferedImage.TYPE_INT_ARGB, resolutiondpi);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		pngpath += "1.png";
 		try {
 			document.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return pngpath;
 	}
 }

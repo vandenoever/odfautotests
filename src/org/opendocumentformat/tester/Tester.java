@@ -95,6 +95,7 @@ public class Tester {
 
 	public TargetReportType runTest(TargetType target, String path,
 			OutputType out, Map<String, String> nsmap) {
+		System.out.println("runTest " + target.getName());
 		TargetReportType report = new TargetReportType();
 		report.setName(target.getName());
 		OutputReportType output = new OutputReportType();

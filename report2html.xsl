@@ -176,16 +176,45 @@
 		</tr>
 	</xsl:template>
 	<xsl:template name="pdfpages">
-		<xsl:for-each select="r:target/r:output[@type='pdf']">
-			<xsl:sort select="r:pdfinfo/@pages" data-type="number"
-				order="descending" />
-			<xsl:if test="position() = 1">
-				<xsl:call-template name="pdfpage">
-					<xsl:with-param name="pageNumber" select="position()" />
-					<xsl:with-param name="outputs"
-						select="../../r:target/r:output[@type='pdf']" />
-				</xsl:call-template>
-			</xsl:if>
+		<xsl:param name="pageNumber" select="1" />
+		<xsl:call-template name="pdfpage">
+			<xsl:with-param name="pageNumber" select="$pageNumber" />
+			<xsl:with-param name="outputs" select="r:target/r:output[@type='pdf']" />
+		</xsl:call-template>
+		<xsl:if test="count(r:target/r:output/r:pdfinfo[@pages > $pageNumber]) > 0">
+			<xsl:call-template name="pdfpages">
+				<xsl:with-param name="pageNumber" select="$pageNumber + 1" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
+	<xsl:template name="pdfmask">
+		<xsl:param name="name" />
+		<xsl:param name="masks" />
+		<tr>
+			<th>
+				<xsl:value-of select="concat('mask ', $name)" />
+			</th>
+			<td></td>
+			<xsl:for-each select="$masks">
+				<td>
+					<xsl:value-of select="@result" />
+					<br />
+					<a href="{@png}">
+						<img class="thumb" src="{@png}" style="width:100px" />
+					</a>
+				</td>
+			</xsl:for-each>
+		</tr>
+	</xsl:template>
+	<xsl:template name="pdfmasks">
+		<xsl:for-each
+			select="r:target[r:output[@type='pdf']][1]/r:output/r:pdfinfo/r:maskResult">
+			<xsl:variable name="name" select="@name" />
+			<xsl:call-template name="pdfmask">
+				<xsl:with-param name="name" select="@name" />
+				<xsl:with-param name="masks"
+					select="ancestor::r:testreport/r:target/r:output/r:pdfinfo/r:maskResult[@name=$name]" />
+			</xsl:call-template>
 		</xsl:for-each>
 	</xsl:template>
 	<xsl:template match="r:testreport">
@@ -252,12 +281,14 @@
 			<td></td>
 			<xsl:for-each select="r:target[r:output[@type='pdf']]">
 				<td>
-					<xsl:value-of select="count(r:output/r:validation/r:error)=0" />
+					<xsl:value-of
+						select="count(r:output/r:validation/r:error)=0 and count(r:output/r:pdfinfo/r:maskResult[@result='false'])=0" />
 					<xsl:apply-templates select="r:output/r:validation" />
 				</td>
 			</xsl:for-each>
 		</tr>
 		<xsl:call-template name="pdfpages" />
+		<xsl:call-template name="pdfmasks" />
 	</xsl:template>
 	<xsl:template match="/r:documenttestsreport">
 		<html>
