@@ -179,8 +179,9 @@ public class PdfOutputChecker {
 		try {
 			for (int i = 1; i <= numberOfPages; ++i) {
 				String path = String.format(pngpath, i);
+				// use TYPE_INT_ARGB instead of TYPE_INT_ARGB because otherwise bitmaps from Abiword look bad
 				imageWriter.writeImage(document, "png", null, i, i, path,
-						BufferedImage.TYPE_INT_ARGB, resolutiondpi);
+						BufferedImage.TYPE_INT_RGB, resolutiondpi);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
