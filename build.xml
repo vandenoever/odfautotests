@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="documenttester" default="jar" basedir=".">
-   <target name="depjars">
-      <get src="http://netcologne.dl.sourceforge.net/project/itext/iText/iText5.5.3/itext-5.5.3.zip" dest="lib/itext.zip" skipexisting="true"/>
-      <unzip src="lib/itext.zip" dest="lib">
-        <patternset>
-          <include name="itextpdf-5.5.3.jar"/>
-        </patternset>
-      </unzip>
-      <checksum file="lib/itext.zip" algorithm="sha-512" fileext=".sha"
-                verifyproperty="checksum.matches"/>
-   </target>
-   <target name="checkforxjcchanges" depends="depjars">
-	  <uptodate property="noxjcchanges" targetfile="src/org/example/documenttests/DocumenttestsType.java">
-		 <srcfiles dir="." includes="*.xsd"/>
-	  </uptodate>
-   </target>
+	<target name="depjars">
+		<get src="http://netcologne.dl.sourceforge.net/project/itext/iText/iText5.5.3/itext-5.5.3.zip" dest="lib/itext.zip" skipexisting="true" />
+		<unzip src="lib/itext.zip" dest="lib">
+			<patternset>
+				<include name="itextpdf-5.5.3.jar" />
+			</patternset>
+		</unzip>
+		<checksum file="lib/itext.zip" algorithm="sha-512" fileext=".sha" verifyproperty="checksum.matches" />
+	</target>
+	<target name="checkforxjcchanges" depends="depjars">
+		<uptodate property="noxjcchanges" targetfile="src/org/example/documenttests/DocumenttestsType.java">
+			<srcfiles dir="." includes="*.xsd" />
+		</uptodate>
+	</target>
 	<target name="xjc" depends="checkforxjcchanges" unless="noxjcchanges">
 		<java jar="lib/jaxb-xjc.jar" fork='true'>
-			<arg value="-xmlschema"/>
-			<arg value="-target"/>
-			<arg value="2.1"/>
-			<arg file="documenttests.xsd"/>
-			<arg value="-d"/>
-			<arg file="src"/>
+			<arg value="-xmlschema" />
+			<arg value="-target" />
+			<arg value="2.1" />
+			<arg file="documenttests.xsd" />
+			<arg value="-d" />
+			<arg file="src" />
 		</java>
 	</target>
 	<target name="compile" depends="xjc">
 		<mkdir dir="bin" />
-        <copy todir="bin" file="documenttests.xsd">
-            <fileset dir="rng"/>
-        </copy>
-        <copy todir="bin" file="report2html.xsl"/>
+		<copy todir="bin" file="documenttests.xsd">
+			<fileset dir="rng" />
+		</copy>
+		<copy todir="bin" file="report2html.xsl" />
 		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.5.3.jar:lib/pdfbox-1.7.1.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
@@ -38,32 +37,32 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.opendocumentformat.tester.Main" />
 			</manifest>
-            <zipfileset src="lib/jing.jar" includes="**/*"/>
-            <zipfileset src="lib/itextpdf-5.5.3.jar" includes="**/*"/>
-            <zipfileset src="lib/pdfbox-1.7.1.jar" includes="**/*"/>
-            <zipfileset src="lib/commons-logging-1.1.1.jar" includes="**/*"/>
-            <zipfileset src="lib/xml-apis-ext.jar" includes="**/*"/>
-            <zipfileset src="lib/fontbox-1.7.1.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-anim.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-awt-util.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-bridge.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-codec.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-css.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-dom.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-ext.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-gvt.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-parser.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-script.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-svg-dom.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-transcoder.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-util.jar" includes="**/*"/>
-            <zipfileset src="lib/batik-xml.jar" includes="**/*"/>
+			<zipfileset src="lib/jing.jar" includes="**/*" />
+			<zipfileset src="lib/itextpdf-5.5.3.jar" includes="**/*" />
+			<zipfileset src="lib/pdfbox-1.7.1.jar" includes="**/*" />
+			<zipfileset src="lib/commons-logging-1.1.1.jar" includes="**/*" />
+			<zipfileset src="lib/xml-apis-ext.jar" includes="**/*" />
+			<zipfileset src="lib/fontbox-1.7.1.jar" includes="**/*" />
+			<zipfileset src="lib/batik-anim.jar" includes="**/*" />
+			<zipfileset src="lib/batik-awt-util.jar" includes="**/*" />
+			<zipfileset src="lib/batik-bridge.jar" includes="**/*" />
+			<zipfileset src="lib/batik-codec.jar" includes="**/*" />
+			<zipfileset src="lib/batik-css.jar" includes="**/*" />
+			<zipfileset src="lib/batik-dom.jar" includes="**/*" />
+			<zipfileset src="lib/batik-ext.jar" includes="**/*" />
+			<zipfileset src="lib/batik-gvt.jar" includes="**/*" />
+			<zipfileset src="lib/batik-parser.jar" includes="**/*" />
+			<zipfileset src="lib/batik-script.jar" includes="**/*" />
+			<zipfileset src="lib/batik-svg-dom.jar" includes="**/*" />
+			<zipfileset src="lib/batik-transcoder.jar" includes="**/*" />
+			<zipfileset src="lib/batik-util.jar" includes="**/*" />
+			<zipfileset src="lib/batik-xml.jar" includes="**/*" />
 		</jar>
 	</target>
 	<target name="run" depends="jar" description="run the tests">
 		<java jar="odftester.jar" fork='true'>
-			<arg file="config.xml"/>
-            <arg file="texttests.xml"/>
+			<arg file="config.xml" />
+			<arg file="texttests.xml" />
 		</java>
 	</target>
 	<target name="clean">
