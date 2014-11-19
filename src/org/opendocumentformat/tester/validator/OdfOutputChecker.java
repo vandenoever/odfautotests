@@ -61,7 +61,7 @@ public class OdfOutputChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
-	private final ValidationDriver odf11Validator;
+	// private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
 	private final ValidationDriver odf12Validator;
@@ -188,8 +188,8 @@ public class OdfOutputChecker {
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer,
 				extendedODF);
-		odf11Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
+		// odf11Validator = createValidationDriver(tmpdir,
+		// "OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
 		odf11strictValidator = createValidationDriver(tmpdir,
 				"OpenDocument-strict-schema-v1.1.rng", errorbuffer, extendedODF);
 		odf11manifestValidator = createValidationDriver(tmpdir,

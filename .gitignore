@@ -1,2 +1,4 @@
 src/org/example/
 bin
+lib/itext.zip
+lib/itextpdf-*.jar
