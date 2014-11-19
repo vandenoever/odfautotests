@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="documenttester" default="jar" basedir=".">
    <target name="depjars">
-      <get src="http://netcologne.dl.sourceforge.net/project/itext/iText/iText5.3.3/itext-5.3.3.zip" dest="lib/itext.zip" skipexisting="true"/>
+      <get src="http://netcologne.dl.sourceforge.net/project/itext/iText/iText5.5.3/itext-5.5.3.zip" dest="lib/itext.zip" skipexisting="true"/>
       <unzip src="lib/itext.zip" dest="lib">
         <patternset>
-          <include name="itextpdf-5.3.3.jar"/>
+          <include name="itextpdf-5.5.3.jar"/>
         </patternset>
       </unzip>
+      <checksum file="lib/itext.zip" algorithm="sha-512" fileext=".sha"
+                verifyproperty="checksum.matches"/>
    </target>
    <target name="checkforxjcchanges" depends="depjars">
 	  <uptodate property="noxjcchanges" targetfile="src/org/example/documenttests/DocumenttestsType.java">
@@ -29,7 +31,7 @@
             <fileset dir="rng"/>
         </copy>
         <copy todir="bin" file="report2html.xsl"/>
-		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.3.3.jar:lib/pdfbox-1.7.1.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar" debug="on" debuglevel="source" />
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.5.3.jar:lib/pdfbox-1.7.1.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar" debug="on" debuglevel="source" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
 		<jar destfile="odftester.jar" basedir="bin" level="9">
@@ -37,7 +39,7 @@
 				<attribute name="Main-Class" value="org.opendocumentformat.tester.Main" />
 			</manifest>
             <zipfileset src="lib/jing.jar" includes="**/*"/>
-            <zipfileset src="lib/itextpdf-5.3.3.jar" includes="**/*"/>
+            <zipfileset src="lib/itextpdf-5.5.3.jar" includes="**/*"/>
             <zipfileset src="lib/pdfbox-1.7.1.jar" includes="**/*"/>
             <zipfileset src="lib/commons-logging-1.1.1.jar" includes="**/*"/>
             <zipfileset src="lib/xml-apis-ext.jar" includes="**/*"/>
