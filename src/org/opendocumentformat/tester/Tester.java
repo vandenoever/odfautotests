@@ -239,11 +239,13 @@ public class Tester {
 				cmd[i] = inpath.getPath();
 			} else if (name.equals("outfile")) {
 				File dir = new File(runconfig.resultDir, targetName);
+				dir.mkdirs();
 				File f = new File(dir, replaceSuffix(inpath.getName(),
 						outsuffix));
 				cmd[i] = f.getPath();
 			} else if (name.equals("outdir")) {
 				File dir = new File(runconfig.resultDir, targetName);
+				dir.mkdirs();
 				cmd[i] = dir.getPath();
 			}
 			++i;
@@ -261,8 +263,30 @@ public class Tester {
 		return runCommand(cmd, env);
 	}
 
+	private static String resolveExe(String exe) {
+		File f = new File(exe);
+		if (!f.exists()) {
+			String paths[] = System.getenv("PATH").split(File.pathSeparator);
+			for (String p : paths) {
+				f = new File(p, exe);
+				if (f.exists()) {
+					break;
+				}
+			}
+		}
+		try {
+			f = f.getCanonicalFile();
+		} catch (IOException e) {
+		}
+		if (f.isFile()) {
+			return f.getPath();
+		}
+		return exe;
+	}
+
 	public static CommandReportType runCommand(String cmd[],
 			Map<String, String> env) {
+		cmd[0] = resolveExe(cmd[0]);
 		System.err.println("Running '" + join(env) + " " + join(cmd) + "'.");
 		CommandReportType cr = new CommandReportType();
 		cr.setExe(cmd[0]);

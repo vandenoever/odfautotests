@@ -159,13 +159,13 @@
 		</xsl:if>
 	</xsl:template>
 	<xsl:template name="pdfmask">
-		<xsl:param name="name" />
+		<xsl:variable name="name" select="@name" />
 		<tr>
 			<th>
 				<xsl:value-of select="concat('mask ', $name)" />
 			</th>
 			<td></td>
-			<xsl:for-each select="ancestor::r:testreport/r:target/r:output[@type='pdf']">
+			<xsl:for-each select="../../../../r:target/r:output[@type='pdf']">
 				<td>
 					<xsl:for-each select="r:pdfinfo/r:maskResult[@name=$name]">
 						<xsl:value-of select="@result" />
@@ -181,11 +181,9 @@
 	<xsl:template name="pdfmasks">
 		<xsl:for-each select="r:target/r:output/r:pdfinfo/r:maskResult">
 			<xsl:variable name="name" select="@name" />
-			<xsl:if
-				test=".=ancestor::r:testreport/r:target/r:output/r:pdfinfo/r:maskResult[@name=$name][1]">
-				<xsl:call-template name="pdfmask">
-					<xsl:with-param name="name" select="@name" />
-				</xsl:call-template>
+			<xsl:variable name="masks" select="../../../../r:target/r:output/r:pdfinfo/r:maskResult[@name=$name]" />
+			<xsl:if test="../../../@name=$masks[1]/../../../@name">
+				<xsl:call-template name="pdfmask"/>
 			</xsl:if>
 		</xsl:for-each>
 	</xsl:template>
