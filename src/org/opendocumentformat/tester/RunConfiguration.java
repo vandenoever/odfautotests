@@ -30,7 +30,7 @@ public class RunConfiguration {
 		String shorto = option.getOpt();
 		File file = null;
 		if (line.hasOption(shorto)) {
-			file = new File(line.getOptionValue(shorto)).getAbsoluteFile();
+			file = new File(line.getOptionValue(shorto));
 			if (!file.exists() || !file.isFile() || !file.canRead()) {
 				error(options, "Option " + shorto + "/"
 						+ option.getLongOpt()
@@ -50,9 +50,9 @@ public class RunConfiguration {
 					+ " should be followed by an directory path.");
 		} else if (!dir.exists() && !dir.mkdirs()) {
 			error(options, "The directory "
-					+ dir.getAbsolutePath() + " cannot be created.");
+					+ dir.getPath() + " cannot be created.");
 		}
-		return dir.getAbsoluteFile();
+		return dir;
 	}
 
 	static void error(Options options, String msg) throws ArgumentException {

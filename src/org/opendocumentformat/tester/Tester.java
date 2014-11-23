@@ -22,7 +22,6 @@ import org.example.documenttests.FiletypeType;
 import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
-import org.example.documenttests.ResultType;
 import org.example.documenttests.TargetOutputType;
 import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
@@ -120,12 +119,18 @@ public class Tester {
 		report.setName(test.getName());
 
 		// validate the input file
-		ResultType inputReport = new ResultType();
+		OutputReportType inputReport = new OutputReportType();
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
 		File inputfile = new File(runconfig.inputDir, test.getName()
 				+ Main.getSuffix(type));
-		checker.check(inputfile, inputReport, null, nsmap);
+		OutputType output = null;
+		for (OutputType o : test.getOutput()) {
+			if (o.getType().equals(FiletypeType.ZIP)) {
+				output = o;
+			}
+		}
+		checker.check(inputfile, inputReport, output, nsmap);
 		inputReport.setPath(inputfile.getName());
 		inputReport.setSize(inputfile.length());
 		inputReport.setType(FiletypeType.ZIP);
@@ -156,13 +161,8 @@ public class Tester {
 
 	private void evaluateTest(TargetType target, File result, OutputType out,
 			Map<String, String> nsmap, TargetReportType report) {
-		System.out.println("evaluateTest " + target.getName());
-		System.out.println("evaluateTest " + result);
-
-		OutputReportType or = getOutputReportType(report, out.getType());
-		ResultType output = new ResultType();
-		or.setResult(output);
-		output.setPath(result.getAbsolutePath());
+		OutputReportType output = getOutputReportType(report, out.getType());
+		output.setPath(result.getPath());
 		output.setSize(result.length());
 		ValidationReportType vreport = new ValidationReportType();
 		output.setValidation(vreport);
@@ -173,8 +173,6 @@ public class Tester {
 			PdfOutputChecker pdf = new PdfOutputChecker();
 			pdf.check(result, output, out.getMask());
 		}
-
-		output.setType(out.getType());
 	}
 
 	private void runTest(TestType test, OdfTypeType type,
@@ -238,15 +236,15 @@ public class Tester {
 			if (a.getValue() instanceof ArgumentType) {
 				cmd[i] = ((ArgumentType) a.getValue()).getValue();
 			} else if (name.equals("infile")) {
-				cmd[i] = inpath.getAbsolutePath();
+				cmd[i] = inpath.getPath();
 			} else if (name.equals("outfile")) {
 				File dir = new File(runconfig.resultDir, targetName);
 				File f = new File(dir, replaceSuffix(inpath.getName(),
 						outsuffix));
-				cmd[i] = f.getAbsolutePath();
+				cmd[i] = f.getPath();
 			} else if (name.equals("outdir")) {
 				File dir = new File(runconfig.resultDir, targetName);
-				cmd[i] = dir.getAbsolutePath();
+				cmd[i] = dir.getPath();
 			}
 			++i;
 		}

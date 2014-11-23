@@ -166,18 +166,6 @@
 		</sequence>
 		<attribute name="path" use="required" type="string" />
 	</complexType>
-	<complexType name="resultType">
-		<sequence>
-			<element name="fragment" type="tns:fragmentType" minOccurs="0" />
-			<element name="validation" type="tns:validationReportType" />
-			<element name="file" type="tns:fileTestReportType" minOccurs="0"
-				maxOccurs="unbounded" />
-			<element name="pdfinfo" type="tns:pdfinfoType" minOccurs="0" />
-		</sequence>
-		<attribute name="size" type="long" use="required" />
-		<attribute name="path" type="string" use="required" />
-		<attribute name="type" type="tns:filetypeType" use="required" />
-	</complexType>
 	<complexType name="commandReportType">
 		<attribute name="exe" type="string" use="required" />
 		<attribute name="durationMs" type="int" use="required" />
@@ -190,9 +178,15 @@
 		<sequence>
 			<element name="commands" type="tns:commandReportType" minOccurs="0"
 				maxOccurs="unbounded" />
-			<element name="result" type="tns:resultType" />
+			<element name="fragment" type="tns:fragmentType" minOccurs="0" />
+			<element name="validation" type="tns:validationReportType" />
+			<element name="file" type="tns:fileTestReportType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="pdfinfo" type="tns:pdfinfoType" minOccurs="0" />
 		</sequence>
-		<attribute name="type" use="required" type="tns:filetypeType" />
+		<attribute name="size" type="long" use="required" />
+		<attribute name="path" type="string" use="required" />
+		<attribute name="type" type="tns:filetypeType" use="required" />
     </complexType>
 	<complexType name="targetReportType">
 		<sequence>
@@ -202,7 +196,7 @@
 	</complexType>
 	<complexType name="testreportType">
 		<sequence>
-			<element name="input" type="tns:resultType" />
+			<element name="input" type="tns:outputReportType" />
 			<element name="target" type="tns:targetReportType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</sequence>

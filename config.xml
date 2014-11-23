@@ -52,6 +52,7 @@
 		<output outputType="zip">
 			<command exe="/home/oever/.nix-profile/bin/soffice">
 				<env name="DISPLAY" />
+				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
 				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
@@ -65,6 +66,7 @@
 		<output outputType="xml">
 			<command exe="/home/oever/.nix-profile/bin/soffice">
 				<env name="DISPLAY" />
+				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
 				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
@@ -78,6 +80,7 @@
 		<output outputType="pdf">
 			<command exe="/home/oever/.nix-profile/bin/soffice">
 				<env name="DISPLAY" />
+				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
 				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />

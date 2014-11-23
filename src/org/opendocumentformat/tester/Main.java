@@ -173,7 +173,7 @@ public class Main {
 		while (t.getMessage() == null & t.getCause() != null) {
 			t = t.getCause();
 		}
-		System.err.println("Could not load " + file.getAbsolutePath()
+		System.err.println("Could not load " + file.getPath()
 				+ " line " + linenumber + ": " + t.getMessage());
 		System.exit(1);
 	}

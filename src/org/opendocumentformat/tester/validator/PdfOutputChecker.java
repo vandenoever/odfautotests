@@ -17,10 +17,10 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
+import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType.Mask;
 import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.PdfinfoType.MaskResult;
-import org.example.documenttests.ResultType;
 import org.example.documenttests.SimpleResultType;
 import org.example.documenttests.ValidationErrorTypeType;
 import org.w3c.dom.DOMImplementation;
@@ -110,10 +110,10 @@ public class PdfOutputChecker {
 
 	final String pngNumberFormat = "-%01d.png";
 
-	public void check(File pdfpath, ResultType report, List<Mask> masks) {
+	public void check(File pdfpath, OutputReportType report, List<Mask> masks) {
 		PdfReader reader = null;
 		try {
-			reader = new PdfReader(pdfpath.getAbsolutePath());
+			reader = new PdfReader(pdfpath.getPath());
 		} catch (IOException e) {
 			OdfChecker.report(report.getValidation(),
 					ValidationErrorTypeType.INVALIDPDFFILE, e.getMessage());
@@ -123,7 +123,7 @@ public class PdfOutputChecker {
 		report.setPdfinfo(info);
 		int n = reader.getNumberOfPages();
 		info.setPages(n);
-		String path = pdfpath.getAbsolutePath();
+		String path = pdfpath.getPath();
 		String pathbase = path.substring(0, path.lastIndexOf('.'));
 
 		for (int i = 1; i <= n; ++i) {

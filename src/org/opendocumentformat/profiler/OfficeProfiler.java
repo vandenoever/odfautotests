@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.example.documenttests.CommandReportType;
-import org.example.documenttests.ResultType;
+import org.example.documenttests.OutputReportType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.Tester;
@@ -246,7 +246,7 @@ public class OfficeProfiler {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String dir = (new File(args[0])).getAbsolutePath();
+		String dir = (new File(args[0])).getPath();
 		String output = args[1];
 		String loggername = null;
 		if (args.length > 2) {
@@ -369,7 +369,7 @@ class ODFValidator {
 	final static OdfChecker odfvalidator = new OdfChecker(true);
 
 	String validate(String path) {
-		ResultType report = new ResultType();
+		OutputReportType report = new OutputReportType();
 		ValidationReportType v = new ValidationReportType();
 		report.setValidation(v);
 		odfvalidator.check(new File(path), report, null, null);
