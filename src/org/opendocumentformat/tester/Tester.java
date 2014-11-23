@@ -5,9 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,105 +22,193 @@ import org.example.documenttests.FiletypeType;
 import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
+import org.example.documenttests.ResultType;
+import org.example.documenttests.TargetOutputType;
 import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
 import org.example.documenttests.TestreportType;
 import org.example.documenttests.ValidationReportType;
-import org.opendocumentformat.tester.InputCreator.ODFVersion;
-import org.opendocumentformat.tester.validator.OdfOutputChecker;
+import org.opendocumentformat.tester.validator.OdfChecker;
 import org.opendocumentformat.tester.validator.PdfOutputChecker;
 
 public class Tester {
 
-	private final Map<DocumenttestsType, Map<String, String>> tests;
-	private final List<DocumenttestsconfigType> configs;
+	private final RunConfiguration runconfig;
+	private final DocumenttestsType tests;
+	private final DocumenttestsconfigType config;
+	private final Map<String, String> nsmap;
 
-	private final OdfOutputChecker outputchecker = new OdfOutputChecker(false);
+	private final OdfChecker checker = new OdfChecker(false);
 
-	public Tester() {
-		tests = new HashMap<DocumenttestsType, Map<String, String>>();
-		configs = new ArrayList<DocumenttestsconfigType>();
-	}
-
-	public void addTests(DocumenttestsType tests, Map<String, String> nsmap) {
-		this.tests.put(tests, nsmap);
-	}
-
-	public void addConfig(DocumenttestsconfigType config) {
-		this.configs.add(config);
+	public Tester(RunConfiguration runconfig, DocumenttestsconfigType config,
+			DocumenttestsType tests, Map<String, String> nsmap) {
+		this.runconfig = runconfig;
+		this.config = config;
+		this.tests = tests;
+		this.nsmap = nsmap;
 	}
 
 	public DocumenttestsreportType runAllTests() {
 		DocumenttestsreportType report = new DocumenttestsreportType();
-		List<TestreportType> testreports = report.getTestreport();
-		for (Entry<DocumenttestsType, Map<String, String>> e : tests.entrySet()) {
-			OdfTypeType type = e.getKey().getOdftype();
-			for (TestType test : e.getKey().getTest()) {
-				testreports.add(runTest(test, type, e.getValue()));
-			}
+		OdfTypeType type = tests.getOdftype();
+		for (TestType test : tests.getTest()) {
+			runTest(test, type, report);
 		}
 		return report;
 	}
 
-	public TestreportType runTest(TestType test, OdfTypeType type,
-			Map<String, String> nsmap) {
-		TestreportType report = new TestreportType();
+	public void evaluateAllTests(DocumenttestsreportType report) {
+		OdfTypeType type = tests.getOdftype();
+		// loop over all the tests
+		for (TestType test : tests.getTest()) {
+			TestreportType tr = getTargetReportType(report, test.getName());
+			evaluateTest(test, type, tr);
+		}
+	}
+
+	private TestreportType getTargetReportType(DocumenttestsreportType report,
+			String name) {
+		TestreportType tr = null;
+		for (TestreportType r : report.getTestreport()) {
+			if (r.getName().equals(name)) {
+				tr = r;
+			}
+		}
+		if (tr == null) {
+			tr = new TestreportType();
+			tr.setName(name);
+			report.getTestreport().add(tr);
+		}
+		return tr;
+	}
+
+	private TargetReportType getTargetReportType(TestreportType report,
+			String name) {
+		TargetReportType tr = null;
+		for (TargetReportType r : report.getTarget()) {
+			if (r.getName().equals(name)) {
+				tr = r;
+			}
+		}
+		if (tr == null) {
+			tr = new TargetReportType();
+			tr.setName(name);
+			report.getTarget().add(tr);
+		}
+		return tr;
+	}
+
+	private OutputReportType getOutputReportType(TargetReportType tr,
+			FiletypeType o) {
+		OutputReportType or = null;
+		for (OutputReportType r : tr.getOutput()) {
+			if (r.getType().equals(o)) {
+				or = r;
+			}
+		}
+		if (or == null) {
+			or = new OutputReportType();
+			or.setType(o);
+			tr.getOutput().add(or);
+		}
+		return or;
+	}
+
+	private void evaluateTest(TestType test, OdfTypeType type,
+			TestreportType report) {
 		report.setName(test.getName());
-		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
-		String path = creator.createInput(test.getInput());
-		OutputReportType inputReport = new OutputReportType();
+
+		// validate the input file
+		ResultType inputReport = new ResultType();
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
-		outputchecker.check(path, inputReport, null, nsmap);
-		File inputfile = new File(path);
-		inputReport.setPath(path);
+		File inputfile = new File(runconfig.inputDir, test.getName()
+				+ Main.getSuffix(type));
+		checker.check(inputfile, inputReport, null, nsmap);
+		inputReport.setPath(inputfile.getName());
 		inputReport.setSize(inputfile.length());
 		inputReport.setType(FiletypeType.ZIP);
 		report.setInput(inputReport);
-		for (DocumenttestsconfigType config : configs) {
-			for (TargetType target : config.getTarget()) {
-				for (int i = 0; i < test.getOutput().size(); ++i) {
-					OutputType o = test.getOutput().get(i);
-					if (target.getOutputType().equals(o.getType())) {
-						report.getTarget().add(runTest(target, path, o, nsmap));
+
+		// loop over the applications that created output
+		for (TargetType target : config.getTarget()) {
+			TargetReportType tr = getTargetReportType(report, target.getName());
+			// loop over the types of output (odf, pdf) of those applications
+			for (TargetOutputType to : target.getOutput()) {
+				// loop over the types of files output by the test (odf, pdf)
+				for (OutputType o : test.getOutput()) {
+					if (to.getOutputType().equals(o.getType())) {
+						String suffix = Main.getSuffix(tests.getOdftype());
+						if (o.getType().equals(FiletypeType.PDF)) {
+							suffix = ".pdf";
+						}
+						File dir = new File(runconfig.resultDir,
+								target.getName());
+						File out = new File(dir, replaceSuffix(
+								inputfile.getName(), suffix));
+						evaluateTest(target, out, o, nsmap, tr);
 					}
 				}
 			}
 		}
-		return report;
 	}
 
-	public TargetReportType runTest(TargetType target, String path,
-			OutputType out, Map<String, String> nsmap) {
-		System.out.println("runTest " + target.getName());
-		TargetReportType report = new TargetReportType();
-		report.setName(target.getName());
-		OutputReportType output = new OutputReportType();
-		report.setOutput(output);
-		String suffix = ".odt";
-		if (target.getOutputType().equals(FiletypeType.PDF)) {
-			suffix = ".pdf";
-		}
-		for (CommandType cmd : target.getCommand()) {
-			path = runCommand(cmd, path, report, suffix);
-		}
-		output.setPath(path);
-		output.setSize((new File(path)).length());
+	private void evaluateTest(TargetType target, File result, OutputType out,
+			Map<String, String> nsmap, TargetReportType report) {
+		System.out.println("evaluateTest " + target.getName());
+		System.out.println("evaluateTest " + result);
+
+		OutputReportType or = getOutputReportType(report, out.getType());
+		ResultType output = new ResultType();
+		or.setResult(output);
+		output.setPath(result.getAbsolutePath());
+		output.setSize(result.length());
 		ValidationReportType vreport = new ValidationReportType();
 		output.setValidation(vreport);
 		if (out.getType() == FiletypeType.ZIP
 				|| out.getType() == FiletypeType.XML) {
-			outputchecker.check(path, output, out, nsmap);
+			checker.check(result, output, out, nsmap);
 		} else if (out.getType() == FiletypeType.PDF) {
 			PdfOutputChecker pdf = new PdfOutputChecker();
-			pdf.check(path, output, out.getMask());
+			pdf.check(result, output, out.getMask());
 		}
+
 		output.setType(out.getType());
-		return report;
 	}
 
-	static String join(String a[]) {
+	private void runTest(TestType test, OdfTypeType type,
+			DocumenttestsreportType report) {
+		TestreportType tr = getTargetReportType(report, test.getName());
+		File inputfile = new File(runconfig.inputDir, test.getName()
+				+ Main.getSuffix(type));
+		for (TargetType target : config.getTarget()) {
+			for (OutputType o : test.getOutput()) {
+				runTest(target, inputfile, o, nsmap, tr);
+			}
+		}
+	}
+
+	private void runTest(TargetType target, File path, OutputType out,
+			Map<String, String> nsmap, TestreportType report) {
+		System.out.println("runTest " + target.getName());
+		TargetReportType tr = getTargetReportType(report, target.getName());
+		tr.setName(target.getName());
+		for (TargetOutputType to : target.getOutput()) {
+			if (to.getOutputType().equals(out.getType())) {
+				String suffix = Main.getSuffix(tests.getOdftype());
+				if (to.getOutputType().equals(FiletypeType.PDF)) {
+					suffix = ".pdf";
+				}
+				OutputReportType or = getOutputReportType(tr, out.getType());
+				CommandReportType r = runCommand(to.getCommand(), path, suffix,
+						target.getName());
+				or.getCommands().add(r);
+			}
+		}
+	}
+
+	static private String join(String a[]) {
 		String str = a[0];
 		for (int i = 1; i < a.length; ++i) {
 			str += " " + a[i];
@@ -130,7 +216,7 @@ public class Tester {
 		return str;
 	}
 
-	static String join(Map<String, String> m) {
+	static private String join(Map<String, String> m) {
 		String str = "";
 		for (Entry<String, String> e : m.entrySet()) {
 			str += e.getKey() + "=" + e.getValue() + " ";
@@ -138,10 +224,13 @@ public class Tester {
 		return str;
 	}
 
-	public String runCommand(CommandType command, String inpath,
-			TargetReportType report, String outsuffix) {
+	private String replaceSuffix(String name, String newSuffix) {
+		return name.substring(0, name.lastIndexOf(".")) + newSuffix;
+	}
+
+	private CommandReportType runCommand(CommandType command, File inpath,
+			String outsuffix, String targetName) {
 		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
-		String outpath = inpath;
 		cmd[0] = command.getExe();
 		int i = 1;
 		for (JAXBElement<?> a : command.getInfileOrOutfileOrOutdir()) {
@@ -149,21 +238,15 @@ public class Tester {
 			if (a.getValue() instanceof ArgumentType) {
 				cmd[i] = ((ArgumentType) a.getValue()).getValue();
 			} else if (name.equals("infile")) {
-				cmd[i] = inpath;
+				cmd[i] = inpath.getAbsolutePath();
 			} else if (name.equals("outfile")) {
-				File f = null;
-				try {
-					f = File.createTempFile("output", outsuffix,
-							new File("tmp"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				cmd[i] = outpath = f.getPath();
+				File dir = new File(runconfig.resultDir, targetName);
+				File f = new File(dir, replaceSuffix(inpath.getName(),
+						outsuffix));
+				cmd[i] = f.getAbsolutePath();
 			} else if (name.equals("outdir")) {
-				cmd[i] = "tmp/out";
-				String str = (new File(inpath)).getName();
-				outpath = cmd[i] + File.separator
-						+ str.substring(0, str.lastIndexOf('.')) + outsuffix;
+				File dir = new File(runconfig.resultDir, targetName);
+				cmd[i] = dir.getAbsolutePath();
 			}
 			++i;
 		}
@@ -177,9 +260,7 @@ public class Tester {
 				env.put(e.getName(), value);
 			}
 		}
-		CommandReportType cr = runCommand(cmd, env);
-		report.getCommands().add(cr);
-		return outpath;
+		return runCommand(cmd, env);
 	}
 
 	public static CommandReportType runCommand(String cmd[],

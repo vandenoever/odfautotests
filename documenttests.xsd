@@ -166,7 +166,7 @@
 		</sequence>
 		<attribute name="path" use="required" type="string" />
 	</complexType>
-	<complexType name="outputReportType">
+	<complexType name="resultType">
 		<sequence>
 			<element name="fragment" type="tns:fragmentType" minOccurs="0" />
 			<element name="validation" type="tns:validationReportType" />
@@ -186,17 +186,23 @@
 		<attribute name="stderr" type="string" />
 		<attribute name="stdout" type="string" />
 	</complexType>
+    <complexType name="outputReportType">
+		<sequence>
+			<element name="commands" type="tns:commandReportType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="result" type="tns:resultType" />
+		</sequence>
+		<attribute name="type" use="required" type="tns:filetypeType" />
+    </complexType>
 	<complexType name="targetReportType">
 		<sequence>
-			<element name="commands" type="tns:commandReportType"
-				maxOccurs="unbounded" />
-			<element name="output" type="tns:outputReportType" />
+            <element name="output" type="tns:outputReportType" minOccurs="0" maxOccurs="unbounded"/>
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
 	</complexType>
 	<complexType name="testreportType">
 		<sequence>
-			<element name="input" type="tns:outputReportType" />
+			<element name="input" type="tns:resultType" />
 			<element name="target" type="tns:targetReportType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</sequence>
@@ -245,17 +251,21 @@
 	<simpleType name="versionsType">
 		<list itemType="tns:versionType" />
 	</simpleType>
+	<complexType name="targetOutputType">
+		<sequence>
+			<element name="command" type="tns:commandType" />
+		</sequence>
+		<attribute name="outputType" type="tns:filetypeType" use="required" />
+    </complexType>
 	<complexType name="targetType">
 		<sequence>
-			<element name="command" minOccurs="0" maxOccurs="unbounded"
-				type="tns:commandType" />
+			<element name="output" type="tns:targetOutputType" maxOccurs="unbounded" />
 		</sequence>
+		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
+		<attribute name="inputVersions" type="tns:versionsType" use="required" />
 		<attribute name="name" type="NCName" use="required" />
 		<attribute name="odftypes" type="tns:odfTypesType" use="required" />
-		<attribute name="inputVersions" type="tns:versionsType" use="required" />
 		<attribute name="odfOutputVersion" type="tns:versionType" />
-		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
-		<attribute name="outputType" type="tns:filetypeType" use="required" />
 	</complexType>
 	<complexType name="documenttestsconfigType">
 		<sequence>

@@ -30,8 +30,8 @@ import javax.xml.xpath.XPathFactory;
 import org.example.documenttests.FileTestReportType;
 import org.example.documenttests.FileType;
 import org.example.documenttests.FragmentType;
-import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
+import org.example.documenttests.ResultType;
 import org.example.documenttests.SimpleResultType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationErrorTypeType;
@@ -57,7 +57,7 @@ import com.thaiopensource.validate.prop.rng.RngProperty;
 import com.thaiopensource.validate.rng.SAXSchemaReader;
 import com.thaiopensource.xml.sax.ErrorHandlerImpl;
 
-public class OdfOutputChecker {
+public class OdfChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
@@ -129,7 +129,7 @@ public class OdfOutputChecker {
 	}
 
 	static private void extract(String target, String path) {
-		InputStream i = OdfOutputChecker.class.getClassLoader()
+		InputStream i = OdfChecker.class.getClassLoader()
 				.getResourceAsStream(path);
 		try {
 			FileOutputStream out = new FileOutputStream(target);
@@ -178,7 +178,7 @@ public class OdfOutputChecker {
 		return driver;
 	}
 
-	public OdfOutputChecker(boolean extendedODF) {
+	public OdfChecker(boolean extendedODF) {
 		errorbuffer = new ErrorBuffer();
 		String tmpdir = "rng";
 		(new File(tmpdir)).mkdir();
@@ -278,8 +278,8 @@ public class OdfOutputChecker {
 		return builder;
 	}
 
-	static private void report(OutputReportType report,
-			ValidationErrorTypeType type, String msg) {
+	static private void report(ResultType report, ValidationErrorTypeType type,
+			String msg) {
 		report(report.getValidation(), type, msg);
 	}
 
@@ -296,7 +296,7 @@ public class OdfOutputChecker {
 		report(report, type, null);
 	}
 
-	public void check(String odfpath, OutputReportType report, OutputType out,
+	public void check(File odfpath, ResultType report, OutputType out,
 			Map<String, String> nsmap) {
 		xpath.setNamespaceContext(new NSMapper(nsmap));
 
@@ -319,26 +319,26 @@ public class OdfOutputChecker {
 		}
 	}
 
-	private void checkStylesXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+	private void checkStylesXml(ZipFile zip, ResultType report, OdfData data,
+			OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSTYLESXML,
 				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml", out);
 	}
 
-	private void checkContentXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+	private void checkContentXml(ZipFile zip, ResultType report, OdfData data,
+			OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDCONTENTXML,
 				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml", out);
 	}
 
-	private void checkMetaXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+	private void checkMetaXml(ZipFile zip, ResultType report, OdfData data,
+			OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDMETAXML,
 				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml", out);
 	}
 
-	private void checkSettingsXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+	private void checkSettingsXml(ZipFile zip, ResultType report, OdfData data,
+			OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSETTINGSXML,
 				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml", out);
 	}
@@ -362,10 +362,9 @@ public class OdfOutputChecker {
 		return null;
 	}
 
-	private Document checkXml(ZipFile zip, OutputReportType report,
-			OdfData data, ValidationErrorTypeType invalid,
-			ValidationErrorTypeType missing, String path, OutputType out)
-			throws IOException {
+	private Document checkXml(ZipFile zip, ResultType report, OdfData data,
+			ValidationErrorTypeType invalid, ValidationErrorTypeType missing,
+			String path, OutputType out) throws IOException {
 		ZipEntry ze = zip.getEntry(path);
 		if (ze == null) {
 			report(report.getValidation(), missing);
@@ -474,8 +473,8 @@ public class OdfOutputChecker {
 		}
 	}
 
-	private void checkXml(InputStream in, String version,
-			OutputReportType report, ValidationErrorTypeType error) {
+	private void checkXml(InputStream in, String version, ResultType report,
+			ValidationErrorTypeType error) {
 		ValidationDriver driver = null;
 		if ("1.2".equals(version)) {
 			driver = odf12Validator;
@@ -576,7 +575,7 @@ public class OdfOutputChecker {
 		}
 	}
 
-	private void checkMimetypeFile(String odfpath, ValidationReportType report) {
+	private void checkMimetypeFile(File odfpath, ValidationReportType report) {
 		byte b[] = new byte[73];
 		int n;
 		InputStream in = null;

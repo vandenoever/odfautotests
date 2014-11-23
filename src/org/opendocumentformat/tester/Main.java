@@ -31,7 +31,10 @@ import javax.xml.validation.SchemaFactory;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
-import org.opendocumentformat.tester.validator.OdfOutputChecker;
+import org.example.documenttests.OdfTypeType;
+import org.example.documenttests.TestType;
+import org.opendocumentformat.tester.InputCreator.ODFVersion;
+import org.opendocumentformat.tester.validator.OdfChecker;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -87,7 +90,7 @@ public class Main {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
 
-			documentBuilder = OdfOutputChecker.createDocumentBuilder();
+			documentBuilder = OdfChecker.createDocumentBuilder();
 		}
 
 		void getNSPrefixMap(NamedNodeMap atts, Map<String, String> nsmap) {
@@ -104,19 +107,20 @@ public class Main {
 			}
 		}
 
-		DocumenttestsType loadTests(String path, Map<String, String> nsmap)
+		DocumenttestsType loadTests(File testFile, Map<String, String> nsmap)
 				throws JAXBException, SAXException, IOException {
-			Document doc = documentBuilder.parse(new File(path));
+			Document doc = documentBuilder.parse(testFile);
 			getNSPrefixMap(doc.getDocumentElement().getAttributes(), nsmap);
 			JAXBElement<DocumenttestsType> root;
-			root = unmarshaller.unmarshal(new StreamSource(new File(path)),
+			root = unmarshaller.unmarshal(new StreamSource(testFile),
 					DocumenttestsType.class);
 			return root.getValue();
 		}
 
-		DocumenttestsconfigType loadConfig(String path) throws JAXBException {
+		DocumenttestsconfigType loadConfig(File runConfFile)
+				throws JAXBException {
 			JAXBElement<DocumenttestsconfigType> root;
-			root = unmarshaller.unmarshal(new StreamSource(new File(path)),
+			root = unmarshaller.unmarshal(new StreamSource(runConfFile),
 					DocumenttestsconfigType.class);
 			return root.getValue();
 		}
@@ -163,59 +167,101 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
+	static private void fatalFileError(int linenumber, Throwable t, File file) {
+		while (t.getMessage() == null & t.getCause() != null) {
+			t = t.getCause();
+		}
+		System.err.println("Could not load " + file.getAbsolutePath()
+				+ " line " + linenumber + ": " + t.getMessage());
+		System.exit(1);
+	}
+
+	static String getSuffix(OdfTypeType type) {
+		String suffix;
+		switch (type) {
+		default:
+		case TEXT:
+			suffix = ".odt";
+			break;
+		case PRESENTATION:
+			suffix = ".odp";
+			break;
+		case SPREADSHEET:
+			suffix = "ods";
+			break;
+		}
+		return suffix;
+	}
+
+	private static void createInputFiles(RunConfiguration conf,
+			DocumenttestsType tests) {
+		OdfTypeType type = tests.getOdftype();
+		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
+		for (TestType test : tests.getTest()) {
+			File target = new File(conf.inputDir, test.getName()
+					+ getSuffix(type));
+			creator.createInput(target, test.getInput());
+		}
+	}
+
+	static private DocumenttestsconfigType inferConfig(RunConfiguration rc) {
+		DocumenttestsconfigType conf = new DocumenttestsconfigType();
+		return conf;
+	}
+
+	/**
+	 * The main entry point for the application.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
+		// parse the command-line arguments or exit if they make no sense
+		RunConfiguration conf;
 		try {
-			(new File("tmp")).mkdir();
-		} catch (Exception e) {
+			conf = RunConfiguration.parseArguments(args);
+		} catch (ArgumentException e) {
+			return;
 		}
-		try {
-			(new File("tmp/out")).mkdir();
-		} catch (Exception e) {
-		}
-		Tester tester = new Tester();
 		Loader loader;
 		try {
 			loader = (new Main()).new Loader();
-		} catch (JAXBException e1) {
-			throw new RuntimeException(e1);
+		} catch (JAXBException e) {
+			throw new RuntimeException(e);
 		}
-		// the each argument can be either a config file or a set of tests
-		for (String arg : args) {
+		// load the tests file
+		DocumenttestsType tests = null;
+		Map<String, String> nsmap = new HashMap<String, String>();
+		try {
+			tests = loader.loadTests(conf.tests, nsmap);
+		} catch (Throwable t) {
+			fatalFileError(loader.handler.linenumber, t, conf.tests);
+		}
+		// create any missing input files
+		createInputFiles(conf, tests);
+		// if a run configuration is assigned, run the files through the
+		// configured applications
+		DocumenttestsconfigType config = null;
+		if (conf.runConfiguration == null) {
+			config = inferConfig(conf);
+		} else {
 			try {
-				Map<String, String> nsmap = new HashMap<String, String>();
-				DocumenttestsType tests = loader.loadTests(arg, nsmap);
-				tester.addTests(tests, nsmap);
-			} catch (Exception e) {
-				int linenumber = loader.handler.linenumber;
-				try {
-					DocumenttestsconfigType config = loader.loadConfig(arg);
-					tester.addConfig(config);
-				} catch (JAXBException e2) {
-					Throwable ex = e;
-					if (loader.handler.linenumber > linenumber) {
-						linenumber = loader.handler.linenumber;
-						ex = e2;
-					}
-					System.err.print("Could not load " + arg + " line "
-							+ linenumber + ": ");
-					if (ex.getMessage() == null) {
-						if (e.getCause() != null) {
-							ex = e.getCause();
-						}
-						if (ex.getMessage() == null) {
-							ex.printStackTrace();
-						}
-						System.err.println(ex.getMessage());
-					} else {
-						System.err.println(ex.getMessage());
-					}
-				}
+				config = loader.loadConfig(conf.runConfiguration);
+			} catch (Throwable t) {
+				fatalFileError(loader.handler.linenumber, t,
+						conf.runConfiguration);
 			}
 		}
-		DocumenttestsreportType report = tester.runAllTests();
+
+		Tester tester = new Tester(conf, config, tests, nsmap);
+		DocumenttestsreportType report = null;
+		if (config != null) {
+			report = tester.runAllTests();
+		} else {
+			report = new DocumenttestsreportType();
+		}
+		tester.evaluateAllTests(report);
 		loader.writeReport(report, "report.xml");
 		writeHTML("report.xml", "report.html");
 	}

@@ -1,93 +1,92 @@
 <config xmlns="http://www.example.org/documenttests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 	<target name="Calligra" odftypes="text" inputVersions="1.0 1.1 1.2"
-		odfOutputVersion="1.2" inputTypes="zip" outputType="zip">
-		<command exe="/usr/bin/calligrawords">
-			<env name="DISPLAY" />
-			<env name="XAUTHORITY" />
-			<env name="KDEDIRS" />
-			<env name="HOME" />
-			<argument value="--roundtrip-filename" />
-			<outfile />
-			<infile />
-		</command>
-	</target>
-	<target name="CalligraPdf" odftypes="text" inputVersions="1.0 1.1 1.2"
-		inputTypes="zip" outputType="pdf">
-		<command exe="/usr/bin/calligrawords">
-			<env name="DISPLAY" />
-			<env name="XAUTHORITY" />
-			<env name="KDEDIRS" />
-			<env name="HOME" />
-			<argument value="--export-pdf" />
-			<argument value="--export-filename" />
-			<outfile />
-			<infile />
-		</command>
+		odfOutputVersion="1.2" inputTypes="zip">
+		<output outputType="zip">
+			<command exe="/usr/bin/calligrawords">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--roundtrip-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf">
+			<command exe="/usr/bin/calligrawords">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--export-pdf" />
+				<argument value="--export-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
 	</target>
 	<target name="Abiword" odftypes="text" inputVersions="1.0 1.1 1.2"
-		odfOutputVersion="1.1" inputTypes="zip" outputType="zip">
-		<command exe="/usr/bin/abiword">
-			<argument value="-t" />
-			<argument value="odt" />
-			<argument value="-o" />
-			<outfile />
-			<infile />
-		</command>
-	</target>
-	<target name="AbiwordPdf" odftypes="text" inputVersions="1.0 1.1 1.2"
-		inputTypes="zip" outputType="pdf">
-		<command exe="/usr/bin/abiword">
-			<argument value="-t" />
-			<argument value="pdf" />
-			<argument value="-o" />
-			<outfile />
-			<infile />
-		</command>
-	</target>
-	<target name="LibreOffice" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
-		outputType="zip">
-		<command exe="/usr/bin/soffice">
-			<env name="DISPLAY" />
-			<env name="XAUTHORITY" />
-			<argument value="--headless" />
-			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
-			<argument value="--convert-to" />
-			<argument value="odt:writer8" />
-			<argument value="--outdir" />
-			<outdir />
-			<infile />
-		</command>
+		odfOutputVersion="1.1" inputTypes="zip">
+		<output outputType="zip">
+			<command exe="/usr/bin/abiword">
+				<argument value="-t" />
+				<argument value="odt" />
+				<argument value="-o" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf">
+			<command exe="/usr/bin/abiword">
+				<argument value="-t" />
+				<argument value="pdf" />
+				<argument value="-o" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
 	</target>
 	<target name="LibreOffice" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip"
-		outputType="xml">
-		<command exe="/usr/bin/soffice">
-			<env name="DISPLAY" />
-			<env name="XAUTHORITY" />
-			<argument value="--headless" />
-			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
-			<argument value="--convert-to" />
-			<argument value="odt" />
-			<argument value="--outdir" />
-			<outdir />
-			<infile />
-		</command>
-	</target>
-	<target name="LibreOfficePdf" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" inputTypes="xml zip"
-		outputType="pdf">
-		<command exe="/usr/bin/soffice">
-			<env name="DISPLAY" />
-			<env name="XAUTHORITY" />
-			<argument value="--headless" />
-			<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
-			<argument value="--convert-to" />
-			<argument value="pdf" />
-			<argument value="--outdir" />
-			<outdir />
-			<infile />
-		</command>
+		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip">
+		<output outputType="zip">
+			<command exe="/home/oever/.nix-profile/bin/soffice">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odt:writer8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="xml">
+			<command exe="/home/oever/.nix-profile/bin/soffice">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odt" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf">
+			<command exe="/home/oever/.nix-profile/bin/soffice">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="pdf" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
 	</target>
 </config>

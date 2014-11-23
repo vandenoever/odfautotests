@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.example.documenttests.CommandReportType;
-import org.example.documenttests.OutputReportType;
+import org.example.documenttests.ResultType;
 import org.example.documenttests.ValidationErrorType;
 import org.example.documenttests.ValidationReportType;
 import org.opendocumentformat.tester.Tester;
-import org.opendocumentformat.tester.validator.OdfOutputChecker;
+import org.opendocumentformat.tester.validator.OdfChecker;
 
 public class OfficeProfiler {
 
@@ -366,13 +366,13 @@ class Result {
 }
 
 class ODFValidator {
-	final static OdfOutputChecker odfvalidator = new OdfOutputChecker(true);
+	final static OdfChecker odfvalidator = new OdfChecker(true);
 
 	String validate(String path) {
-		OutputReportType report = new OutputReportType();
+		ResultType report = new ResultType();
 		ValidationReportType v = new ValidationReportType();
 		report.setValidation(v);
-		odfvalidator.check(path, report, null, null);
+		odfvalidator.check(new File(path), report, null, null);
 		if (v.getError().size() == 0) {
 			return null;
 		}

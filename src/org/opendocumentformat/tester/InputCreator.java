@@ -289,14 +289,11 @@ public class InputCreator {
 		nc.cleanNamespaces(styles);
 	}
 
-	String createInput(FragmentType input) {
+	void createInput(File target, FragmentType input) {
 		createDocument(input);
 
-		String filename = null;
 		try {
-			File f = File.createTempFile("input", ".odt", new File("tmp"));
-			filename = f.getPath();
-			FileOutputStream fos = new FileOutputStream(f);
+			FileOutputStream fos = new FileOutputStream(target);
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			zos.setMethod(ZipOutputStream.STORED);
 			addEntry(zos, "mimetype", "application/vnd.oasis.opendocument."
@@ -316,7 +313,6 @@ public class InputCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return filename;
 	}
 
 	private long calculateCRC(byte b[]) {

@@ -17,10 +17,10 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
-import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType.Mask;
 import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.PdfinfoType.MaskResult;
+import org.example.documenttests.ResultType;
 import org.example.documenttests.SimpleResultType;
 import org.example.documenttests.ValidationErrorTypeType;
 import org.w3c.dom.DOMImplementation;
@@ -110,12 +110,12 @@ public class PdfOutputChecker {
 
 	final String pngNumberFormat = "-%01d.png";
 
-	public void check(String pdfpath, OutputReportType report, List<Mask> masks) {
+	public void check(File pdfpath, ResultType report, List<Mask> masks) {
 		PdfReader reader = null;
 		try {
-			reader = new PdfReader(pdfpath);
+			reader = new PdfReader(pdfpath.getAbsolutePath());
 		} catch (IOException e) {
-			OdfOutputChecker.report(report.getValidation(),
+			OdfChecker.report(report.getValidation(),
 					ValidationErrorTypeType.INVALIDPDFFILE, e.getMessage());
 			return;
 		}
@@ -123,7 +123,8 @@ public class PdfOutputChecker {
 		report.setPdfinfo(info);
 		int n = reader.getNumberOfPages();
 		info.setPages(n);
-		String pathbase = pdfpath.substring(0, pdfpath.lastIndexOf('.'));
+		String path = pdfpath.getAbsolutePath();
+		String pathbase = path.substring(0, path.lastIndexOf('.'));
 
 		for (int i = 1; i <= n; ++i) {
 			PdfinfoType.Page p = new PdfinfoType.Page();
@@ -167,11 +168,11 @@ public class PdfOutputChecker {
 		}
 	}
 
-	private void createPngs(String pdfpath, String pngpath, int resolutiondpi,
+	private void createPngs(File pdfpath, String pngpath, int resolutiondpi,
 			int numberOfPages) {
 		PDDocument document = null;
 		try {
-			document = PDDocument.loadNonSeq(new File(pdfpath), null, null);
+			document = PDDocument.loadNonSeq(pdfpath, null, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -179,7 +180,8 @@ public class PdfOutputChecker {
 		try {
 			for (int i = 1; i <= numberOfPages; ++i) {
 				String path = String.format(pngpath, i);
-				// use TYPE_INT_ARGB instead of TYPE_INT_ARGB because otherwise bitmaps from Abiword look bad
+				// use TYPE_INT_ARGB instead of TYPE_INT_ARGB because otherwise
+				// bitmaps from Abiword look bad
 				imageWriter.writeImage(document, "png", null, i, i, path,
 						BufferedImage.TYPE_INT_RGB, resolutiondpi);
 			}
