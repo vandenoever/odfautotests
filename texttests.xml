@@ -23,6 +23,22 @@
 		<output type="pdf">
 		</output>
 	</test>
+<test name="chapter">
+<input>
+ <o:text>
+  <text:h text:outline-level="1">Introduction</text:h>
+  <text:p><text:chapter text:display="name" text:outline-level="1"/></text:p>
+ </o:text>
+</input>
+<output type="zip">
+ <file path="content.xml">
+  <xpath expr="count(//o:text/text:p//text:chapter) = 1"/>
+  <xpath expr="count(//text:chapter) = 1"/>
+  <xpath expr="//text:chapter/@text:display = 'name'"/>
+  <xpath expr="//text:chapter/@text:outline-level = '1'"/>
+ </file>
+</output>
+</test>
 	<test name="angleunit">
 		<!-- show a rectangle rotated 45 degrees or 0.785 radians -->
 		<input>

@@ -1,5 +1,8 @@
-Requirements
-------------
+# ODFAutoTests
+
+Read the [fine introduction](doc/01_introduction.md) to learn more.
+
+## Requirements
 
 For use:
 - Java Runtime Environment
@@ -8,8 +11,7 @@ For development:
 - Java SDK
 - Ant build system
 
-Instructions
-------------
+## Instructions
 
 Locate the file odftester.jar. Run
 
@@ -19,7 +21,6 @@ The file config.xml specifies the ODF software that you would like to test. Adap
 
 The results of the tests are written to the file results.xml and the file results.html.
 
-Compilation
------------
+## Compilation
 
 Run 'ant jar' to create the odftester.jar.
