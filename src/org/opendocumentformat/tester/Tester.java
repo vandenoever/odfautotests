@@ -263,7 +263,7 @@ public class Tester {
 		return runCommand(cmd, env);
 	}
 
-	private static String resolveExe(String exe) {
+	public static String resolveExe(String exe) {
 		File f = new File(exe);
 		if (!f.exists()) {
 			String paths[] = System.getenv("PATH").split(File.pathSeparator);
@@ -287,6 +287,9 @@ public class Tester {
 	public static CommandReportType runCommand(String cmd[],
 			Map<String, String> env) {
 		cmd[0] = resolveExe(cmd[0]);
+		if (env == null) {
+			env = new HashMap<String, String>();
+		}
 		System.err.println("Running '" + join(env) + " " + join(cmd) + "'.");
 		CommandReportType cr = new CommandReportType();
 		cr.setExe(cmd[0]);

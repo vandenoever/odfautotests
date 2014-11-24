@@ -23,6 +23,7 @@ import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.PdfinfoType.MaskResult;
 import org.example.documenttests.SimpleResultType;
 import org.example.documenttests.ValidationErrorTypeType;
+import org.opendocumentformat.tester.Tester;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -170,6 +171,18 @@ public class PdfOutputChecker {
 
 	private void createPngs(File pdfpath, String pngpath, int resolutiondpi,
 			int numberOfPages) {
+		String pdftoppm = Tester.resolveExe("pdftoppm");
+		if (!pdftoppm.equals("pdftoppm")) {
+			String cmd[] = new String[6];
+			cmd[0] = pdftoppm;
+			cmd[1] = "-r";
+			cmd[2] = String.valueOf(resolutiondpi);
+			cmd[3] = "-png";
+			cmd[4] = pdfpath.getPath();
+			cmd[5] = pngpath.substring(0, pngpath.length() - 1);
+			Tester.runCommand(cmd, null);
+			return;
+		}
 		PDDocument document = null;
 		try {
 			document = PDDocument.loadNonSeq(pdfpath, null, null);
