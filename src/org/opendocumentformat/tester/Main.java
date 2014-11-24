@@ -7,7 +7,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -31,7 +33,10 @@ import javax.xml.validation.SchemaFactory;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
+import org.example.documenttests.FiletypeType;
 import org.example.documenttests.OdfTypeType;
+import org.example.documenttests.TargetOutputType;
+import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
 import org.opendocumentformat.tester.InputCreator.ODFVersion;
 import org.opendocumentformat.tester.validator.OdfChecker;
@@ -173,8 +178,8 @@ public class Main {
 		while (t.getMessage() == null & t.getCause() != null) {
 			t = t.getCause();
 		}
-		System.err.println("Could not load " + file.getPath()
-				+ " line " + linenumber + ": " + t.getMessage());
+		System.err.println("Could not load " + file.getPath() + " line "
+				+ linenumber + ": " + t.getMessage());
 		System.exit(1);
 	}
 
@@ -206,8 +211,49 @@ public class Main {
 		}
 	}
 
-	static private DocumenttestsconfigType inferConfig(RunConfiguration rc) {
+	static private DocumenttestsconfigType inferConfig(RunConfiguration rc,
+			DocumenttestsType tests) {
+		Set<String> testNames = new HashSet<String>();
+		for (TestType test : tests.getTest()) {
+			testNames.add(test.getName());
+		}
+		String odfSuffix = getSuffix(tests.getOdftype());
 		DocumenttestsconfigType conf = new DocumenttestsconfigType();
+		// look through the output directory
+		for (File targetDir : rc.resultDir.listFiles()) {
+			if (targetDir.isDirectory()) {
+				// if at least one test result is in the directory, the dir
+				// name is the name of a configuration
+				TargetType target = null;
+				TargetOutputType pdf = null;
+				TargetOutputType odf = null;
+				for (File output : targetDir.listFiles()) {
+					String name = output.getName();
+					boolean isTestOutput = output.isFile()
+							&& (name.endsWith(".pdf") || name
+									.endsWith(odfSuffix))
+							&& testNames.contains(name.substring(0,
+									name.lastIndexOf(".")));
+					if (isTestOutput && target == null) {
+						target = new TargetType();
+						target.setName(targetDir.getName());
+					}
+					if (name.endsWith(".pdf") && pdf == null) {
+						pdf = new TargetOutputType();
+						pdf.setOutputType(FiletypeType.PDF);
+						target.getOutput().add(pdf);
+					}
+					if (name.endsWith(odfSuffix) && odf == null) {
+						odf = new TargetOutputType();
+						odf.setOutputType(FiletypeType.ZIP);
+						target.getOutput().add(odf);
+					}
+				}
+				if (target != null) {
+					conf.getTarget().add(target);
+				}
+			}
+		}
 		return conf;
 	}
 
@@ -243,9 +289,7 @@ public class Main {
 		// if a run configuration is assigned, run the files through the
 		// configured applications
 		DocumenttestsconfigType config = null;
-		if (conf.runConfiguration == null) {
-			config = inferConfig(conf);
-		} else {
+		if (conf.runConfiguration != null) {
 			try {
 				config = loader.loadConfig(conf.runConfiguration);
 			} catch (Throwable t) {
@@ -254,11 +298,14 @@ public class Main {
 			}
 		}
 
-		Tester tester = new Tester(conf, config, tests, nsmap);
+		Tester tester = null;
 		DocumenttestsreportType report = null;
 		if (config != null) {
+			tester = new Tester(conf, config, tests, nsmap);
 			report = tester.runAllTests();
 		} else {
+			config = inferConfig(conf, tests);
+			tester = new Tester(conf, config, tests, nsmap);
 			report = new DocumenttestsreportType();
 		}
 		tester.evaluateAllTests(report);
