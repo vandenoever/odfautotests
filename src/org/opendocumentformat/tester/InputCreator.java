@@ -74,6 +74,8 @@ public class InputCreator {
 
 	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
 	public final static String stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
+	public final static String svgns = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0";
+	public final static String fons = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
 	InputCreator(OdfTypeType type, ODFVersion version) {
@@ -150,6 +152,33 @@ public class InputCreator {
 		documentStylesElement = styles.getDocumentElement();
 		setAttribute(documentStylesElement, "office", officens, "version",
 				version.toString());
+
+		// set default font to Helvetica 12pt
+		Element fontFaceDecls = styles.createElementNS(officens,
+				"style:font-face-decls");
+		documentStylesElement.appendChild(fontFaceDecls);
+		Element fontFace = styles.createElementNS(stylens, "font-face");
+		setAttribute(fontFace, "style", stylens, "font-family-generic", "swiss");
+		setAttribute(fontFace, "style", stylens, "font-pitch", "variable");
+		setAttribute(fontFace, "style", stylens, "name", "Helvetica");
+		setAttribute(fontFace, "svg", svgns, "font-family", "'Helvetica'");
+		fontFaceDecls.appendChild(fontFace);
+
+		Element ostyles = styles.createElementNS(officens, "styles");
+		Element defaultStyle = styles.createElementNS(stylens, "default-style");
+		setAttribute(defaultStyle, "style", stylens, "family", "text");
+		documentStylesElement.appendChild(ostyles);
+		ostyles.appendChild(defaultStyle);
+		Element textProperties = styles.createElementNS(stylens,
+				"text-properties");
+		defaultStyle.appendChild(textProperties);
+		setAttribute(textProperties, "style", stylens, "font-name", "Helvetica");
+		setAttribute(textProperties, "fo", fons, "font-size", "12pt");
+
+		defaultStyle.cloneNode(true);
+		setAttribute(defaultStyle, "style", stylens, "family", "paragraph");
+		ostyles.appendChild(defaultStyle);
+
 		stylesAutomaticStylesElement = styles.createElementNS(officens,
 				"automatic-styles");
 		documentStylesElement.appendChild(stylesAutomaticStylesElement);

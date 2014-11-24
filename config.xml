@@ -30,7 +30,6 @@
 		odfOutputVersion="1.1" inputTypes="zip">
 		<output outputType="zip">
 			<command exe="abiword">
-				<env name="PATH" />
 				<argument value="-t" />
 				<argument value="odt" />
 				<argument value="-o" />
@@ -40,7 +39,6 @@
 		</output>
 		<output outputType="pdf">
 			<command exe="abiword">
-				<env name="PATH" />
 				<argument value="-t" />
 				<argument value="pdf" />
 				<argument value="-o" />
