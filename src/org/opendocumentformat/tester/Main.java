@@ -194,7 +194,7 @@ public class Main {
 			suffix = ".odp";
 			break;
 		case SPREADSHEET:
-			suffix = "ods";
+			suffix = ".ods";
 			break;
 		}
 		return suffix;
