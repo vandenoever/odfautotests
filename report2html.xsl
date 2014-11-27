@@ -197,16 +197,17 @@
 		</tr>
 		<tr>
 			<th>
-				<xsl:value-of select="substring-after(r:input[1]/@path,'.')" />
+                <xsl:variable name="name" select="r:input[1]/@path"/>
+				<xsl:value-of select="substring($name,string-length($name)-2)" />
 			</th>
 			<th>
 				input
 				<xsl:apply-templates select="r:input" />
 			</th>
-			<xsl:for-each select="r:target[r:output[@type='zip']]">
+			<xsl:for-each select="r:target[r:output[@type!='pdf']]">
 				<th>
 					<xsl:value-of select="@name" />
-					<xsl:apply-templates select="r:output[@type='zip']" />
+					<xsl:apply-templates select="r:output[@type!='pdf']" />
 				</th>
 			</xsl:for-each>
 		</tr>
@@ -216,10 +217,10 @@
 				<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
 				<xsl:apply-templates select="r:input/r:validation" />
 			</td>
-			<xsl:for-each select="r:target[r:output[@type='zip']]">
+			<xsl:for-each select="r:target[r:output[@type!='pdf']]">
 				<td>
-					<xsl:value-of select="count(r:output[@type='zip']/r:validation/r:error)=0" />
-					<xsl:apply-templates select="r:output[@type='zip']/r:validation" />
+					<xsl:value-of select="count(r:output[@type!='pdf']/r:validation/r:error)=0" />
+					<xsl:apply-templates select="r:output[@type!='pdf']/r:validation" />
 				</td>
 			</xsl:for-each>
 		</tr>
@@ -239,10 +240,10 @@
 					<td>
 						<xsl:value-of select="@result" />
 					</td>
-					<xsl:for-each select="../../../r:target[r:output[@type='zip']]">
+					<xsl:for-each select="../../../r:target[r:output[@type!='pdf']]">
 						<td>
 							<xsl:value-of
-								select="r:output[@type='zip']/r:file[@path=$path]/r:xpath[@expr=$expr]/@result" />
+								select="r:output[@type!='pdf']/r:file[@path=$path]/r:xpath[@expr=$expr]/@result" />
 						</td>
 					</xsl:for-each>
 				</tr>

@@ -369,6 +369,7 @@ class ODFValidator {
 	final static OdfChecker odfvalidator = new OdfChecker(true);
 
 	String validate(String path) {
+		System.out.println(path);
 		OutputReportType report = new OutputReportType();
 		ValidationReportType v = new ValidationReportType();
 		report.setValidation(v);

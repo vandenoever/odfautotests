@@ -5,43 +5,44 @@
 	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" odftype="text"
-	xmlns="http://www.example.org/documenttests" inputVersion="1.2"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns="http://www.example.org/documenttests"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 
 	<test name="simpletext">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<text:p>hello</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//o:text/text:p)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf />
 	</test>
-<test name="chapter">
-<input>
- <o:text>
-  <text:h text:outline-level="1">Introduction</text:h>
-  <text:p><text:chapter text:display="name" text:outline-level="1"/></text:p>
- </o:text>
-</input>
-<output type="zip">
- <file path="content.xml">
-  <xpath expr="count(//o:text/text:p//text:chapter) = 1"/>
-  <xpath expr="count(//text:chapter) = 1"/>
-  <xpath expr="//text:chapter/@text:display = 'name'"/>
-  <xpath expr="//text:chapter/@text:outline-level = '1'"/>
- </file>
-</output>
-</test>
+	<test name="chapter">
+		<input type="odt1.2">
+			<o:text>
+				<text:h text:outline-level="1">Introduction</text:h>
+				<text:p>
+					<text:chapter text:display="name" text:outline-level="1" />
+				</text:p>
+			</o:text>
+		</input>
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+			<file path="content.xml">
+				<xpath expr="count(//o:text/text:p//text:chapter) = 1" />
+				<xpath expr="count(//text:chapter) = 1" />
+				<xpath expr="//text:chapter/@text:display = 'name'" />
+				<xpath expr="//text:chapter/@text:outline-level = '1'" />
+			</file>
+		</output>
+		<pdf />
+	</test>
 	<test name="angleunit">
 		<!-- show a rectangle rotated 45 degrees or 0.785 radians -->
-		<input>
+		<input type="odt1.2">
 			<o:automatic-styles>
 				<style:style style:name="gr1" style:family="graphic">
 					<style:graphic-properties draw:fill="none"
@@ -55,16 +56,15 @@
 					svg:height="5mm" draw:transform="skewY(0.785)" />
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//o:text/draw:rect)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="mergedcells">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<table:table>
 					<table:table-column
@@ -86,7 +86,7 @@
 				</table:table>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//table:table)=1" />
 				<xpath expr="count(//table:table-cell)=3" />
@@ -96,11 +96,10 @@
 					expr="count(//table:table-column)=1 or count(//table:table-column)=2" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="hiddenparagraph">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<text:p>
 					<text:hidden-paragraph text:condition="ooow:true" />
@@ -108,17 +107,16 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//text:p)=1" />
 				<xpath expr="count(//text:hidden-paragraph)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="listheader">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<text:list>
 					<text:list-header>
@@ -127,18 +125,17 @@
 				</text:list>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//text:list)=1" />
 				<xpath expr="count(//text:list-header)=1" />
 				<xpath expr="count(//text:list/*/text:p)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="dropcap">
-		<input>
+		<input type="odt1.2">
 			<o:automatic-styles>
 				<style:style style:name="d" style:family="paragraph">
 					<style:paragraph-properties>
@@ -153,18 +150,17 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//style:drop-cap)=1" />
 				<xpath expr="//style:drop-cap/@style:lines=3" />
 				<xpath expr="//style:drop-cap/@style:length='word'" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="annotation">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<text:p>
 					hello
@@ -176,18 +172,17 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//o:annotation)=1" />
 				<xpath expr="count(//dc:creator)=1" />
 				<xpath expr="count(//o:annotation/text:p)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="annotation-end">
-		<input>
+		<input type="odt1.2">
 			<o:text>
 				<text:p>
 					hello
@@ -201,7 +196,7 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//o:annotation)=1" />
 				<xpath expr="count(//dc:creator)=1" />
@@ -209,11 +204,10 @@
 				<xpath expr="count(//o:annotation-end)=1" />
 			</file>
 		</output>
-		<output type="pdf">
-		</output>
+		<pdf/>
 	</test>
 	<test name="backgroundimage">
-		<input>
+		<input type="odt1.2">
 			<o:automatic-styles>
 				<style:style style:name="P1" style:family="paragraph">
 					<style:paragraph-properties
@@ -233,21 +227,21 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="zip">
+		<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<file path="content.xml">
 				<xpath expr="count(//style:background-image)=1" />
 			</file>
 		</output>
-		<output type="pdf">
+		<pdf>
 			<mask name="rect">
 				<rect style="opacity:1;fill:white;fill-opacity:1;stroke-opacity:0"
 					height="100mm" width="200mm" x="0" xmlns="http://www.w3.org/2000/svg"
 					y="0" />
 			</mask>
-		</output>
+		</pdf>
 	</test>
 	<test name="twocolumns">
-		<input>
+		<input type="odt1.2">
 			<o:document-styles>
 				<o:automatic-styles>
 					<style:style style:name="cols" style:family="section">
@@ -286,7 +280,7 @@
 				</text:p>
 			</o:text>
 		</input>
-		<output type="pdf">
+		<pdf>
 			<mask name="columns">
 				<rect style="opacity:1;fill:white;fill-opacity:1;stroke-opacity:0"
 					height="162mm" width="27mm" x="19mm" xmlns="http://www.w3.org/2000/svg"
@@ -295,6 +289,6 @@
 					height="162mm" width="27mm" x="54mm" xmlns="http://www.w3.org/2000/svg"
 					y="19mm" />
 			</mask>
-		</output>
+		</pdf>
 	</test>
 </documenttests>

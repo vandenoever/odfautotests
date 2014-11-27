@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns="http://www.example.org/documenttests"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+
+	<test name="simplespreadsheet">
+		<input type="ods1.2">
+			<office:spreadsheet>
+				<table:table table:name="TestTable">
+					<table:table-column />
+					<table:table-row>
+						<table:table-cell office:value-type="string">
+							<text:p>hello</text:p>
+						</table:table-cell>
+					</table:table-row>
+				</table:table>
+			</office:spreadsheet>
+		</input>
+		<output types="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<file path="content.xml">
+				<xpath
+					expr="count(//office:spreadsheet/table:table/table:table-row/table:table-cell)>=1" />
+				<xpath expr="//table:table-cell[1]/@office:value-type='string'" />
+			</file>
+		</output>
+		<pdf/>
+	</test>
+</documenttests>

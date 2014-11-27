@@ -9,29 +9,151 @@
 			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
+	<complexType name="inputType">
+		<sequence>
+			<any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="type" type="tns:filetypeType" use="required" />
+	</complexType>
 	<complexType name="operationType">
 		<sequence>
 		</sequence>
 	</complexType>
 	<simpleType name="filetypeType">
 		<restriction base="NCName">
-			<enumeration value="zip" />
-			<enumeration value="xml" />
+			<enumeration value="odt1.0" />
+			<enumeration value="odt1.1" />
+			<enumeration value="odt1.2" />
+			<enumeration value="odt1.2ext" />
+			<enumeration value="ott1.0" />
+			<enumeration value="ott1.1" />
+			<enumeration value="ott1.2" />
+			<enumeration value="ott1.2ext" />
+			<enumeration value="odg1.0" />
+			<enumeration value="odg1.1" />
+			<enumeration value="odg1.2" />
+			<enumeration value="odg1.2ext" />
+			<enumeration value="otg1.0" />
+			<enumeration value="otg1.1" />
+			<enumeration value="otg1.2" />
+			<enumeration value="otg1.2ext" />
+			<enumeration value="odp1.0" />
+			<enumeration value="odp1.1" />
+			<enumeration value="odp1.2" />
+			<enumeration value="odp1.2ext" />
+			<enumeration value="otp1.0" />
+			<enumeration value="otp1.1" />
+			<enumeration value="otp1.2" />
+			<enumeration value="otp1.2ext" />
+			<enumeration value="ods1.0" />
+			<enumeration value="ods1.1" />
+			<enumeration value="ods1.2" />
+			<enumeration value="ods1.2ext" />
+			<enumeration value="ots1.0" />
+			<enumeration value="ots1.1" />
+			<enumeration value="ots1.2" />
+			<enumeration value="ots1.2ext" />
+			<enumeration value="odc1.0" />
+			<enumeration value="odc1.1" />
+			<enumeration value="odc1.2" />
+			<enumeration value="odc1.2ext" />
+			<enumeration value="otc1.0" />
+			<enumeration value="otc1.1" />
+			<enumeration value="otc1.2" />
+			<enumeration value="otc1.2ext" />
+			<enumeration value="odi1.0" />
+			<enumeration value="odi1.1" />
+			<enumeration value="odi1.2" />
+			<enumeration value="odi1.2ext" />
+			<enumeration value="oti1.0" />
+			<enumeration value="oti1.1" />
+			<enumeration value="oti1.2" />
+			<enumeration value="oti1.2ext" />
+			<enumeration value="odf1.0" />
+			<enumeration value="odf1.1" />
+			<enumeration value="odf1.2" />
+			<enumeration value="odf1.2ext" />
+			<enumeration value="otf1.0" />
+			<enumeration value="otf1.1" />
+			<enumeration value="otf1.2" />
+			<enumeration value="otf1.2ext" />
+			<enumeration value="odm1.0" />
+			<enumeration value="odm1.1" />
+			<enumeration value="odm1.2" />
+			<enumeration value="odm1.2ext" />
+			<enumeration value="oth1.0" />
+			<enumeration value="oth1.1" />
+			<enumeration value="oth1.2" />
+			<enumeration value="oth1.2ext" />
+			<enumeration value="odb1.2" />
+			<enumeration value="odb1.2ext" />
+			<enumeration value="odt1.0xml" />
+			<enumeration value="odt1.1xml" />
+			<enumeration value="odt1.2xml" />
+			<enumeration value="odt1.2extxml" />
+			<enumeration value="ott1.0xml" />
+			<enumeration value="ott1.1xml" />
+			<enumeration value="ott1.2xml" />
+			<enumeration value="ott1.2extxml" />
+			<enumeration value="odg1.0xml" />
+			<enumeration value="odg1.1xml" />
+			<enumeration value="odg1.2xml" />
+			<enumeration value="odg1.2extxml" />
+			<enumeration value="otg1.0xml" />
+			<enumeration value="otg1.1xml" />
+			<enumeration value="otg1.2xml" />
+			<enumeration value="otg1.2extxml" />
+			<enumeration value="odp1.0xml" />
+			<enumeration value="odp1.1xml" />
+			<enumeration value="odp1.2xml" />
+			<enumeration value="odp1.2extxml" />
+			<enumeration value="otp1.0xml" />
+			<enumeration value="otp1.1xml" />
+			<enumeration value="otp1.2xml" />
+			<enumeration value="otp1.2extxml" />
+			<enumeration value="ods1.0xml" />
+			<enumeration value="ods1.1xml" />
+			<enumeration value="ods1.2xml" />
+			<enumeration value="ods1.2extxml" />
+			<enumeration value="ots1.0xml" />
+			<enumeration value="ots1.1xml" />
+			<enumeration value="ots1.2xml" />
+			<enumeration value="ots1.2extxml" />
+			<enumeration value="odc1.0xml" />
+			<enumeration value="odc1.1xml" />
+			<enumeration value="odc1.2xml" />
+			<enumeration value="odc1.2extxml" />
+			<enumeration value="otc1.0xml" />
+			<enumeration value="otc1.1xml" />
+			<enumeration value="otc1.2xml" />
+			<enumeration value="otc1.2extxml" />
+			<enumeration value="odi1.0xml" />
+			<enumeration value="odi1.1xml" />
+			<enumeration value="odi1.2xml" />
+			<enumeration value="odi1.2extxml" />
+			<enumeration value="oti1.0xml" />
+			<enumeration value="oti1.1xml" />
+			<enumeration value="oti1.2xml" />
+			<enumeration value="oti1.2extxml" />
+			<enumeration value="odf1.0xml" />
+			<enumeration value="odf1.1xml" />
+			<enumeration value="odf1.2xml" />
+			<enumeration value="odf1.2extxml" />
+			<enumeration value="otf1.0xml" />
+			<enumeration value="otf1.1xml" />
+			<enumeration value="otf1.2xml" />
+			<enumeration value="otf1.2extxml" />
+			<enumeration value="odm1.0xml" />
+			<enumeration value="odm1.1xml" />
+			<enumeration value="odm1.2xml" />
+			<enumeration value="odm1.2extxml" />
+			<enumeration value="oth1.0xml" />
+			<enumeration value="oth1.1xml" />
+			<enumeration value="oth1.2xml" />
+			<enumeration value="oth1.2extxml" />
+			<enumeration value="odb1.2xml" />
+			<enumeration value="odb1.2extxml" />
 			<enumeration value="pdf" />
-		</restriction>
-	</simpleType>
-	<simpleType name="versionType">
-		<restriction base="token">
-			<enumeration value="1.0" />
-			<enumeration value="1.1" />
-			<enumeration value="1.2" />
-		</restriction>
-	</simpleType>
-	<simpleType name="odfTypeType">
-		<restriction base="string">
-			<enumeration value="text" />
-			<enumeration value="presentation" />
-			<enumeration value="spreadsheet" />
 		</restriction>
 	</simpleType>
 	<complexType name="fileType">
@@ -48,6 +170,11 @@
 		<sequence>
 			<element name="file" type="tns:fileType" minOccurs="0"
 				maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="types" use="required" type="tns:filetypesType" />
+	</complexType>
+	<complexType name="pdfType">
+		<sequence>
 			<element name="mask" minOccurs="0" maxOccurs="unbounded">
 				<complexType>
 					<sequence>
@@ -57,14 +184,15 @@
 				</complexType>
 			</element>
 		</sequence>
-		<attribute name="type" use="required" type="tns:filetypeType" />
 	</complexType>
 	<complexType name="testType">
 		<sequence>
-			<element name="input" type="tns:fragmentType" />
+			<element name="input" type="tns:inputType" />
 			<element name="operation" type="tns:operationType" minOccurs="0"
 				maxOccurs="unbounded" />
-			<element name="output" type="tns:outputType" maxOccurs="unbounded" />
+			<element name="output" type="tns:outputType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="pdf" type="tns:pdfType" minOccurs="0" />
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
 	</complexType>
@@ -74,8 +202,6 @@
 				maxOccurs="unbounded">
 			</element>
 		</sequence>
-		<attribute name="odftype" type="tns:odfTypeType" use="required" />
-		<attribute name="inputVersion" type="tns:versionType" use="required" />
 	</complexType>
 	<element name="documenttests" type="tns:documenttestsType">
 		<key name="uniqueTestNames">
@@ -174,10 +300,10 @@
 		<attribute name="stderr" type="string" />
 		<attribute name="stdout" type="string" />
 	</complexType>
-    <complexType name="outputReportType">
+	<complexType name="outputReportType">
 		<sequence>
-			<element name="commands" type="tns:commandReportType" minOccurs="0"
-				maxOccurs="unbounded" />
+			<element name="commands" type="tns:commandReportType"
+				minOccurs="0" maxOccurs="unbounded" />
 			<element name="fragment" type="tns:fragmentType" minOccurs="0" />
 			<element name="validation" type="tns:validationReportType" />
 			<element name="file" type="tns:fileTestReportType" minOccurs="0"
@@ -187,10 +313,11 @@
 		<attribute name="size" type="long" use="required" />
 		<attribute name="path" type="string" use="required" />
 		<attribute name="type" type="tns:filetypeType" use="required" />
-    </complexType>
+	</complexType>
 	<complexType name="targetReportType">
 		<sequence>
-            <element name="output" type="tns:outputReportType" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="output" type="tns:outputReportType" minOccurs="0"
+				maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="NCName" use="required" />
 	</complexType>
@@ -236,30 +363,26 @@
 		</sequence>
 		<attribute name="exe" type="anyURI" use="required" />
 	</complexType>
-	<simpleType name="odfTypesType">
-		<list itemType="tns:odfTypeType" />
-	</simpleType>
-	<simpleType name="filetypesType">
-		<list itemType="tns:filetypeType" />
-	</simpleType>
-	<simpleType name="versionsType">
-		<list itemType="tns:versionType" />
+	<simpleType name='filetypesType'>
+		<restriction>
+			<simpleType>
+				<list itemType="tns:filetypeType" />
+			</simpleType>
+			<minLength value='1' />
+		</restriction>
 	</simpleType>
 	<complexType name="targetOutputType">
 		<sequence>
 			<element name="command" type="tns:commandType" />
 		</sequence>
+		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
 		<attribute name="outputType" type="tns:filetypeType" use="required" />
-    </complexType>
+	</complexType>
 	<complexType name="targetType">
 		<sequence>
 			<element name="output" type="tns:targetOutputType" maxOccurs="unbounded" />
 		</sequence>
-		<attribute name="inputTypes" type="tns:filetypesType" use="required" />
-		<attribute name="inputVersions" type="tns:versionsType" use="required" />
 		<attribute name="name" type="NCName" use="required" />
-		<attribute name="odftypes" type="tns:odfTypesType" use="required" />
-		<attribute name="odfOutputVersion" type="tns:versionType" />
 	</complexType>
 	<complexType name="documenttestsconfigType">
 		<sequence>

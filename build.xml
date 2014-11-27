@@ -33,6 +33,7 @@
 			<fileset dir="rng" />
 		</copy>
 		<copy todir="bin" file="report2html.xsl" />
+		<copy todir="bin" file="removeForeign.xsl" />
 		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.5.3.jar:lib/pdfbox-1.8.7.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar;lib/commons-cli-1.2.jar" debug="on" debuglevel="source" includeantruntime="false"/>
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">

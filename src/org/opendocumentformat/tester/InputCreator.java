@@ -20,8 +20,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.example.documenttests.FragmentType;
-import org.example.documenttests.OdfTypeType;
+import org.example.documenttests.FiletypeType;
+import org.example.documenttests.InputType;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -30,7 +30,7 @@ import org.w3c.dom.Node;
 
 public class InputCreator {
 
-	final OdfTypeType type;
+	final FiletypeType type;
 
 	public enum ODFVersion {
 		v1_0 {
@@ -78,9 +78,125 @@ public class InputCreator {
 	public final static String fons = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
-	InputCreator(OdfTypeType type, ODFVersion version) {
+	static ODFVersion getVersion(FiletypeType type) {
+		String version = type.value();
+		if (version.contains("1.0")) {
+			return ODFVersion.v1_0;
+		}
+		if (version.contains("1.1")) {
+			return ODFVersion.v1_1;
+		}
+		if (version.contains("1.2")) {
+			return ODFVersion.v1_2;
+		}
+		return null;
+	}
+
+	static String getODFType(FiletypeType type) {
+		String t = getODFMimeType(type);
+		if ("graphics".equals(t)) {
+			t = "drawing";
+		}
+		if ("text-master".equals(t)) {
+			t = "text";
+		}
+		if ("text-web".equals(t)) {
+			t = "text";
+		}
+		return t;
+	}
+
+	static String getODFMimeType(FiletypeType type) {
+		switch (type) {
+		case ODT_1_0:
+		case ODT_1_1:
+		case ODT_1_2:
+		case ODT_1_2_EXT:
+		case ODT_1_0_XML:
+		case ODT_1_1_XML:
+		case ODT_1_2_XML:
+		case ODT_1_2_EXTXML:
+			return "text";
+		case ODG_1_0:
+		case ODG_1_1:
+		case ODG_1_2:
+		case ODG_1_2_EXT:
+		case ODG_1_0_XML:
+		case ODG_1_1_XML:
+		case ODG_1_2_XML:
+		case ODG_1_2_EXTXML:
+			return "graphics";
+		case ODP_1_0:
+		case ODP_1_1:
+		case ODP_1_2:
+		case ODP_1_2_EXT:
+		case ODP_1_0_XML:
+		case ODP_1_1_XML:
+		case ODP_1_2_XML:
+		case ODP_1_2_EXTXML:
+			return "presentation";
+		case ODS_1_0:
+		case ODS_1_1:
+		case ODS_1_2:
+		case ODS_1_2_EXT:
+		case ODS_1_0_XML:
+		case ODS_1_1_XML:
+		case ODS_1_2_XML:
+		case ODS_1_2_EXTXML:
+			return "spreadsheet";
+		case ODC_1_0:
+		case ODC_1_1:
+		case ODC_1_2:
+		case ODC_1_2_EXT:
+		case ODC_1_0_XML:
+		case ODC_1_1_XML:
+		case ODC_1_2_XML:
+		case ODC_1_2_EXTXML:
+			return "chart";
+		case ODI_1_0:
+		case ODI_1_1:
+		case ODI_1_2:
+		case ODI_1_2_EXT:
+		case ODI_1_0_XML:
+		case ODI_1_1_XML:
+		case ODI_1_2_XML:
+		case ODI_1_2_EXTXML:
+			return "image";
+		case ODF_1_0:
+		case ODF_1_1:
+		case ODF_1_2:
+		case ODF_1_2_EXT:
+		case ODF_1_0_XML:
+		case ODF_1_1_XML:
+		case ODF_1_2_XML:
+		case ODF_1_2_EXTXML:
+			return "formula";
+		case ODM_1_0:
+		case ODM_1_1:
+		case ODM_1_2:
+		case ODM_1_2_EXT:
+		case ODM_1_0_XML:
+		case ODM_1_1_XML:
+		case ODM_1_2_XML:
+		case ODM_1_2_EXTXML:
+			return "text-master";
+		case OTH_1_0:
+		case OTH_1_1:
+		case OTH_1_2:
+		case OTH_1_2_EXT:
+		case OTH_1_0_XML:
+		case OTH_1_1_XML:
+		case OTH_1_2_XML:
+		case OTH_1_2_EXTXML:
+			return "text-master";
+		default:
+			return null;
+		}
+	}
+
+	InputCreator(FiletypeType type) {
 		this.type = type;
-		this.version = version;
+		this.version = getVersion(type);
 		Transformer xformer = null;
 		try {
 			String stylesheet = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -140,8 +256,7 @@ public class InputCreator {
 		documentContentElement.appendChild(contentAutomaticStylesElement);
 		bodyElement = content.createElementNS(officens, "body");
 		documentContentElement.appendChild(bodyElement);
-		bodyChildElement = content.createElementNS(officens, type.toString()
-				.toLowerCase());
+		bodyChildElement = content.createElementNS(officens, getODFType(type));
 		bodyElement.appendChild(bodyChildElement);
 	}
 
@@ -197,7 +312,7 @@ public class InputCreator {
 					version.toString());
 		}
 		addFileEntry(doc, "application/vnd.oasis.opendocument."
-				+ type.toString().toLowerCase(), "/");
+				+ getODFMimeType(type), "/");
 		addFileEntry(doc, "text/xml", "content.xml");
 		addFileEntry(doc, "text/xml", "styles.xml");
 		addFileEntry(doc, "text/xml", "meta.xml");
@@ -264,7 +379,7 @@ public class InputCreator {
 		String name = e.getLocalName();
 		e = (Element) content.importNode(e, true);
 		if (ns.equals(officens)) {
-			if (name.equals(type.toString().toLowerCase())) {
+			if (name.equals(getODFType(type))) {
 				bodyChildElement.getParentNode().replaceChild(e,
 						bodyChildElement);
 				return true;
@@ -307,7 +422,7 @@ public class InputCreator {
 		}
 	}
 
-	private void createDocument(FragmentType input) {
+	private void createDocument(InputType input) {
 		createNewDocument();
 		for (Object o : input.getAny()) {
 			Element e = (Element) o;
@@ -318,7 +433,7 @@ public class InputCreator {
 		nc.cleanNamespaces(styles);
 	}
 
-	void createInput(File target, FragmentType input) {
+	void createInput(File target, InputType input) {
 		createDocument(input);
 
 		try {
@@ -326,7 +441,7 @@ public class InputCreator {
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			zos.setMethod(ZipOutputStream.STORED);
 			addEntry(zos, "mimetype", "application/vnd.oasis.opendocument."
-					+ type.toString().toLowerCase());
+					+ getODFMimeType(type));
 			zos.setMethod(ZipOutputStream.DEFLATED);
 			addEntry(zos, "META-INF/manifest.xml", manifest);
 			addEntry(zos, "content.xml", content);

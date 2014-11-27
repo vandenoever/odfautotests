@@ -1,6 +1,7 @@
 package org.opendocumentformat.tester.validator;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,6 +22,11 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -44,7 +50,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -71,6 +76,7 @@ public class OdfChecker {
 	private final DocumentBuilder documentBuilder;
 	private final XPathFactory factory = XPathFactory.newInstance();
 	private final XPath xpath = factory.newXPath();
+	private final Transformer foreignRemover = createForeignRemover();
 
 	private class ErrorBuffer extends Writer {
 		private StringWriter buffer;
@@ -256,21 +262,6 @@ public class OdfChecker {
 					false);
 			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			builder = factory.newDocumentBuilder();
-			builder.setEntityResolver(new EntityResolver() {
-				public InputSource resolveEntity(String publicId,
-						String systemId) throws SAXException, IOException {
-					// deal with <!DOCTYPE manifest:manifest PUBLIC
-					// "-//OpenOffice.org//DTD Manifest 1.0//EN" "Manifest.dtd">
-					if (systemId.contains("Manifest.dtd")) {
-						System.out.println(systemId); // this deactivates the
-														// open office DTD
-						return new InputSource(new ByteArrayInputStream(""
-								.getBytes()));
-					} else {
-						return null;
-					}
-				}
-			});
 
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -291,7 +282,7 @@ public class OdfChecker {
 		report.getError().add(error);
 	}
 
-	static public void report(ValidationReportType report,
+	static private void report(ValidationReportType report,
 			ValidationErrorTypeType type) {
 		report(report, type, null);
 	}
@@ -485,7 +476,11 @@ public class OdfChecker {
 			driver = odf10Validator;
 		}
 		if (driver != null) {
-			validateRelaxNG(driver, in, error, report.getValidation());
+			// create a stream where the foreign elements and attributes are
+			// removed
+			in = removeForeign(in);
+			InputSource source = new InputSource(in);
+			validateRelaxNG(driver, source, error, report.getValidation());
 		}
 	}
 
@@ -500,8 +495,58 @@ public class OdfChecker {
 			driver = odf10manifestValidator;
 		}
 		if (driver != null) {
-			validateRelaxNG(driver, in, error, report);
+			// create a stream where the foreign elements and attributes are
+			// removed
+			in = removeForeign(in);
+			InputSource source = new InputSource(in);
+			validateRelaxNG(driver, source, error, report);
 		}
+	}
+
+	Transformer createForeignRemover() {
+		Source source;
+		File f = new File("removeForeign.xsl");
+		if (!f.exists()) {
+			source = new StreamSource(OdfChecker.class.getClassLoader()
+					.getResourceAsStream("removeForeign.xsl"));
+		} else {
+			source = new StreamSource(f);
+		}
+		TransformerFactory factory = TransformerFactory.newInstance();
+		Transformer trans = null;
+		try {
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			trans = factory.newTransformer(source);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		// abiwords manifest.xml needs Manifest.dtd
+		// we create one if there is none yet
+		File abiwordManifest = new File("Manifest.dtd");
+		if (!abiwordManifest.exists()) {
+			try {
+				abiwordManifest.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return trans;
+	}
+
+	InputStream removeForeign(InputStream in) {
+		InputStream result = null;
+		try {
+			Source source = new StreamSource(in);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			StreamResult stream = new StreamResult(out);
+			foreignRemover.transform(source, stream);
+			out.close();
+			result = new ByteArrayInputStream(out.toByteArray());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	void removeForeignXml(Element e) {
@@ -562,10 +607,9 @@ public class OdfChecker {
 		}
 	}
 
-	private void validateRelaxNG(ValidationDriver driver, InputStream in,
+	private void validateRelaxNG(ValidationDriver driver, InputSource source,
 			ValidationErrorTypeType errorIfInvalid, ValidationReportType report) {
 		errorbuffer.reset();
-		InputSource source = new InputSource(in);
 		try {
 			if (!driver.validate(source) && errorbuffer.toString().length() > 0) {
 				report(report, errorIfInvalid, errorbuffer.toString());

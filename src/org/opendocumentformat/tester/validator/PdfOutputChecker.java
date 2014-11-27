@@ -18,7 +18,7 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
 import org.example.documenttests.OutputReportType;
-import org.example.documenttests.OutputType.Mask;
+import org.example.documenttests.PdfType.Mask;
 import org.example.documenttests.PdfinfoType;
 import org.example.documenttests.PdfinfoType.MaskResult;
 import org.example.documenttests.SimpleResultType;

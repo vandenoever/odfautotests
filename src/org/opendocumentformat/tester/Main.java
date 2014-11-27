@@ -34,11 +34,9 @@ import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.FiletypeType;
-import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.TargetOutputType;
 import org.example.documenttests.TargetType;
 import org.example.documenttests.TestType;
-import org.opendocumentformat.tester.InputCreator.ODFVersion;
 import org.opendocumentformat.tester.validator.OdfChecker;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -183,41 +181,71 @@ public class Main {
 		System.exit(1);
 	}
 
-	static String getSuffix(OdfTypeType type) {
-		String suffix;
-		switch (type) {
-		default:
-		case TEXT:
-			suffix = ".odt";
-			break;
-		case PRESENTATION:
-			suffix = ".odp";
-			break;
-		case SPREADSHEET:
-			suffix = ".ods";
-			break;
+	/**
+	 * Return the suffix as used in OdfAutoTests. PDF has suffix .pdf. The ODF
+	 * types have more complicated suffixes that encodes the file type into the
+	 * name. For example, and ODF 1.0 text file in package format (enumeration
+	 * value ODT_1_0) has suffix '-1.0.odt' and the single xml version has
+	 * (enumeration value ODT_1_0_XML) has suffix '-1.0xml.odt'.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	static String getSuffixForFileType(FiletypeType type) {
+		if (type.equals(FiletypeType.PDF)) {
+			return ".pdf";
 		}
-		return suffix;
+		String value = type.value();
+		String subtype = value.substring(3);
+		String ext = value.substring(0, 3);
+		return "_" + subtype + "." + ext;
+	}
+
+	// derive the file type from the file suffix. see getSuffix()
+	static FiletypeType getFileType(String name) {
+		if (name.endsWith(".pdf")) {
+			return FiletypeType.PDF;
+		}
+		String ext = name.substring(name.length() - 3);
+		int pos = name.lastIndexOf('_');
+		if (pos == -1) {
+			return null;
+		}
+		String subtype = name.substring(pos + 1, name.length() - 4);
+		FiletypeType type;
+		try {
+			type = FiletypeType.fromValue(ext + subtype);
+		} catch (IllegalArgumentException e) {
+			type = null;
+		}
+		return type;
+	}
+
+	static String getTestName(String filename) {
+		int end = filename.lastIndexOf('_');
+		if (end == -1) {
+			end = filename.length();
+		}
+		return filename.substring(0, end);
 	}
 
 	private static void createInputFiles(RunConfiguration conf,
 			DocumenttestsType tests) {
-		OdfTypeType type = tests.getOdftype();
-		InputCreator creator = new InputCreator(type, ODFVersion.v1_2);
 		for (TestType test : tests.getTest()) {
 			File target = new File(conf.inputDir, test.getName()
-					+ getSuffix(type));
+					+ getSuffixForFileType(test.getInput().getType()));
+			InputCreator creator = new InputCreator(test.getInput().getType());
 			creator.createInput(target, test.getInput());
 		}
 	}
 
 	static private DocumenttestsconfigType inferConfig(RunConfiguration rc,
 			DocumenttestsType tests) {
-		Set<String> testNames = new HashSet<String>();
+		Map<String, InferredTest> testNames = new HashMap<String, InferredTest>();
 		for (TestType test : tests.getTest()) {
-			testNames.add(test.getName());
+			InferredTest i = new InferredTest(test.getInput().getType());
+			testNames.put(test.getName(), i);
 		}
-		String odfSuffix = getSuffix(tests.getOdftype());
 		DocumenttestsconfigType conf = new DocumenttestsconfigType();
 		// look through the output directory
 		for (File targetDir : rc.resultDir.listFiles()) {
@@ -225,28 +253,26 @@ public class Main {
 				// if at least one test result is in the directory, the dir
 				// name is the name of a configuration
 				TargetType target = null;
-				TargetOutputType pdf = null;
-				TargetOutputType odf = null;
+				Map<FiletypeType, TargetOutputType> t = new HashMap<FiletypeType, TargetOutputType>();
 				for (File output : targetDir.listFiles()) {
-					String name = output.getName();
-					boolean isTestOutput = output.isFile()
-							&& (name.endsWith(".pdf") || name
-									.endsWith(odfSuffix))
-							&& testNames.contains(name.substring(0,
-									name.lastIndexOf(".")));
-					if (isTestOutput && target == null) {
-						target = new TargetType();
-						target.setName(targetDir.getName());
-					}
-					if (name.endsWith(".pdf") && pdf == null) {
-						pdf = new TargetOutputType();
-						pdf.setOutputType(FiletypeType.PDF);
-						target.getOutput().add(pdf);
-					}
-					if (name.endsWith(odfSuffix) && odf == null) {
-						odf = new TargetOutputType();
-						odf.setOutputType(FiletypeType.ZIP);
-						target.getOutput().add(odf);
+					String filename = output.getName();
+					String testname = Main.getTestName(filename);
+
+					FiletypeType type = getFileType(filename);
+					InferredTest test = testNames.get(testname);
+					if (test != null && type != null && output.canRead()) {
+						if (target == null) {
+							target = new TargetType();
+							target.setName(targetDir.getName());
+						}
+						TargetOutputType out = t.get(type);
+						if (out == null) {
+							out = new TargetOutputType();
+							out.setOutputType(type);
+							t.put(type, out);
+							target.getOutput().add(out);
+						}
+						out.getInputTypes().add(test.input);
 					}
 				}
 				if (target != null) {
@@ -311,5 +337,14 @@ public class Main {
 		tester.evaluateAllTests(report);
 		loader.writeReport(report, "report.xml");
 		writeHTML("report.xml", "report.html");
+	}
+}
+
+class InferredTest {
+	public final FiletypeType input;
+	public final Set<FiletypeType> outputs = new HashSet<FiletypeType>();
+
+	InferredTest(FiletypeType input) {
+		this.input = input;
 	}
 }

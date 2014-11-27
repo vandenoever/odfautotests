@@ -19,9 +19,9 @@ import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
 import org.example.documenttests.EnvType;
 import org.example.documenttests.FiletypeType;
-import org.example.documenttests.OdfTypeType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.OutputType;
+import org.example.documenttests.PdfType;
 import org.example.documenttests.TargetOutputType;
 import org.example.documenttests.TargetReportType;
 import org.example.documenttests.TargetType;
@@ -38,7 +38,8 @@ public class Tester {
 	private final DocumenttestsconfigType config;
 	private final Map<String, String> nsmap;
 
-	private final OdfChecker checker = new OdfChecker(false);
+	private final OdfChecker odfchecker = new OdfChecker(false);
+	PdfOutputChecker pdfchecker = new PdfOutputChecker();
 
 	public Tester(RunConfiguration runconfig, DocumenttestsconfigType config,
 			DocumenttestsType tests, Map<String, String> nsmap) {
@@ -50,19 +51,17 @@ public class Tester {
 
 	public DocumenttestsreportType runAllTests() {
 		DocumenttestsreportType report = new DocumenttestsreportType();
-		OdfTypeType type = tests.getOdftype();
 		for (TestType test : tests.getTest()) {
-			runTest(test, type, report);
+			runTest(test, report);
 		}
 		return report;
 	}
 
 	public void evaluateAllTests(DocumenttestsreportType report) {
-		OdfTypeType type = tests.getOdftype();
 		// loop over all the tests
 		for (TestType test : tests.getTest()) {
 			TestreportType tr = getTargetReportType(report, test.getName());
-			evaluateTest(test, type, tr);
+			evaluateTest(test, tr);
 		}
 	}
 
@@ -114,8 +113,7 @@ public class Tester {
 		return or;
 	}
 
-	private void evaluateTest(TestType test, OdfTypeType type,
-			TestreportType report) {
+	private void evaluateTest(TestType test, TestreportType report) {
 		report.setName(test.getName());
 
 		// validate the input file
@@ -123,18 +121,17 @@ public class Tester {
 		ValidationReportType vreport = new ValidationReportType();
 		inputReport.setValidation(vreport);
 		File inputfile = new File(runconfig.inputDir, test.getName()
-				+ Main.getSuffix(type));
-		OutputType output = null;
+				+ Main.getSuffixForFileType(test.getInput().getType()));
+		OutputType odfoutput = null;
 		for (OutputType o : test.getOutput()) {
-			if (o.getType().equals(FiletypeType.ZIP)) {
-				output = o;
-			}
+			odfoutput = o;
 		}
-		checker.check(inputfile, inputReport, output, nsmap);
+		odfchecker.check(inputfile, inputReport, odfoutput, nsmap);
 		inputReport.setPath(inputfile.getName());
 		inputReport.setSize(inputfile.length());
-		inputReport.setType(FiletypeType.ZIP);
+		inputReport.setType(test.getInput().getType());
 		report.setInput(inputReport);
+		FiletypeType inputType = test.getInput().getType();
 
 		// loop over the applications that created output
 		for (TargetType target : config.getTarget()) {
@@ -143,17 +140,24 @@ public class Tester {
 			for (TargetOutputType to : target.getOutput()) {
 				// loop over the types of files output by the test (odf, pdf)
 				for (OutputType o : test.getOutput()) {
-					if (to.getOutputType().equals(o.getType())) {
-						String suffix = Main.getSuffix(tests.getOdftype());
-						if (o.getType().equals(FiletypeType.PDF)) {
-							suffix = ".pdf";
-						}
+					if (to.getInputTypes().contains(inputType)
+							&& o.getTypes().contains(to.getOutputType())) {
+						String suffix = Main.getSuffixForFileType(to
+								.getOutputType());
 						File dir = new File(runconfig.resultDir,
 								target.getName());
-						File out = new File(dir, replaceSuffix(
-								inputfile.getName(), suffix));
+						File out = new File(dir, Main.getTestName(inputfile
+								.getName()) + suffix);
 						evaluateTest(target, out, o, nsmap, tr);
 					}
+				}
+				if (test.getPdf() != null
+						&& to.getInputTypes().contains(inputType)
+						&& to.getOutputType().equals(FiletypeType.PDF)) {
+					File dir = new File(runconfig.resultDir, target.getName());
+					File out = new File(dir, Main.getTestName(inputfile
+							.getName()) + ".pdf");
+					evaluateTest(target, out, test.getPdf(), nsmap, tr);
 				}
 			}
 		}
@@ -161,44 +165,69 @@ public class Tester {
 
 	private void evaluateTest(TargetType target, File result, OutputType out,
 			Map<String, String> nsmap, TargetReportType report) {
-		OutputReportType output = getOutputReportType(report, out.getType());
+		OutputReportType output = getOutputReportType(report,
+				Main.getFileType(result.getName()));
 		output.setPath(result.getPath());
 		output.setSize(result.length());
 		ValidationReportType vreport = new ValidationReportType();
 		output.setValidation(vreport);
-		if (out.getType() == FiletypeType.ZIP
-				|| out.getType() == FiletypeType.XML) {
-			checker.check(result, output, out, nsmap);
-		} else if (out.getType() == FiletypeType.PDF) {
-			PdfOutputChecker pdf = new PdfOutputChecker();
-			pdf.check(result, output, out.getMask());
-		}
+		System.out.println("> " + result.getPath());
+		odfchecker.check(result, output, out, nsmap);
 	}
 
-	private void runTest(TestType test, OdfTypeType type,
-			DocumenttestsreportType report) {
+	private void evaluateTest(TargetType target, File result, PdfType pdf,
+			Map<String, String> nsmap, TargetReportType report) {
+		OutputReportType output = getOutputReportType(report, FiletypeType.PDF);
+		output.setPath(result.getPath());
+		output.setSize(result.length());
+		ValidationReportType vreport = new ValidationReportType();
+		output.setValidation(vreport);
+		pdfchecker.check(result, output, pdf.getMask());
+	}
+
+	private void runTest(TestType test, DocumenttestsreportType report) {
 		TestreportType tr = getTargetReportType(report, test.getName());
+		FiletypeType inputType = test.getInput().getType();
 		File inputfile = new File(runconfig.inputDir, test.getName()
-				+ Main.getSuffix(type));
+				+ Main.getSuffixForFileType(inputType));
 		for (TargetType target : config.getTarget()) {
 			for (OutputType o : test.getOutput()) {
-				runTest(target, inputfile, o, nsmap, tr);
+				runTest(target, inputType, inputfile, o, nsmap, tr);
+			}
+		}
+		if (test.getPdf() != null) {
+			for (TargetType target : config.getTarget()) {
+				runTest(target, inputType, inputfile, test.getPdf(), nsmap, tr);
 			}
 		}
 	}
 
-	private void runTest(TargetType target, File path, OutputType out,
-			Map<String, String> nsmap, TestreportType report) {
+	private void runTest(TargetType target, FiletypeType inputType, File path,
+			OutputType out, Map<String, String> nsmap, TestreportType report) {
 		System.out.println("runTest " + target.getName());
 		TargetReportType tr = getTargetReportType(report, target.getName());
-		tr.setName(target.getName());
 		for (TargetOutputType to : target.getOutput()) {
-			if (to.getOutputType().equals(out.getType())) {
-				String suffix = Main.getSuffix(tests.getOdftype());
-				if (to.getOutputType().equals(FiletypeType.PDF)) {
-					suffix = ".pdf";
-				}
-				OutputReportType or = getOutputReportType(tr, out.getType());
+			if (to.getInputTypes().contains(inputType)
+					&& out.getTypes().contains(to.getOutputType())) {
+				String suffix = Main.getSuffixForFileType(to.getOutputType());
+				OutputReportType or = getOutputReportType(tr,
+						to.getOutputType());
+				CommandReportType r = runCommand(to.getCommand(), path, suffix,
+						target.getName());
+				or.getCommands().add(r);
+			}
+		}
+	}
+
+	private void runTest(TargetType target, FiletypeType inputType, File path,
+			PdfType out, Map<String, String> nsmap, TestreportType report) {
+		TargetReportType tr = getTargetReportType(report, target.getName());
+		for (TargetOutputType to : target.getOutput()) {
+			if (to.getInputTypes().contains(inputType)
+					&& to.getOutputType().equals(FiletypeType.PDF)) {
+				String suffix = Main.getSuffixForFileType(to.getOutputType());
+				OutputReportType or = getOutputReportType(tr,
+						to.getOutputType());
 				CommandReportType r = runCommand(to.getCommand(), path, suffix,
 						target.getName());
 				or.getCommands().add(r);
@@ -222,8 +251,14 @@ public class Tester {
 		return str;
 	}
 
-	private String replaceSuffix(String name, String newSuffix) {
-		return name.substring(0, name.lastIndexOf(".")) + newSuffix;
+	private void replaceVariables(String cmd[]) {
+		int i;
+		String pwduri = new File(System.getProperty("user.dir")).toURI()
+				.toString();
+		pwduri = pwduri.replace("file:/", "file:///");
+		for (i = 0; i < cmd.length; i += 1) {
+			cmd[i] = cmd[i].replace("${pwduri}", pwduri);
+		}
 	}
 
 	private CommandReportType runCommand(CommandType command, File inpath,
@@ -231,6 +266,9 @@ public class Tester {
 		String cmd[] = new String[command.getInfileOrOutfileOrOutdir().size() + 1];
 		cmd[0] = command.getExe();
 		int i = 1;
+		File outfile = null;
+		File outdir = null;
+		String outfilename = Main.getTestName(inpath.getName()) + outsuffix;
 		for (JAXBElement<?> a : command.getInfileOrOutfileOrOutdir()) {
 			String name = a.getName().getLocalPart();
 			if (a.getValue() instanceof ArgumentType) {
@@ -240,16 +278,16 @@ public class Tester {
 			} else if (name.equals("outfile")) {
 				File dir = new File(runconfig.resultDir, targetName);
 				dir.mkdirs();
-				File f = new File(dir, replaceSuffix(inpath.getName(),
-						outsuffix));
-				cmd[i] = f.getPath();
+				outfile = new File(dir, outfilename);
+				cmd[i] = outfile.getPath();
 			} else if (name.equals("outdir")) {
-				File dir = new File(runconfig.resultDir, targetName);
-				dir.mkdirs();
-				cmd[i] = dir.getPath();
+				outdir = new File(runconfig.resultDir, targetName);
+				outdir.mkdirs();
+				cmd[i] = outdir.getPath();
 			}
 			++i;
 		}
+		replaceVariables(cmd);
 		Map<String, String> env = new HashMap<String, String>();
 		for (EnvType e : command.getEnv()) {
 			String value = System.getenv(e.getName());
@@ -260,7 +298,25 @@ public class Tester {
 				env.put(e.getName(), value);
 			}
 		}
-		return runCommand(cmd, env);
+		new File(outdir, outfilename).delete();
+		CommandReportType report = runCommand(cmd, env);
+		if (outfile == null && outdir != null) {
+			// outfile was not uses, so file was written with old name to
+			// new dir, if the file type and hence the suffix was changed,
+			// then the output file must be renamed
+			String fromname = inpath.getName();
+			if (outfilename.endsWith("pdf")) {
+				fromname = fromname.substring(0, fromname.length() - 4)
+						+ ".pdf";
+			}
+			File from = new File(outdir, fromname);
+			File to = new File(outdir, outfilename);
+			if (from != to) {
+				System.out.println(from + " " + to);
+				from.renameTo(to);
+			}
+		}
+		return report;
 	}
 
 	public static String resolveExe(String exe) {

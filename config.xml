@@ -1,8 +1,7 @@
 <config xmlns="http://www.example.org/documenttests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
-	<target name="Calligra" odftypes="text" inputVersions="1.0 1.1 1.2"
-		odfOutputVersion="1.2" inputTypes="zip">
-		<output outputType="zip">
+	<target name="Calligra">
+		<output outputType="odt1.2ext" inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<command exe="calligrawords">
 				<env name="DISPLAY" />
 				<env name="XAUTHORITY" />
@@ -13,7 +12,40 @@
 				<infile />
 			</command>
 		</output>
-		<output outputType="pdf">
+		<output outputType="odg1.2ext" inputTypes="odg1.0 odg1.1 odg1.2 odg1.2ext">
+			<command exe="karbon">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--roundtrip-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="odp1.2ext" inputTypes="odp1.0 odp1.1 odp1.2 odp1.2ext">
+			<command exe="calligrastage">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--roundtrip-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="ods1.2ext" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="calligrasheets">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--roundtrip-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf" inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<command exe="calligrawords">
 				<env name="DISPLAY" />
 				<env name="XAUTHORITY" />
@@ -25,10 +57,45 @@
 				<infile />
 			</command>
 		</output>
+		<output outputType="pdf" inputTypes="odp1.0 odp1.1 odp1.2 odp1.2ext">
+			<command exe="calligrastage">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--export-pdf" />
+				<argument value="--export-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf" inputTypes="odg1.0 odg1.1 odg1.2 odg1.2ext">
+			<command exe="karbon">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--export-pdf" />
+				<argument value="--export-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="calligrasheets">
+				<env name="DISPLAY" />
+				<env name="XAUTHORITY" />
+				<env name="KDEDIRS" />
+				<env name="HOME" />
+				<argument value="--export-pdf" />
+				<argument value="--export-filename" />
+				<outfile />
+				<infile />
+			</command>
+		</output>
 	</target>
-	<target name="Abiword" odftypes="text" inputVersions="1.0 1.1 1.2"
-		odfOutputVersion="1.1" inputTypes="zip">
-		<output outputType="zip">
+	<target name="Abiword">
+		<output outputType="odt1.1" inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<command exe="abiword">
 				<argument value="-t" />
 				<argument value="odt" />
@@ -37,7 +104,7 @@
 				<infile />
 			</command>
 		</output>
-		<output outputType="pdf">
+		<output outputType="pdf" inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<command exe="abiword">
 				<argument value="-t" />
 				<argument value="pdf" />
@@ -47,15 +114,43 @@
 			</command>
 		</output>
 	</target>
-	<target name="LibreOffice" odftypes="text spreadsheet presentation"
-		inputVersions="1.0 1.1 1.2" odfOutputVersion="1.2" inputTypes="xml zip">
-		<output outputType="zip">
+	<target name="Gnumeric">
+		<output outputType="ods1.2" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="ssconvert">
+				<argument value="--export-type=Gnumeric_OpenCalc:openoffice" />
+				<argument value="--recalc" />
+				<infile />
+				<outfile />
+			</command>
+		</output>
+		<!-- we could add a version with export-type=Gnumeric_OpenCalc:odf that 
+			outputs ods1.2ext -->
+		<output outputType="ods1.2ext" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="ssconvert">
+				<argument value="--export-type=Gnumeric_OpenCalc:odf" />
+				<argument value="--recalc" />
+				<infile />
+				<outfile />
+			</command>
+		</output>
+		<output outputType="pdf" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="ssconvert">
+				<argument value="--export-type=Gnumeric_pdf:pdf_assistant" />
+				<argument value="--recalc" />
+				<infile />
+				<outfile />
+			</command>
+		</output>
+	</target>
+	<target name="LibreOffice">
+		<output outputType="odt1.2ext" inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext">
 			<command exe="soffice">
 				<env name="DISPLAY" />
 				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
-				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
 				<argument value="--convert-to" />
 				<argument value="odt:writer8" />
 				<argument value="--outdir" />
@@ -63,27 +158,182 @@
 				<infile />
 			</command>
 		</output>
-		<output outputType="xml">
+		<output outputType="ott1.2ext" inputTypes="ott1.0 ott1.1 ott1.2 ott1.2ext">
 			<command exe="soffice">
 				<env name="DISPLAY" />
 				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
-				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
 				<argument value="--convert-to" />
-				<argument value="odt" />
+				<argument value="ott:writer8" />
 				<argument value="--outdir" />
 				<outdir />
 				<infile />
 			</command>
 		</output>
-		<output outputType="pdf">
+		<output outputType="odg1.2ext" inputTypes="odg1.0 odg1.1 odg1.2 odg1.2ext">
 			<command exe="soffice">
 				<env name="DISPLAY" />
 				<env name="PATH" />
 				<env name="XAUTHORITY" />
 				<argument value="--headless" />
-				<argument value="-env:UserInstallation=file:///tmp/libreofficeconfig" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odg:draw8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="odp1.2ext" inputTypes="odp1.0 odp1.1 odp1.2 odp1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odp:impress8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="otp1.2ext" inputTypes="otp1.0 otp1.1 otp1.2 otp1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="otp:impress8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="ods1.2ext" inputTypes="ods1.0 ods1.1 ods1.2 ods1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="ods:calc8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="ots1.2ext" inputTypes="ots1.0 ots1.1 ots1.2 ots1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="ots:calc8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<!-- i could find no support for converting chart (odc, otc) files -->
+		<!-- i could find no support for converting image (odi, oti) files -->
+		<output outputType="odf1.2ext" inputTypes="odf1.0 odf1.1 odf1.2 odf1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odf:math8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="otf1.2ext" inputTypes="otf1.0 otf1.1 otf1.2 otf1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="otf:math8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="odm1.2ext" inputTypes="odm1.0 odm1.1 odm1.2 odm1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="odm:writerglobal8" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="oth1.2ext" inputTypes="oth1.0 oth1.1 oth1.2 oth1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="oth:writerweb8_writer_template" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="odb1.2ext" inputTypes="odb1.2 odb1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
+				<argument value="--convert-to" />
+				<argument value="oth:writerweb8_writer_template" />
+				<argument value="--outdir" />
+				<outdir />
+				<infile />
+			</command>
+		</output>
+		<output outputType="pdf"
+			inputTypes="odt1.0 odt1.1 odt1.2 odt1.2ext odg1.0 odg1.1 odg1.2 odg1.2ext odp1.0 odp1.1 odp1.2 odp1.2ext ods1.0 ods1.1 ods1.2 ods1.2ext odf1.0 odf1.1 odf1.2 odf1.2ext odm1.0 odm1.1 odm1.2 odm1.2ext oth1.0 oth1.1 oth1.2 oth1.2ext">
+			<command exe="soffice">
+				<env name="DISPLAY" />
+				<env name="PATH" />
+				<env name="XAUTHORITY" />
+				<argument value="--headless" />
+				<argument
+					value="-env:UserInstallation=${pwduri}/configs/libreofficeconfig" />
 				<argument value="--convert-to" />
 				<argument value="pdf" />
 				<argument value="--outdir" />
