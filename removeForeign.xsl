@@ -21,16 +21,37 @@
 	xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0">
 	<xsl:output encoding="utf-8" indent="no" method="xml"
 		omit-xml-declaration="no"></xsl:output>
-	<xsl:template match="@*">
+
+	<!-- omit any content unless specified explicitly -->
+	<xsl:template match="@*|node()">
 	</xsl:template>
-    <xsl:template match="processing-instruction('DOCTYPE')">
-    </xsl:template>
-	<!-- only copy attributes from allowed namespaces -->
+
+	<!-- copy text -->
+	<xsl:template match="text()" />
+
+	<!-- copy attributes from allowed namespaces -->
 	<xsl:template
-		match="@anim:*|@chart:*|@config:*|@db:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xml:*|node()">
+		match="@anim:*|@chart:*|@config:*|@db:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xml:*">
+		<xsl:copy />
+	</xsl:template>
+
+	<!-- copy elements from allowed namespaces -->
+	<xsl:template
+		match="anim:*|chart:*|config:*|db:*|dr3d:*|draw:*|form:*|manifest:*|meta:*|number:*|office:*|presentation:*|script:*|table:*|text:*|style:*|odf:*|fo:*|svg:*|smil:*|xml:*">
 		<xsl:copy>
-			<xsl:apply-templates
-				select="@*|node()" />
+			<xsl:apply-templates select="@*|node()" />
 		</xsl:copy>
 	</xsl:template>
+
+	<!-- if @office:process-content='true' or document is not ODF 1.2, the contents 
+		of a foreign element should not be processed -->
+	<xsl:template
+		match="*[@office:process-content='true' or ancestor::office:*[@office:version!='1.2']]">
+		<xsl:copy>
+			<xsl:apply-templates select="@*|node()" />
+		</xsl:copy>
+	</xsl:template>
+
+	<!-- TODO: implement the rule for foreign element beneath text:h and text:p 
+		in ODF 1.2 § 3.17 -->
 </xsl:stylesheet>
