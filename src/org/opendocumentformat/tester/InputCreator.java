@@ -72,6 +72,8 @@ public class InputCreator {
 
 	final DOMImplementation domimplementation;
 
+	public final static String xmlnsns = "http://www.w3.org/2000/xmlns/";
+	public final static String ofns = "urn:oasis:names:tc:opendocument:xmlns:of:1.2";
 	public final static String officens = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
 	public final static String stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
 	public final static String svgns = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0";
@@ -279,11 +281,11 @@ public class InputCreator {
 		setAttribute(fontFace, "svg", svgns, "font-family", "'Helvetica'");
 		fontFaceDecls.appendChild(fontFace);
 
-		Element ostyles = styles.createElementNS(officens, "styles");
+		stylesElement = styles.createElementNS(officens, "styles");
 		Element defaultStyle = styles.createElementNS(stylens, "default-style");
 		setAttribute(defaultStyle, "style", stylens, "family", "text");
-		documentStylesElement.appendChild(ostyles);
-		ostyles.appendChild(defaultStyle);
+		documentStylesElement.appendChild(stylesElement);
+		stylesElement.appendChild(defaultStyle);
 		Element textProperties = styles.createElementNS(stylens,
 				"text-properties");
 		defaultStyle.appendChild(textProperties);
@@ -292,7 +294,7 @@ public class InputCreator {
 
 		defaultStyle.cloneNode(true);
 		setAttribute(defaultStyle, "style", stylens, "family", "paragraph");
-		ostyles.appendChild(defaultStyle);
+		stylesElement.appendChild(defaultStyle);
 
 		stylesAutomaticStylesElement = styles.createElementNS(officens,
 				"automatic-styles");
@@ -366,7 +368,9 @@ public class InputCreator {
 		String name = e.getLocalName();
 		e = (Element) styles.importNode(e, true);
 		if (ns.equals(officens)) {
-			if (name.equals("automatic-styles")) {
+			if (name.equals("styles")) {
+				merge(e, stylesElement);
+			} else if (name.equals("automatic-styles")) {
 				merge(e, stylesAutomaticStylesElement);
 			} else if (name.equals("master-styles")) {
 				merge(e, masterStylesElement);
@@ -431,6 +435,8 @@ public class InputCreator {
 		NamespaceCleaner nc = new NamespaceCleaner();
 		nc.cleanNamespaces(content);
 		nc.cleanNamespaces(styles);
+		documentStylesElement.setAttributeNS(xmlnsns, "xmlns:of", ofns);
+		documentContentElement.setAttributeNS(xmlnsns, "xmlns:of", ofns);
 	}
 
 	void createInput(File target, InputType input) {

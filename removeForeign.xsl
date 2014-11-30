@@ -18,7 +18,8 @@
 	xmlns:odf="http://docs.oasis-open.org/ns/office/1.2/meta/odf#"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
-	xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0">
+	xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
 	<xsl:output encoding="utf-8" indent="no" method="xml"
 		omit-xml-declaration="no"></xsl:output>
 
@@ -31,7 +32,7 @@
 
 	<!-- copy attributes from allowed namespaces -->
 	<xsl:template
-		match="@anim:*|@chart:*|@config:*|@db:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xml:*">
+		match="@anim:*|@chart:*|@config:*|@db:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xlink:*|@xml:*">
 		<xsl:copy />
 	</xsl:template>
 
