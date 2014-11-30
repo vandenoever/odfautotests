@@ -8,8 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -283,6 +286,45 @@ public class Main {
 		return conf;
 	}
 
+	public static void removeMissingTargets(DocumenttestsconfigType config) {
+		List<TargetType> targets = config.getTarget();
+		SortedSet<String> neededExecutables = new TreeSet<String>();
+		SortedSet<String> missingExecutables = new TreeSet<String>();
+		for (TargetType t : config.getTarget()) {
+			for (TargetOutputType o : t.getOutput()) {
+				neededExecutables.add(o.getCommand().getExe());
+			}
+		}
+		for (String exe : neededExecutables) {
+			String fullexe = Tester.resolveExe(exe);
+			if (exe == fullexe && !new File(exe).exists()) {
+				System.err.println("Executable " + exe
+						+ " was not found in PATH.");
+				missingExecutables.add(exe);
+			}
+		}
+		int i = 0;
+		while (i < targets.size()) {
+			TargetType t = targets.get(i);
+			List<TargetOutputType> outputs = t.getOutput();
+			int j = 0;
+			while (j < outputs.size()) {
+				TargetOutputType o = outputs.get(j);
+				String exe = o.getCommand().getExe();
+				if (missingExecutables.contains(exe)) {
+					outputs.remove(i);
+				} else {
+					j++;
+				}
+			}
+			if (outputs.size() == 0) {
+				targets.remove(i);
+			} else {
+				i++;
+			}
+		}
+	}
+
 	/**
 	 * The main entry point for the application.
 	 * 
@@ -322,6 +364,7 @@ public class Main {
 				fatalFileError(loader.handler.linenumber, t,
 						conf.runConfiguration);
 			}
+			removeMissingTargets(config);
 		}
 
 		Tester tester = null;
