@@ -60,10 +60,9 @@ We want to add a few checks that ODFAutoTools should perform. When a program loa
 	xmlns="http://www.example.org/documenttests"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd"
-    inputVersion="1.2" odftype="text" ➁
   >
-  <test name="chapter"> ➂
-    <input> ➃
+  <test name="chapter"> ➁
+    <input type="odt1.2"> ➂ 
       <office:text>
         <text:h text:outline-level="1">Introduction</text:h>
         <text:p>
@@ -71,28 +70,29 @@ We want to add a few checks that ODFAutoTools should perform. When a program loa
         </text:p>
       </office:text>
     </input>
-    <output type="zip"> ➄
+    <output type="odt1.0 odt1.1 odt1.2 odt1.2ext"> ➃
       <file path="content.xml">
-        <xpath expr="count(//text:chapter[ancestor::text:p]) = 1"/> ➅
-        <xpath expr="count(//text:chapter) = 1"/>                ➆
-        <xpath expr="//text:chapter/@text:display = 'name'"/>    ➇
-        <xpath expr="//text:chapter/@text:outline-level = '1'"/> ➈
+        <xpath expr="count(//text:chapter[ancestor::text:p]) = 1"/> ➄
+        <xpath expr="count(//text:chapter) = 1"/>                ➅
+        <xpath expr="//text:chapter/@text:display = 'name'"/>    ➆
+        <xpath expr="//text:chapter/@text:outline-level = '1'"/> ➇
       </file>
     </output>
+    <pdf/> ➈
   </test>
 </documenttests>
 ```
 This test contains a number of parts:
 ```
  ➀. The document element <documenttests/> can contain multiple tests
- ➁. The created document should be an ODF 1.2 text document
- ➂. The name of the test is 'chapter'
- ➃. The fragment from which the document is created
- ➄. The ODF programs should save the document back in the usual ZIP format (PDF is also possible)
- ➅. After loading and saving, there should still be one <text:chapter/> in a paragraph
- ➆  And there should be only one <text:chapter/> in the whole of `content.xml`
- ➇  The attribute 'text:display' should still have value 'name'
- ➈  And the attribute 'text:outline-level' should still have the value '1'
+ ➁. The name of the test is 'chapter'
+ ➂. The created document should be an ODF 1.2 text document
+ ➃. The ODF programs should save the document back in any packaged odt format.
+ ➄. After loading and saving, there should still be one <text:chapter/> in a paragraph
+ ➅  And there should be only one <text:chapter/> in the whole of `content.xml`
+ ➆  The attribute 'text:display' should still have value 'name'
+ ➇  And the attribute 'text:outline-level' should still have the value '1'
+ ➈  Create pdf outputs for visual inspection
 ```
 
 ## Performing the test
