@@ -21,15 +21,17 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.example.org/documenttests" xmlns:t="http://www.example.org/documenttests">
 
+	<xsl:param name="mode" select="'odt'" />
+
 	<t:testtemplates>
+		<t:testtemplate name="color">
+			<fo:color value="#339999" />
+		</t:testtemplate>
 		<t:testtemplate name="background-color">
 			<fo:background-color value="#339999" />
 		</t:testtemplate>
 		<t:testtemplate name="background-color-transparent">
 			<fo:background-color value="transparent" />
-		</t:testtemplate>
-		<t:testtemplate name="color">
-			<fo:color value="#339999" />
 		</t:testtemplate>
 		<t:testtemplate name="country-language">
 			<fo:country value="NL" />
@@ -154,7 +156,7 @@
 			<s:font-name-asian value="Helvetica" />
 		</t:testtemplate>
 		<t:testtemplate name="font-name-complex">
-			<s:font-name-complex value="Helvetica " />
+			<s:font-name-complex value="Helvetica" />
 		</t:testtemplate>
 		<t:testtemplate name="font-pitch-fixed">
 			<s:font-pitch value="fixed" />
@@ -440,15 +442,78 @@
 	<xsl:output encoding="utf-8" indent="no" method="xml"
 		omit-xml-declaration="no" />
 
+	<xsl:template name="body">
+		<xsl:choose>
+			<xsl:when test="$mode='ods'">
+				<o:spreadsheet>
+					<table:table table:name="TestTable" table:style-name="table"
+						table:print="true">
+						<table:table-column
+							table:default-cell-style-name="style" />
+						<table:table-row>
+							<table:table-cell o:value-type="string">
+								<text:p>hello world</text:p>
+							</table:table-cell>
+						</table:table-row>
+					</table:table>
+				</o:spreadsheet>
+			</xsl:when>
+			<xsl:when test="$mode='odp'">
+				<o:presentation>
+					<draw:page draw:master-page-name="Page">
+						<draw:frame draw:style-name="style" svg:width="10cm"
+							svg:height="10cm" svg:x="1cm" svg:y="1cm">
+							<draw:text-box>
+								<text:p>hello world</text:p>
+							</draw:text-box>
+						</draw:frame>
+					</draw:page>
+				</o:presentation>
+			</xsl:when>
+			<xsl:otherwise>
+				<o:text>
+					<text:p text:style-name="style">hello world</text:p>
+				</o:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<xsl:template match="t:testtemplate">
-		<test name="{@name}">
-			<input type="odt1.2">
+		<xsl:variable name="family">
+			<xsl:choose>
+				<xsl:when test="$mode='ods'">
+					<xsl:value-of select="'table-cell'" />
+				</xsl:when>
+				<xsl:when test="$mode='odp'">
+					<xsl:value-of select="'graphic'" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="'paragraph'" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<test name="{$mode}-{@name}">
+			<input type="{$mode}1.2">
 				<o:styles>
+					<s:style s:name="standard" s:family="paragraph">
+						<s:text-properties fo:font-size="12pt"
+							s:font-name="Helvetica" />
+					</s:style>
+					<s:style s:name="standard" s:family="graphic">
+						<s:graphic-properties draw:stroke="none"
+							draw:fill="none" />
+						<s:text-properties fo:font-size="12pt"
+							s:font-name="Helvetica" />
+					</s:style>
+					<s:style s:name="standard" s:family="table-cell">
+						<s:text-properties fo:font-size="12pt"
+							s:font-name="Helvetica" />
+					</s:style>
 					<s:style s:name="color" s:family="text" s:display-name="Text">
 						<s:text-properties fo:color="#339999" />
 					</s:style>
-					<s:style s:name="style" s:family="paragraph"
-						s:display-name="TestStyle">
+					<s:style s:name="style" s:family="{$family}"
+						s:display-name="TestStyle" s:parent-style-name="standard">
 						<s:text-properties>
 							<xsl:for-each select="*">
 								<xsl:attribute namespace="{namespace-uri()}" name="{name()}"><xsl:value-of
@@ -456,12 +521,22 @@
 							</xsl:for-each>
 						</s:text-properties>
 					</s:style>
+					<s:style s:name="table" s:family="table"
+						s:master-page-name="Standard">
+						<s:table-properties table:display="true"
+							s:writing-mode="lr-tb" />
+					</s:style>
 				</o:styles>
-				<o:text>
-					<text:p text:style-name="style">hello world</text:p>
-				</o:text>
+				<o:automatic-styles>
+					<s:style s:family="table" s:master-page-name="Standard"
+						s:name="table">
+						<s:table-properties s:writing-mode="lr-tb"
+							table:display="true" />
+					</s:style>
+				</o:automatic-styles>
+				<xsl:call-template name="body" />
 			</input>
-			<output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+			<output types="{$mode}1.0 {$mode}1.1 {$mode}1.2 {$mode}1.2ext">
 				<file path="styles.xml">
 					<xsl:for-each select="*">
 						<xpath
@@ -475,11 +550,11 @@
 		</test>
 	</xsl:template>
 
-
 	<xsl:template match="/">
 		<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:schemaLocation="http://www.example.org/documenttests ../documenttests.xsd">
-			<xsl:apply-templates select="/xsl:stylesheet/t:testtemplates/*" />
+			<xsl:variable name="tests" select="/xsl:stylesheet/t:testtemplates/*" />
+			<xsl:apply-templates select="$tests" />
 		</documenttests>
 	</xsl:template>
 

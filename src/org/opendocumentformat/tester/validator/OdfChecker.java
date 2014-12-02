@@ -66,12 +66,12 @@ public class OdfChecker {
 
 	private final ValidationDriver odf10Validator;
 	private final ValidationDriver odf10manifestValidator;
-	// private final ValidationDriver odf11Validator;
+	private final ValidationDriver odf11Validator;
 	private final ValidationDriver odf11manifestValidator;
 	private final ValidationDriver odf11strictValidator;
 	private final ValidationDriver odf12Validator;
 	private final ValidationDriver odf12manifestValidator;
-	// private final ValidationDriver odf12dsigValidator;
+	private final ValidationDriver odf12dsigValidator;
 	private final ErrorBuffer errorbuffer;
 	private final DocumentBuilder documentBuilder;
 	private final XPathFactory factory = XPathFactory.newInstance();
@@ -194,20 +194,23 @@ public class OdfChecker {
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer,
 				extendedODF);
-		// odf11Validator = createValidationDriver(tmpdir,
-		// "OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
-		odf11strictValidator = createValidationDriver(tmpdir,
-				"OpenDocument-strict-schema-v1.1.rng", errorbuffer, extendedODF);
+		odf11Validator = createValidationDriver(tmpdir,
+				"OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
+		odf11strictValidator = (odf11Validator != null) ? createValidationDriver(
+				tmpdir, "OpenDocument-strict-schema-v1.1.rng", errorbuffer,
+				extendedODF) : null;
 		odf11manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer,
 				extendedODF);
 		odf12manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer,
 				extendedODF);
-		// odf12dsigValidator = createValidationDriver(tmpdir,
-		// "OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer);
-		odf12Validator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-schema.rng", errorbuffer, extendedODF);
+		odf12dsigValidator = createValidationDriver(tmpdir,
+				"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer,
+				extendedODF);
+		odf12Validator = (odf12dsigValidator != null) ? createValidationDriver(
+				tmpdir, "OpenDocument-v1.2-os-schema.rng", errorbuffer,
+				extendedODF) : null;
 
 		documentBuilder = createDocumentBuilder();
 	}

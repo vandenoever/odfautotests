@@ -78,6 +78,7 @@ public class InputCreator {
 	public final static String stylens = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
 	public final static String svgns = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0";
 	public final static String fons = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0";
+	public final static String drawns = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0";
 	public final static String manifestns = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
 
 	static ODFVersion getVersion(FiletypeType type) {
@@ -282,18 +283,31 @@ public class InputCreator {
 		fontFaceDecls.appendChild(fontFace);
 
 		stylesElement = styles.createElementNS(officens, "styles");
-		Element defaultStyle = styles.createElementNS(stylens, "default-style");
-		setAttribute(defaultStyle, "style", stylens, "family", "text");
 		documentStylesElement.appendChild(stylesElement);
-		stylesElement.appendChild(defaultStyle);
+
 		Element textProperties = styles.createElementNS(stylens,
 				"text-properties");
-		defaultStyle.appendChild(textProperties);
 		setAttribute(textProperties, "style", stylens, "font-name", "Helvetica");
 		setAttribute(textProperties, "fo", fons, "font-size", "12pt");
 
+		Element graphicProperties = styles.createElementNS(stylens,
+				"graphic-properties");
+		setAttribute(graphicProperties, "draw", drawns, "fill", "none");
+		setAttribute(graphicProperties, "draw", drawns, "stroke", "none");
+
+		Element defaultStyle = styles.createElementNS(stylens, "default-style");
+		setAttribute(defaultStyle, "style", stylens, "family", "text");
+		stylesElement.appendChild(defaultStyle);
+		defaultStyle.appendChild(textProperties);
+
 		defaultStyle.cloneNode(true);
 		setAttribute(defaultStyle, "style", stylens, "family", "paragraph");
+		stylesElement.appendChild(defaultStyle);
+
+		defaultStyle.cloneNode(true);
+		setAttribute(defaultStyle, "style", stylens, "family", "graphic");
+		defaultStyle.insertBefore(graphicProperties,
+				defaultStyle.getFirstChild());
 		stylesElement.appendChild(defaultStyle);
 
 		stylesAutomaticStylesElement = styles.createElementNS(officens,
@@ -301,6 +315,24 @@ public class InputCreator {
 		documentStylesElement.appendChild(stylesAutomaticStylesElement);
 		masterStylesElement = styles.createElementNS(officens, "master-styles");
 		documentStylesElement.appendChild(masterStylesElement);
+
+		// provide a simple layout by defaulst
+		Element layout = styles.createElementNS(stylens, "page-layout");
+		setAttribute(layout, "style", stylens, "name", "TestLayout");
+		Element layoutProperties = styles.createElementNS(stylens,
+				"page-layout-properties");
+		setAttribute(layoutProperties, "fo", fons, "margin", "1cm");
+		setAttribute(layoutProperties, "fo", fons, "page-height", "12cm");
+		setAttribute(layoutProperties, "fo", fons, "page-width", "10cm");
+		layout.appendChild(layoutProperties);
+		stylesAutomaticStylesElement.appendChild(layout);
+
+		Element masterStyleElement = styles.createElementNS(stylens,
+				"master-page");
+		setAttribute(masterStyleElement, "style", stylens, "name", "Standard");
+		setAttribute(masterStyleElement, "style", stylens, "page-layout-name",
+				"TestLayout");
+		masterStylesElement.appendChild(masterStyleElement);
 	}
 
 	private Document createNewManifest() {
