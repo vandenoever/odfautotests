@@ -28,7 +28,9 @@
 	</xsl:template>
 
 	<!-- copy text -->
-	<xsl:template match="text()" />
+	<xsl:template match="text()">
+		<xsl:copy />
+	</xsl:template>
 
 	<!-- copy attributes from allowed namespaces -->
 	<xsl:template
