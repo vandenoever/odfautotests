@@ -312,7 +312,7 @@ public class Main {
 				TargetOutputType o = outputs.get(j);
 				String exe = o.getCommand().getExe();
 				if (missingExecutables.contains(exe)) {
-					outputs.remove(i);
+					outputs.remove(j);
 				} else {
 					j++;
 				}
