@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns="http://www.example.org/documenttests"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+	<test name="specODF1.2-5.5.1-texttrackchanges-test">
+		<input type="odt1.2">
+			<office:text>
+				<text:tracked-changes>
+					<text:changed-region xml:id="ct52175232"
+						text:id="ct52175232">
+						<text:deletion>
+							<office:change-info>
+								<dc:creator>Jos van den Oever</dc:creator>
+								<dc:date>2014-12-09T16:05:00</dc:date>
+							</office:change-info>
+							<text:p text:style-name="P1">e</text:p>
+						</text:deletion>
+					</text:changed-region>
+					<text:changed-region xml:id="ct52173392"
+						text:id="ct52173392">
+						<text:insertion>
+							<office:change-info>
+								<dc:creator>Jos van den Oever</dc:creator>
+								<dc:date>2014-12-09T16:04:00</dc:date>
+							</office:change-info>
+						</text:insertion>
+					</text:changed-region>
+					<text:changed-region xml:id="ct51862592"
+						text:id="ct51862592">
+						<text:deletion>
+							<office:change-info>
+								<dc:creator>Jos van den Oever</dc:creator>
+								<dc:date>2014-12-09T16:04:00</dc:date>
+							</office:change-info>
+							<text:p text:style-name="P1">l</text:p>
+						</text:deletion>
+					</text:changed-region>
+					<text:changed-region xml:id="ct51779712"
+						text:id="ct51779712">
+						<text:insertion>
+							<office:change-info>
+								<dc:creator>Jos van den Oever</dc:creator>
+								<dc:date>2014-12-09T16:04:00</dc:date>
+							</office:change-info>
+						</text:insertion>
+					</text:changed-region>
+				</text:tracked-changes>
+				<text:p>
+					H
+					<text:change text:change-id="ct52175232" />
+					l
+					<text:change-start text:change-id="ct52173392" />
+					L
+					<text:change-end text:change-id="ct52173392" />
+					<text:change text:change-id="ct51862592" />
+					o
+					<text:change-start text:change-id="ct51779712" />
+					world
+					<text:change-end text:change-id="ct51779712" />
+				</text:p>
+
+			</office:text>
+		</input>
+		<output types="odt1.2 odt1.2ext">
+			<file path="content.xml">
+				<xpath expr="count(//text:change-start[ancestor::text:p]) = 2"></xpath>
+				<xpath expr="count(//@text:change-id) = 6"></xpath>
+				<xpath expr="count(//text:changed-region) = 4"></xpath>
+				<xpath expr="count(//text:insertion) = 2"></xpath>
+				<xpath expr="count(//text:deletion) = 2"></xpath>
+				<xpath expr="count(//dc:creator) = 4"></xpath>
+				<xpath expr="count(//dc:date) = 4"></xpath>
+			</file>
+		</output>
+	</test>
+</documenttests>
