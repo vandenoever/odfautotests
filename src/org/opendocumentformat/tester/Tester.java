@@ -325,6 +325,7 @@ public class Tester {
 			String paths[] = System.getenv("PATH").split(File.pathSeparator);
 			for (String p : paths) {
 				f = new File(p, exe);
+				System.err.println("Checking " + p);
 				if (f.exists()) {
 					break;
 				}
