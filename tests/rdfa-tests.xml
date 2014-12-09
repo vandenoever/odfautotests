@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns="http://www.example.org/documenttests"
+	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
+	<test name="rdfa">
+  		<input type="odt1.2">
+    			<o:styles>
+    			</o:styles>
+    			<o:automatic-styles>
+    			</o:automatic-styles>
+    			<o:text>
+      				<text:p xhtml:about="." xhtml:property="dc:date" xhtml:datatype="xsd:date" xhtml:content="2014-12-09">Tuesday 9th December 2014</text:p>
+    			</o:text>
+  		</input>
+  		<output types="odt1.2ext">
+			<file path="content.xml">
+				<xpath expr="count(//o:text/text:p//@xhtml:about) = 1" />
+				<xpath expr="count(//o:text/text:p//@xhtml:property) = 1" />
+				<xpath expr="count(//o:text/text:p//@xhtml:datatype) = 1" />
+				<xpath expr="count(//o:text/text:p//@xhtml:content) = 1" />
+				<xpath expr="//o:text/text:p//@xhtml:about = '.'" />
+				<xpath expr="//o:text/text:p//@xhtml:property = 'dc:date'" />
+				<xpath expr="//o:text/text:p//@xhtml:datatype = 'xsd:date'" />
+				<xpath expr="//o:text/text:p//@xhtml:content = '2014-12-09'" />
+			</file>
+  		</output>
+	</test>
+</documenttests>
