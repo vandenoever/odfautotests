@@ -4,6 +4,7 @@
 	xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
 	xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"
 	xmlns:db="urn:oasis:names:tc:opendocument:xmlns:database:1.0"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
 	xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
@@ -34,13 +35,13 @@
 
 	<!-- copy attributes from allowed namespaces -->
 	<xsl:template
-		match="@anim:*|@chart:*|@config:*|@db:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xlink:*|@xml:*">
+		match="@anim:*|@chart:*|@config:*|@db:*|@dc:*|@dr3d:*|@draw:*|@form:*|@manifest:*|@meta:*|@number:*|@office:*|@presentation:*|@script:*|@table:*|@text:*|@style:*|@odf:*|@fo:*|@svg:*|@smil:*|@xlink:*|@xml:*">
 		<xsl:copy />
 	</xsl:template>
 
 	<!-- copy elements from allowed namespaces -->
 	<xsl:template
-		match="anim:*|chart:*|config:*|db:*|dr3d:*|draw:*|form:*|manifest:*|meta:*|number:*|office:*|presentation:*|script:*|table:*|text:*|style:*|odf:*|fo:*|svg:*|smil:*|xml:*">
+		match="anim:*|chart:*|config:*|db:*|dc:*|dr3d:*|draw:*|form:*|manifest:*|meta:*|number:*|office:*|presentation:*|script:*|table:*|text:*|style:*|odf:*|fo:*|svg:*|smil:*|xml:*">
 		<xsl:copy>
 			<xsl:apply-templates select="@*|node()" />
 		</xsl:copy>
