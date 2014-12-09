@@ -23,7 +23,7 @@
 			<arg value="-d" />
 			<arg file="src" />
 			<classpath>
-				<pathelement location="lib/jaxb-core.jar"/>
+				<pathelement location="lib/jaxb-core.jar" />
 			</classpath>
 		</java>
 	</target>
@@ -34,7 +34,7 @@
 		</copy>
 		<copy todir="bin" file="report2html.xsl" />
 		<copy todir="bin" file="removeForeign.xsl" />
-		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.5.3.jar:lib/pdfbox-1.8.7.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar;lib/commons-cli-1.2.jar" debug="on" debuglevel="source" includeantruntime="false" target="1.6"/>
+		<javac source="1.6" srcdir="src" destdir="bin" classpath="bin:lib/jing.jar:lib/itextpdf-5.5.3.jar:lib/pdfbox-1.8.7.jar;lib/batik-anim.jar;lib/batik-awt-util.jar;lib/batik-bridge.jar;lib/batik-codec.jar;lib/batik-css.jar;lib/batik-dom.jar;lib/batik-ext.jar;lib/batik-gvt.jar;lib/batik-parser.jar;lib/batik-script.jar;lib/batik-svg-dom.jar;lib/batik-transcoder.jar;lib/batik-util.jar;lib/batik-xml.jar;lib/commons-cli-1.2.jar" debug="on" debuglevel="source" includeantruntime="false" target="1.6" />
 	</target>
 	<target name="jar" depends="compile" description="package the compiled code in a jar">
 		<jar destfile="odftester.jar" basedir="bin" level="9">
@@ -66,13 +66,22 @@
 	</target>
 	<target name="run" depends="jar" description="run the tests">
 		<java jar="odftester.jar" fork='true'>
+			<arg value="-c" />
 			<arg file="config.xml" />
-			<arg file="texttests.xml" />
+			<arg value="-t" />
+			<arg file="hellotests.xml" />
+			<arg value="-i" />
+			<arg value="/tmp/odfautotest/in" />
+			<arg value="-r" />
+			<arg value="/tmp/odfautotest/results" />
 		</java>
 	</target>
 	<target name="clean">
 		<delete dir="bin" />
 		<delete dir="src/org/example" />
 		<delete file="odftester.jar" />
+	</target>
+	<target name="distclean" depends="clean">
+		<delete file="lib/itext.zip" />
 	</target>
 </project>
