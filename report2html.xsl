@@ -213,12 +213,12 @@
 		</tr>
 		<tr>
 			<th>valid ODF</th>
-			<td>
+			<td class="{count(r:input/r:validation/r:error)=0}">
 				<xsl:value-of select="count(r:input/r:validation/r:error)=0" />
 				<xsl:apply-templates select="r:input/r:validation" />
 			</td>
 			<xsl:for-each select="r:target[r:output[@type!='pdf']]">
-				<td>
+				<td class="{count(r:output[@type!='pdf']/r:validation/r:error)=0}">
 					<xsl:value-of select="count(r:output[@type!='pdf']/r:validation/r:error)=0" />
 					<xsl:apply-templates select="r:output[@type!='pdf']/r:validation" />
 				</td>
@@ -237,11 +237,11 @@
 					<th>
 						<xsl:value-of select="@expr" />
 					</th>
-					<td>
+					<td class="{@result}">
 						<xsl:value-of select="@result" />
 					</td>
 					<xsl:for-each select="../../../r:target[r:output[@type!='pdf']]">
-						<td>
+						<td class="{r:output[@type!='pdf']/r:file[@path=$path]/r:xpath[@expr=$expr]/@result}">
 							<xsl:value-of
 								select="r:output[@type!='pdf']/r:file[@path=$path]/r:xpath[@expr=$expr]/@result" />
 						</td>
@@ -266,7 +266,7 @@
 			<th>success</th>
 			<td></td>
 			<xsl:for-each select="r:target[r:output[@type='pdf']]">
-				<td>
+				<td class="{count(r:output[@type='pdf']/r:validation/r:error)=0 and count(r:output[@type='pdf']/r:pdfinfo/r:maskResult[@result='false'])=0}">
 					<xsl:value-of
 						select="count(r:output[@type='pdf']/r:validation/r:error)=0 and count(r:output[@type='pdf']/r:pdfinfo/r:maskResult[@result='false'])=0" />
 					<xsl:apply-templates select="r:output[@type='pdf']/r:validation" />
@@ -281,6 +281,8 @@
 			<head>
 				<title>ODF Automatic tests report</title>
 				<style type="text/css">
+					.false {background-color: #faa}
+					.true {background-color: #afa}
 					.popup, .output {
 					display: none;
 					}
