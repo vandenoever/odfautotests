@@ -330,6 +330,7 @@ public class Tester {
 				}
 				// look for windows executable
 				f = new File(p, exe + ".exe");
+				System.err.println("Checking " + f.getAbsolutePath());
 				if (f.exists()) {
 					break;
 				}
