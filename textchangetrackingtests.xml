@@ -50,4 +50,45 @@
         </output>
         <pdf />
     </test>
+    <test name="singledeletiontext">
+        <input type="odt1.2">
+            <o:text>
+                <t:tracked-changes t:track-changes="false">
+                    <t:changed-region xml:id="crd" t:id="crd">
+                        <t:deletion>
+                            <o:change-info>
+                                <dc:creator>Test</dc:creator>
+                                <dc:date>2014-12-09T12:33:00</dc:date>
+                                <t:p>Comment 1</t:p>
+                                <t:p>Comment 2</t:p>
+                            </o:change-info>
+                        </t:deletion>
+                    </t:changed-region>
+                </t:tracked-changes>
+                <t:p><t:change-start t:change-id="crd"/>Hello<t:change-end t:change-id="crd"/></t:p>
+            </o:text>
+        </input>
+        <output types="odt1.2 odt1.2ext"><!-- TODO: other types as well? -->
+            <file path="content.xml">
+                <!-- id not defined to be the same after roundtrip, at least LO does not do it -->
+                <xpath expr="count(//o:text/text:tracked-changes/text:changed-region[@t:id or @id]/t:deletion)=1" />
+                <!-- test change info -->
+                <xpath expr="//o:text/text:tracked-changes/text:changed-region/text:deletion/o:change-info/dc:creator='Test'" />
+                <xpath expr="//o:text/text:tracked-changes/text:changed-region/text:deletion/o:change-info/dc:date='2014-12-09T12:33:00'" />
+                <!-- test change info comments -->
+                <xpath expr="count(//o:text/text:tracked-changes/text:changed-region/text:deletion/o:change-info/t:p)=2" />
+                <xpath expr="//o:text/text:tracked-changes/text:changed-region/text:deletion/o:change-info/t:p[1]='Comment 1'" />
+                <xpath expr="//o:text/text:tracked-changes/text:changed-region/text:deletion/o:change-info/t:p[2]='Comment 2'" />
+                <!-- test text:change-start and text:change-end -->
+                <xpath expr="count(//o:text/text:p)=1" />
+<!-- TODO: there can be both inline and out-of-line placement of the deleted text, that needs proper testing -->
+<!--                 <xpath expr="count(//o:text/text:p/text:change-start/@text:change-id)=1" /> -->
+<!--                 <xpath expr="(//o:text/text:p/text:change-start/@text:change-id = //o:text/text:p/text:change-end/@text:change-id)" />  -->
+<!--                 <xpath expr="count(//o:text/text:p/text:change-end[preceding::t:change-start])=1" /> -->
+                <!-- TODO: if both xml:id and text:id are set, they need to be equal perhaps -->
+<!--                 <xpath expr="(//o:text/text:tracked-changes/text:changed-region/@t:id = //o:text/text:p/text:change-start//@text:change-id) or (//o:text/text:tracked-changes/text:changed-region/@id = //o:text/text:p/text:change-start//@text:change-id)" /> -->
+            </file>
+        </output>
+        <pdf />
+    </test>
 </documenttests>
