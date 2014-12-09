@@ -6,7 +6,7 @@ Required software:
 
 1. Install git
 2. Install ant
-3. Install Java runtime and compiler
+3. Install Java runtime and compiler (e.g. openjdk)
 
 Create the test software locally:
 
