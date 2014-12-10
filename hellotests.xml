@@ -112,8 +112,7 @@
 		<input type="ods1.2">
 			<office:document-styles>
 				<office:styles>
-					<style:default-style style:family="table"
-						style:master-page-name="Default" />
+					<style:default-style style:family="table" />
 					<style:style style:name="Standard" style:family="table"
 						style:master-page-name="Default" />
 				</office:styles>
