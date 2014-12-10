@@ -259,6 +259,8 @@
 		<attribute name="type" type="tns:validationErrorTypeType"
 			use="required" />
 		<attribute name="message" type="string" />
+		<attribute name="lineNumber" type="int" />
+		<attribute name="columnNumber" type="int" />
 	</complexType>
 	<complexType name="missingFileErrorType">
 		<complexContent>

@@ -7,10 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -72,60 +72,31 @@ public class OdfChecker {
 	private final ValidationDriver odf12Validator;
 	private final ValidationDriver odf12manifestValidator;
 	private final ValidationDriver odf12dsigValidator;
-	private final ErrorBuffer errorbuffer;
+	private final ErrorHandler errorhandler;
 	private final DocumentBuilder documentBuilder;
 	private final XPathFactory factory = XPathFactory.newInstance();
 	private final XPath xpath = factory.newXPath();
 	private final Transformer foreignRemover = createForeignRemover();
 
-	private class ErrorBuffer extends Writer {
-		private StringWriter buffer;
+	class ErrorHandler extends ErrorHandlerImpl {
+		final List<SAXParseException> errors = new LinkedList<SAXParseException>();
 
-		public ErrorBuffer() {
-			reset();
+		ErrorHandler() {
+			super();
+		}
+
+		@Override
+		public void error(SAXParseException e) {
+			errors.add(e);
+		}
+
+		@Override
+		public void fatalError(SAXParseException e) throws SAXParseException {
+			errors.add(e);
 		}
 
 		public void reset() {
-			buffer = new StringWriter();
-		}
-
-		public void close() throws IOException {
-		}
-
-		@Override
-		public void flush() throws IOException {
-		}
-
-		@Override
-		public void write(char[] cbuf, int off, int len) throws IOException {
-			buffer.write(cbuf, off, len);
-		}
-
-		public String toString() {
-			return buffer.toString();
-		}
-
-		class ExtendedODFErrorHandler extends ErrorHandlerImpl {
-			ExtendedODFErrorHandler(ErrorBuffer errorbuffer) {
-				super(errorbuffer);
-			}
-
-			@Override
-			public void error(SAXParseException e) {
-				String msg = e.getMessage();
-				if (msg == null || msg.indexOf("calligra:") == -1) {
-					super.error(e);
-				}
-			}
-
-			@Override
-			public void fatalError(SAXParseException e)
-					throws SAXParseException {
-				String msg = e.getMessage();
-				if (msg == null || msg.indexOf("calligra:") == -1) {
-					super.fatalError(e);
-				}
-			}
+			errors.clear();
 		}
 	}
 
@@ -151,22 +122,16 @@ public class OdfChecker {
 	}
 
 	static private ValidationDriver createValidationDriver(String tmpdir,
-			String path, ErrorBuffer errorbuffer, boolean extendedODF) {
+			String path, ErrorHandler errorhandler, boolean extendedODF) {
 		File rng = new File(tmpdir + File.separator + path);
 		if (!rng.exists()) {
 			extract(rng.getPath(), path);
 		}
 		String rngpath = rng.getPath();
 
-		ErrorHandlerImpl eh;
-		if (extendedODF) {
-			eh = errorbuffer.new ExtendedODFErrorHandler(errorbuffer);
-		} else {
-			eh = new ErrorHandlerImpl(errorbuffer);
-		}
 		SchemaReader schemaReader = SAXSchemaReader.getInstance();
 		PropertyMapBuilder properties = new PropertyMapBuilder();
-		properties.put(ValidateProperty.ERROR_HANDLER, eh);
+		properties.put(ValidateProperty.ERROR_HANDLER, errorhandler);
 		RngProperty.CHECK_ID_IDREF.add(properties);
 		properties.put(RngProperty.CHECK_ID_IDREF, null);
 
@@ -185,31 +150,31 @@ public class OdfChecker {
 	}
 
 	public OdfChecker(boolean extendedODF) {
-		errorbuffer = new ErrorBuffer();
+		errorhandler = new ErrorHandler();
 		String tmpdir = "rng";
 		(new File(tmpdir)).mkdir();
 
 		odf10Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.0-os.rng", errorbuffer, extendedODF);
+				"OpenDocument-schema-v1.0-os.rng", errorhandler, extendedODF);
 		odf10manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-manifest-schema-v1.0-os.rng", errorbuffer,
+				"OpenDocument-manifest-schema-v1.0-os.rng", errorhandler,
 				extendedODF);
 		odf11Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.1.rng", errorbuffer, extendedODF);
+				"OpenDocument-schema-v1.1.rng", errorhandler, extendedODF);
 		odf11strictValidator = (odf11Validator != null) ? createValidationDriver(
-				tmpdir, "OpenDocument-strict-schema-v1.1.rng", errorbuffer,
+				tmpdir, "OpenDocument-strict-schema-v1.1.rng", errorhandler,
 				extendedODF) : null;
 		odf11manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-manifest-schema-v1.1.rng", errorbuffer,
+				"OpenDocument-manifest-schema-v1.1.rng", errorhandler,
 				extendedODF);
 		odf12manifestValidator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-manifest-schema.rng", errorbuffer,
+				"OpenDocument-v1.2-os-manifest-schema.rng", errorhandler,
 				extendedODF);
 		odf12dsigValidator = createValidationDriver(tmpdir,
-				"OpenDocument-v1.2-os-dsig-schema.rng", errorbuffer,
+				"OpenDocument-v1.2-os-dsig-schema.rng", errorhandler,
 				extendedODF);
 		odf12Validator = (odf12dsigValidator != null) ? createValidationDriver(
-				tmpdir, "OpenDocument-v1.2-os-schema.rng", errorbuffer,
+				tmpdir, "OpenDocument-v1.2-os-schema.rng", errorhandler,
 				extendedODF) : null;
 
 		documentBuilder = createDocumentBuilder();
@@ -272,12 +237,12 @@ public class OdfChecker {
 		return builder;
 	}
 
-	static private void report(OutputReportType report,
+	static public void report(OutputReportType report,
 			ValidationErrorTypeType type, String msg) {
 		report(report.getValidation(), type, msg);
 	}
 
-	static public void report(ValidationReportType report,
+	static private void report(ValidationReportType report,
 			ValidationErrorTypeType type, String msg) {
 		ValidationErrorType error = new ValidationErrorType();
 		error.setType(type);
@@ -286,8 +251,20 @@ public class OdfChecker {
 	}
 
 	static private void report(ValidationReportType report,
+			ValidationErrorTypeType type, List<SAXParseException> msgs) {
+		for (SAXParseException e : msgs) {
+			ValidationErrorType error = new ValidationErrorType();
+			error.setType(type);
+			error.setLineNumber(e.getLineNumber());
+			error.setColumnNumber(e.getColumnNumber());
+			error.setMessage(e.getMessage());
+			report.getError().add(error);
+		}
+	}
+
+	static private void report(ValidationReportType report,
 			ValidationErrorTypeType type) {
-		report(report, type, null);
+		report(report, type, "");
 	}
 
 	public void check(File odfpath, OutputReportType report, OutputType out,
@@ -612,15 +589,13 @@ public class OdfChecker {
 
 	private void validateRelaxNG(ValidationDriver driver, InputSource source,
 			ValidationErrorTypeType errorIfInvalid, ValidationReportType report) {
-		errorbuffer.reset();
+		errorhandler.reset();
 		try {
-			if (!driver.validate(source) && errorbuffer.toString().length() > 0) {
-				report(report, errorIfInvalid, errorbuffer.toString());
-			}
+			driver.validate(source);
 		} catch (Exception e) {
-			report(report, errorIfInvalid,
-					errorbuffer.toString() + e.getMessage());
+			report(report, errorIfInvalid, e.getMessage());
 		}
+		report(report, errorIfInvalid, errorhandler.errors);
 	}
 
 	private void checkMimetypeFile(File odfpath, ValidationReportType report) {

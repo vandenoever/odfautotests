@@ -116,8 +116,8 @@ public class PdfOutputChecker {
 		try {
 			reader = new PdfReader(pdfpath.getPath());
 		} catch (IOException e) {
-			OdfChecker.report(report.getValidation(),
-					ValidationErrorTypeType.INVALIDPDFFILE, e.getMessage());
+			OdfChecker.report(report, ValidationErrorTypeType.INVALIDPDFFILE,
+					e.getMessage());
 			return;
 		}
 		PdfinfoType info = new PdfinfoType();
