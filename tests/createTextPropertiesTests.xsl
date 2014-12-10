@@ -442,6 +442,17 @@
 	<xsl:output encoding="utf-8" indent="no" method="xml"
 		omit-xml-declaration="no" />
 
+	<xsl:template name="isLength">
+		<xsl:variable name="len" select="string-length(.)" />
+		<xsl:variable name="suf" select="substring(.,$len - 1,$len)" />
+		<xsl:variable name="num" select="substring(.,1,$len - 2)" />
+		<xsl:variable name="hasLengthUnit"
+			select="$suf = 'cm' or $suf = 'mm' or $suf = 'in' or $suf = 'pt' or $suf = 'pc' or $suf = 'px'" />
+		<xsl:variable name="hasValidNumber"
+			select="string-length(translate($num,'1234567890.-',''))=0" />
+		<xsl:value-of select="$hasLengthUnit and $hasValidNumber" />
+	</xsl:template>
+
 	<xsl:template name="body">
 		<xsl:choose>
 			<xsl:when test="$mode='ods'">
@@ -539,10 +550,23 @@
 			<output types="{$mode}1.0 {$mode}1.1 {$mode}1.2 {$mode}1.2ext">
 				<file path="styles.xml">
 					<xsl:for-each select="*">
+						<xsl:variable name="isLength">
+							<xsl:for-each select="@value">
+								<xsl:call-template name="isLength" />
+							</xsl:for-each>
+						</xsl:variable>
 						<xpath
 							expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()})" />
-						<xpath
-							expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()}='{@value}'" />
+						<xsl:choose>
+							<xsl:when test="$isLength = 'true'">
+								<xpath
+									expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()},'{@value}')" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xpath
+									expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()}='{@value}'" />
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:for-each>
 				</file>
 			</output>

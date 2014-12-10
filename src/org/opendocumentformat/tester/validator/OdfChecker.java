@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,6 +35,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
 
 import org.example.documenttests.FileTestReportType;
 import org.example.documenttests.FileType;
@@ -178,6 +184,9 @@ public class OdfChecker {
 				extendedODF) : null;
 
 		documentBuilder = createDocumentBuilder();
+
+		XPathFunctionResolver resolver = new XPathFunctions();
+		xpath.setXPathFunctionResolver(resolver);
 	}
 
 	private class NSMapper implements NamespaceContext {
@@ -628,5 +637,111 @@ public class OdfChecker {
 				return;
 			}
 		}
+	}
+}
+
+class XPathFunctions implements XPathFunctionResolver {
+	final XPathFunction compareLength = new CompareLengthFunction();
+
+	@Override
+	public XPathFunction resolveFunction(QName qname, int nargs) {
+		if ((nargs == 2 || nargs == 3)
+				&& qname.getNamespaceURI().equals(
+						"http://www.example.org/documenttests")
+				&& qname.getLocalPart().equals("compareLength")) {
+
+			return compareLength;
+		}
+		return null;
+	}
+
+}
+
+class CompareLengthFunction implements XPathFunction {
+
+	private String getString(Object o) {
+		if (o instanceof String) {
+			return (String) o;
+		}
+		if (o instanceof NodeList) {
+			NodeList nodeList = (NodeList) o;
+			if (nodeList.getLength() == 1) {
+				return nodeList.item(0).getTextContent();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Object evaluate(@SuppressWarnings("rawtypes") List args)
+			throws XPathFunctionException {
+		if (args.size() < 2 || args.size() > 3) {
+			throw new XPathFunctionException("two or three arguments needed");
+		}
+
+		String length = getString(args.get(0));
+		String reference = getString(args.get(1));
+		String tolerance = null;
+		if (args.size() == 3) {
+			tolerance = getString(args.get(2));
+		}
+		if (length == null || reference == null) {
+			return false;
+		}
+		boolean r = false;
+		try {
+			r = evaluate(length, reference, tolerance);
+		} catch (XPathFunctionException e) {
+			e.printStackTrace();
+			System.err.println(e);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return r;
+	}
+
+	final Pattern regexp = Pattern
+			.compile("(-?(?:[0-9]+(?:\\.[0-9]*)?)|(?:\\.[0-9]+))(cm|mm|in|pt|pc|px)");
+
+	private double convertToPx(String length) throws XPathFunctionException {
+		Matcher matcher = regexp.matcher(length);
+		if (!matcher.matches()) {
+			throw new XPathFunctionException(length + " is not a valid length");
+		}
+		double value = Double.parseDouble(matcher.group(1));
+		String unit = matcher.group(2);
+		switch (unit) {
+		case "cm":
+			value = value * 96 / 2.54;
+			break;
+		case "mm":
+			value = value * 96 / 25.4;
+			break;
+		case "in":
+			value = value * 96;
+			break;
+		case "pt":
+			value = value / 0.75;
+			break;
+		case "pc":
+			value = value * 16;
+			break;
+		case "px":
+			break;
+		default:
+			throw new XPathFunctionException("Invalid unit " + unit);
+		}
+		return value;
+	}
+
+	private boolean evaluate(String length, String reference, String tolerance)
+			throws XPathFunctionException {
+		double lengthPx = convertToPx(length);
+		double referencePx = convertToPx(reference);
+		double tolerancePx = referencePx * 0.03; // default allows 3% error
+		if (tolerance != null) {
+			tolerancePx = convertToPx(tolerance);
+		}
+		return Math.abs(lengthPx - referencePx) <= tolerancePx;
 	}
 }
