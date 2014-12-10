@@ -710,25 +710,17 @@ class CompareLengthFunction implements XPathFunction {
 		}
 		double value = Double.parseDouble(matcher.group(1));
 		String unit = matcher.group(2);
-		switch (unit) {
-		case "cm":
+		if ("cm".equals(unit)) {
 			value = value * 96 / 2.54;
-			break;
-		case "mm":
+		} else if ("mm".equals(unit)) {
 			value = value * 96 / 25.4;
-			break;
-		case "in":
+		} else if ("in".equals(unit)) {
 			value = value * 96;
-			break;
-		case "pt":
+		} else if ("pt".equals(unit)) {
 			value = value / 0.75;
-			break;
-		case "pc":
+		} else if ("pc".equals(unit)) {
 			value = value * 16;
-			break;
-		case "px":
-			break;
-		default:
+		} else if (!"px".equals(unit)) {
 			throw new XPathFunctionException("Invalid unit " + unit);
 		}
 		return value;
