@@ -139,8 +139,8 @@ public class PdfOutputChecker {
 		}
 		int resolutiondpi = 150;
 		String pdfpngpath = pathbase + String.format(pngNumberFormat, 1);
-		createPngs(pdfpath, pathbase + "-", resolutiondpi, n);
-		createPngs(pdfpath, pathbase + "-thumb-", resolutiondpi / 10, n);
+		createPngs(pdfpath, pathbase + "-", pathbase + "-thumb-",
+				resolutiondpi, n);
 
 		BufferedImage pdfimage = null;
 		try {
@@ -169,10 +169,10 @@ public class PdfOutputChecker {
 		}
 	}
 
-	private void createPngs(File pdfpath, String pngpath, int resolutiondpi,
-			int numberOfPages) {
+	private void createPngs(File pdfpath, String pngpath, String thumbpath,
+			int resolutiondpi, int numberOfPages) {
 		String pdftoppm = Tester.resolveExe("pdftoppm");
-		if (!pdftoppm.equals("pdftoppm")) {
+		if (pdftoppm != null) {
 			String cmd[] = new String[6];
 			cmd[0] = pdftoppm;
 			cmd[1] = "-r";
@@ -181,30 +181,119 @@ public class PdfOutputChecker {
 			cmd[4] = pdfpath.getPath();
 			cmd[5] = pngpath.substring(0, pngpath.length() - 1);
 			Tester.runCommand(cmd, null);
-			return;
-		}
-		PDDocument document = null;
-		try {
-			document = PDDocument.loadNonSeq(pdfpath, null, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		PDFImageWriter imageWriter = new PDFImageWriter();
-		try {
-			for (int i = 1; i <= numberOfPages; ++i) {
-				String path = String.format(pngpath, i);
-				// use TYPE_INT_ARGB instead of TYPE_INT_ARGB because otherwise
-				// bitmaps from Abiword look bad
-				imageWriter.writeImage(document, "png", null, i, i, path,
-						BufferedImage.TYPE_INT_RGB, resolutiondpi);
+		} else {
+			PDDocument document = null;
+			try {
+				document = PDDocument.loadNonSeq(pdfpath, null, null);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			PDFImageWriter imageWriter = new PDFImageWriter();
+			try {
+				for (int i = 1; i <= numberOfPages; ++i) {
+					String path = String.format(pngpath, i);
+					// use TYPE_INT_ARGB instead of TYPE_INT_ARGB because
+					// otherwise
+					// bitmaps from Abiword look bad
+					imageWriter.writeImage(document, "png", null, i, i, path,
+							BufferedImage.TYPE_INT_RGB, resolutiondpi);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				document.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		for (int i = 1; i <= numberOfPages; ++i) {
+			String path = String.format(pngpath + "%01d.png", i);
+			String thumb = String.format(thumbpath + "%01d.png", i);
+			createThumbnail(path, thumb);
+		}
+	}
+
+	void createThumbnail(String path, String thumbpath) {
 		try {
-			document.close();
+			BufferedImage image = ImageIO.read(new File(path));
+			image = getCroppedImage(image);
+			ImageIO.write(image, "png", new File(thumbpath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
+	public BufferedImage getCroppedImage(BufferedImage source) {
+		int baseColor = source.getRGB(0, 0);
+
+		int width = source.getWidth();
+		int height = source.getHeight();
+
+		int topY;
+		for (topY = 0; topY < height; topY++) {
+			boolean isBase = true;
+			for (int x = 0; isBase && x < width; x++) {
+				isBase = baseColor == source.getRGB(x, topY);
+			}
+			if (!isBase) {
+				break;
+			}
+		}
+		topY = Math.max(0, topY - 3);
+		int bottomY;
+		for (bottomY = height - 1; bottomY > 0; bottomY--) {
+			boolean isBase = true;
+			for (int x = 0; isBase && x < width; x++) {
+				isBase = baseColor == source.getRGB(x, bottomY);
+			}
+			if (!isBase) {
+				break;
+			}
+		}
+		bottomY = Math.min(height - 1, bottomY + 3);
+		int leftX;
+		for (leftX = 0; leftX < width; leftX++) {
+			boolean isBase = true;
+			for (int y = 0; isBase && y < height; y++) {
+				isBase = baseColor == source.getRGB(leftX, y);
+			}
+			if (!isBase) {
+				break;
+			}
+		}
+		leftX = Math.max(0, leftX - 3);
+		int rightX;
+		for (rightX = width - 1; rightX > 0; rightX--) {
+			boolean isBase = true;
+			for (int y = 0; isBase && y < height; y++) {
+				isBase = baseColor == source.getRGB(rightX, y);
+			}
+			if (!isBase) {
+				break;
+			}
+		}
+		rightX = Math.min(width - 1, rightX + 3);
+
+		int dwidth = rightX - leftX + 1;
+		int dheight = bottomY - topY + 1;
+		double ratio = dwidth * 1.0 / dheight;
+		int max = 128;
+		dwidth = Math.min(dwidth, max);
+		dheight = Math.min(dheight, max);
+		if (dheight * ratio > dwidth) {
+			dheight = (int) (dwidth / ratio);
+		} else {
+			dwidth = (int) (dheight * ratio);
+		}
+
+		BufferedImage destination = new BufferedImage(dwidth, dheight,
+				BufferedImage.TYPE_INT_ARGB);
+
+		destination.getGraphics().drawImage(source, 0, 0, dwidth, dheight,
+				leftX, topY, rightX, bottomY, null);
+
+		return destination;
+	}
+
 }
