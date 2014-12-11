@@ -750,6 +750,7 @@ class ItemFunction implements XPathFunction {
 	@Override
 	public Object evaluate(@SuppressWarnings("rawtypes") List args)
 			throws XPathFunctionException {
+
 		if (args.size() < 2 || args.size() > 3) {
 			throw new XPathFunctionException("two or three arguments needed");
 		}
@@ -758,8 +759,8 @@ class ItemFunction implements XPathFunction {
 		if (input == null) {
 			return null;
 		}
-		String index = CompareLengthFunction.getString(args.get(1));
+		int index = ((Double) args.get(1)).intValue();
 		String delimiter = CompareLengthFunction.getString(args.get(2));
-		return input.split(delimiter)[Integer.parseInt(index)];
+		return input.split(delimiter)[index];
 	}
 }
