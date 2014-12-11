@@ -1490,7 +1490,7 @@
           <s:text-properties fo:color="#339999"/>
         </s:style>
         <s:style s:name="style" s:family="table-cell" s:display-name="TestStyle" s:parent-style-name="standard">
-          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-bottom="0.4mm 0.0299in 0.7mm"/>
+          <s:paragraph-properties fo:border-bottom="5pt double #000000" s:border-line-width-bottom="0.4mm 0.0299in 0.7mm"/>
         </s:style>
         <s:style s:name="table" s:family="table" s:master-page-name="Standard">
           <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
@@ -1514,10 +1514,10 @@
     </input>
     <output types="ods1.0 ods1.1 ods1.2 ods1.2ext">
       <file path="styles.xml">
-        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,2,&quot; &quot;)='#000000'"/>
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom)"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom,0,&quot; &quot;),'0.4mm')"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom,1,&quot; &quot;),'0.0299in')"/>
@@ -1543,7 +1543,7 @@
           <s:text-properties fo:color="#339999"/>
         </s:style>
         <s:style s:name="style" s:family="table-cell" s:display-name="TestStyle" s:parent-style-name="standard">
-          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-left="0.4mm 0.0299in 0.7mm"/>
+          <s:paragraph-properties fo:border-left="5pt double #000000" s:border-line-width-left="0.4mm 0.0299in 0.7mm"/>
         </s:style>
         <s:style s:name="table" s:family="table" s:master-page-name="Standard">
           <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
@@ -1567,10 +1567,10 @@
     </input>
     <output types="ods1.0 ods1.1 ods1.2 ods1.2ext">
       <file path="styles.xml">
-        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,2,&quot; &quot;)='#000000'"/>
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left)"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left,0,&quot; &quot;),'0.4mm')"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left,1,&quot; &quot;),'0.0299in')"/>
@@ -1596,7 +1596,7 @@
           <s:text-properties fo:color="#339999"/>
         </s:style>
         <s:style s:name="style" s:family="table-cell" s:display-name="TestStyle" s:parent-style-name="standard">
-          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-right="0.4mm 0.0299in 0.7mm"/>
+          <s:paragraph-properties fo:border-right="5pt double #000000" s:border-line-width-right="0.4mm 0.0299in 0.7mm"/>
         </s:style>
         <s:style s:name="table" s:family="table" s:master-page-name="Standard">
           <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
@@ -1620,10 +1620,10 @@
     </input>
     <output types="ods1.0 ods1.1 ods1.2 ods1.2ext">
       <file path="styles.xml">
-        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,2,&quot; &quot;)='#000000'"/>
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right)"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right,0,&quot; &quot;),'0.4mm')"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right,1,&quot; &quot;),'0.0299in')"/>
@@ -1649,7 +1649,7 @@
           <s:text-properties fo:color="#339999"/>
         </s:style>
         <s:style s:name="style" s:family="table-cell" s:display-name="TestStyle" s:parent-style-name="standard">
-          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-top="0.4mm 0.0299in 0.7mm"/>
+          <s:paragraph-properties fo:border-top="5pt double #000000" s:border-line-width-top="0.4mm 0.0299in 0.7mm"/>
         </s:style>
         <s:style s:name="table" s:family="table" s:master-page-name="Standard">
           <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
@@ -1673,10 +1673,10 @@
     </input>
     <output types="ods1.0 ods1.1 ods1.2 ods1.2ext">
       <file path="styles.xml">
-        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,2,&quot; &quot;)='#000000'"/>
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top)"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top,0,&quot; &quot;),'0.4mm')"/>
         <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top,1,&quot; &quot;),'0.0299in')"/>

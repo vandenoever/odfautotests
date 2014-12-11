@@ -123,19 +123,19 @@
 			<s:border-line-width value="0.4mm 0.0299in 0.7mm" />
 		</t:testtemplate>
 		<t:testtemplate name="border-line-width-bottom">
-			<fo:border value="5pt double #000000" />
+			<fo:border-bottom value="5pt double #000000" />
 			<s:border-line-width-bottom value="0.4mm 0.0299in 0.7mm" />
 		</t:testtemplate>
 		<t:testtemplate name="border-line-width-left">
-			<fo:border value="5pt double #000000" />
+			<fo:border-left value="5pt double #000000" />
 			<s:border-line-width-left value="0.4mm 0.0299in 0.7mm" />
 		</t:testtemplate>
 		<t:testtemplate name="border-line-width-right">
-			<fo:border value="5pt double #000000" />
+			<fo:border-right value="5pt double #000000" />
 			<s:border-line-width-right value="0.4mm 0.0299in 0.7mm" />
 		</t:testtemplate>
 		<t:testtemplate name="border-line-width-top">
-			<fo:border value="5pt double #000000" />
+			<fo:border-top value="5pt double #000000" />
 			<s:border-line-width-top value="0.4mm 0.0299in 0.7mm" />
 		</t:testtemplate>
 		<t:testtemplate name="font-independent-line-spacing">
