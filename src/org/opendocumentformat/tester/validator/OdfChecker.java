@@ -742,7 +742,7 @@ class CompareLengthFunction implements XPathFunction {
 		if (tolerance != null) {
 			tolerancePx = convertToPx(tolerance);
 		}
-		return Math.abs(lengthPx - referencePx) <= tolerancePx;
+		return Math.abs(lengthPx - referencePx) <= Math.abs(tolerancePx);
 	}
 }
 
