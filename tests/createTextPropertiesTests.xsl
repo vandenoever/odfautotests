@@ -21,6 +21,8 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.example.org/documenttests" xmlns:t="http://www.example.org/documenttests">
 
+	<xsl:import href="shared.xsl" />
+
 	<xsl:param name="mode" select="'odt'" />
 
 	<t:testtemplates>
@@ -99,7 +101,7 @@
 			<fo:language value="es" />
 		</t:testtemplate>
 		<t:testtemplate name="text-shadow">
-			<fo:text-shadow value="3pt 3pt" />
+			<fo:text-shadow value="3pt 4pt" />
 		</t:testtemplate>
 		<t:testtemplate name="text-transform-none">
 			<fo:text-transform value="none" />
@@ -442,53 +444,6 @@
 	<xsl:output encoding="utf-8" indent="no" method="xml"
 		omit-xml-declaration="no" />
 
-	<xsl:template name="isLength">
-		<xsl:variable name="len" select="string-length(.)" />
-		<xsl:variable name="suf" select="substring(.,$len - 1,$len)" />
-		<xsl:variable name="num" select="substring(.,1,$len - 2)" />
-		<xsl:variable name="hasLengthUnit"
-			select="$suf = 'cm' or $suf = 'mm' or $suf = 'in' or $suf = 'pt' or $suf = 'pc' or $suf = 'px'" />
-		<xsl:variable name="hasValidNumber"
-			select="string-length(translate($num,'1234567890.-',''))=0" />
-		<xsl:value-of select="$hasLengthUnit and $hasValidNumber" />
-	</xsl:template>
-
-	<xsl:template name="body">
-		<xsl:choose>
-			<xsl:when test="$mode='ods'">
-				<o:spreadsheet>
-					<table:table table:name="TestTable" table:style-name="table"
-						table:print="true">
-						<table:table-column
-							table:default-cell-style-name="style" />
-						<table:table-row>
-							<table:table-cell o:value-type="string">
-								<text:p>hello world</text:p>
-							</table:table-cell>
-						</table:table-row>
-					</table:table>
-				</o:spreadsheet>
-			</xsl:when>
-			<xsl:when test="$mode='odp'">
-				<o:presentation>
-					<draw:page draw:master-page-name="Page">
-						<draw:frame draw:style-name="style" svg:width="10cm"
-							svg:height="10cm" svg:x="1cm" svg:y="1cm">
-							<draw:text-box>
-								<text:p>hello world</text:p>
-							</draw:text-box>
-						</draw:frame>
-					</draw:page>
-				</o:presentation>
-			</xsl:when>
-			<xsl:otherwise>
-				<o:text>
-					<text:p text:style-name="style">hello world</text:p>
-				</o:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
 	<xsl:template match="t:testtemplate">
 		<xsl:variable name="family">
 			<xsl:choose>
@@ -550,23 +505,14 @@
 			<output types="{$mode}1.0 {$mode}1.1 {$mode}1.2 {$mode}1.2ext">
 				<file path="styles.xml">
 					<xsl:for-each select="*">
-						<xsl:variable name="isLength">
-							<xsl:for-each select="@value">
-								<xsl:call-template name="isLength" />
-							</xsl:for-each>
-						</xsl:variable>
-						<xpath
-							expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()})" />
-						<xsl:choose>
-							<xsl:when test="$isLength = 'true'">
-								<xpath
-									expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()},'{@value}')" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xpath
-									expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@{name()}='{@value}'" />
-							</xsl:otherwise>
-						</xsl:choose>
+						<xsl:variable name="selector"
+							select="concat(&quot;//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@&quot;,name())" />
+						<xpath expr="boolean({$selector})" />
+						<xsl:call-template name="xpaths">
+							<xsl:with-param name="selector" select="$selector" />
+							<xsl:with-param name="value" select="@value" />
+							<xsl:with-param name="index" select="-1" />
+						</xsl:call-template>
 					</xsl:for-each>
 				</file>
 			</output>

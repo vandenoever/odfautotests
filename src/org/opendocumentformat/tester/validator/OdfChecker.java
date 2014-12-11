@@ -642,6 +642,7 @@ public class OdfChecker {
 
 class XPathFunctions implements XPathFunctionResolver {
 	final XPathFunction compareLength = new CompareLengthFunction();
+	final XPathFunction item = new ItemFunction();
 
 	@Override
 	public XPathFunction resolveFunction(QName qname, int nargs) {
@@ -652,6 +653,13 @@ class XPathFunctions implements XPathFunctionResolver {
 
 			return compareLength;
 		}
+		if ((nargs == 2 || nargs == 3)
+				&& qname.getNamespaceURI().equals(
+						"http://www.example.org/documenttests")
+				&& qname.getLocalPart().equals("item")) {
+
+			return item;
+		}
 		return null;
 	}
 
@@ -659,7 +667,7 @@ class XPathFunctions implements XPathFunctionResolver {
 
 class CompareLengthFunction implements XPathFunction {
 
-	private String getString(Object o) {
+	public static String getString(Object o) {
 		if (o instanceof String) {
 			return (String) o;
 		}
@@ -735,5 +743,23 @@ class CompareLengthFunction implements XPathFunction {
 			tolerancePx = convertToPx(tolerance);
 		}
 		return Math.abs(lengthPx - referencePx) <= tolerancePx;
+	}
+}
+
+class ItemFunction implements XPathFunction {
+	@Override
+	public Object evaluate(@SuppressWarnings("rawtypes") List args)
+			throws XPathFunctionException {
+		if (args.size() < 2 || args.size() > 3) {
+			throw new XPathFunctionException("two or three arguments needed");
+		}
+
+		String input = CompareLengthFunction.getString(args.get(0));
+		if (input == null) {
+			return null;
+		}
+		String index = CompareLengthFunction.getString(args.get(1));
+		String delimiter = CompareLengthFunction.getString(args.get(2));
+		return input.split(delimiter)[Integer.parseInt(index)];
 	}
 }
