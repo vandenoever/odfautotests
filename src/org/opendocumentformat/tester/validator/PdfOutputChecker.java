@@ -231,7 +231,7 @@ public class PdfOutputChecker {
 		int height = source.getHeight();
 
 		int topY;
-		for (topY = 0; topY < height; topY++) {
+		for (topY = 0; topY < height - 1; topY++) {
 			boolean isBase = true;
 			for (int x = 0; isBase && x < width; x++) {
 				isBase = baseColor == source.getRGB(x, topY);
@@ -251,9 +251,9 @@ public class PdfOutputChecker {
 				break;
 			}
 		}
-		bottomY = Math.min(height - 1, bottomY + 3);
+		bottomY = Math.max(topY, Math.min(height - 1, bottomY + 3));
 		int leftX;
-		for (leftX = 0; leftX < width; leftX++) {
+		for (leftX = 0; leftX < width - 1; leftX++) {
 			boolean isBase = true;
 			for (int y = 0; isBase && y < height; y++) {
 				isBase = baseColor == source.getRGB(leftX, y);
@@ -266,14 +266,14 @@ public class PdfOutputChecker {
 		int rightX;
 		for (rightX = width - 1; rightX > 0; rightX--) {
 			boolean isBase = true;
-			for (int y = 0; isBase && y < height; y++) {
+			for (int y = 0; isBase && y < height - 1; y++) {
 				isBase = baseColor == source.getRGB(rightX, y);
 			}
 			if (!isBase) {
 				break;
 			}
 		}
-		rightX = Math.min(width - 1, rightX + 3);
+		rightX = Math.max(leftX, Math.min(width - 1, rightX + 3));
 
 		int dwidth = rightX - leftX + 1;
 		int dheight = bottomY - topY + 1;
