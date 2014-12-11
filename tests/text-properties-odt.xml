@@ -963,8 +963,8 @@
     <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
       <file path="styles.xml">
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@fo:text-shadow)"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@fo:text-shadow,0&quot; &quot;,'3pt')"/>
-        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@fo:text-shadow,1&quot; &quot;,'4pt')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@fo:text-shadow,0,&quot; &quot;),'3pt')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@fo:text-shadow,1,&quot; &quot;),'4pt')"/>
       </file>
     </output>
     <pdf/>
@@ -3218,8 +3218,8 @@
     <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
       <file path="styles.xml">
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-emphasize)"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-emphasize,0&quot; &quot;='disc'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-emphasize,1&quot; &quot;='below'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-emphasize,0,&quot; &quot;)='disc'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-emphasize,1,&quot; &quot;)='below'"/>
       </file>
     </output>
     <pdf/>
@@ -4163,8 +4163,8 @@
     <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
       <file path="styles.xml">
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position)"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,0&quot; &quot;='sub'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,1&quot; &quot;='50%'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,0,&quot; &quot;)='sub'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,1,&quot; &quot;)='50%'"/>
       </file>
     </output>
     <pdf/>
@@ -4244,8 +4244,8 @@
     <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
       <file path="styles.xml">
         <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position)"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,0&quot; &quot;='super'"/>
-        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,1&quot; &quot;='50%'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,0,&quot; &quot;)='super'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:text-properties/@s:text-position,1,&quot; &quot;)='50%'"/>
       </file>
     </output>
     <pdf/>

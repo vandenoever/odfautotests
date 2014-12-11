@@ -1,0 +1,2167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<documenttests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.example.org/documenttests" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:db="urn:oasis:names:tc:opendocument:xmlns:database:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datas:1.0" xmlns:o="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:odf="http://docs.oasis-open.org/ns/office/1.2/meta/odf#" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:s="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:t="http://www.example.org/documenttests" xsi:schemaLocation="http://www.example.org/documenttests ../documenttests.xsd">
+  <test name="odt-background-color">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:background-color="#339999"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:background-color)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:background-color='#339999'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="0.06pt solid #000000"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'0.06pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='solid'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-bottom">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border-bottom="0.06pt solid #000000"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,0,&quot; &quot;),'0.06pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,1,&quot; &quot;)='solid'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-bottom,2,&quot; &quot;)='#000000'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-left">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border-left="0.06pt solid #000000"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,0,&quot; &quot;),'0.06pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,1,&quot; &quot;)='solid'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-left,2,&quot; &quot;)='#000000'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-right">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border-right="0.06pt solid #000000"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,0,&quot; &quot;),'0.06pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,1,&quot; &quot;)='solid'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-right,2,&quot; &quot;)='#000000'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-top">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border-top="0.06pt solid #000000"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,0,&quot; &quot;),'0.06pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,1,&quot; &quot;)='solid'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border-top,2,&quot; &quot;)='#000000'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-break-after">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:break-after="auto"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:break-after)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:break-after='auto'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-break-before">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:break-before="auto"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:break-before)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:break-before='auto'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-hyphenation-keep">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:hyphenation-keep="page"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:hyphenation-keep)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:hyphenation-keep='page'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-hyphenation-ladder-count">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:hyphenation-ladder-count="no-limit"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:hyphenation-ladder-count)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:hyphenation-ladder-count='no-limit'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-keep-together">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:keep-together="auto"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:keep-together)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:keep-together='auto'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-keep-with-next">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:keep-with-next="auto"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:keep-with-next)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:keep-with-next='auto'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-line-height">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:line-height="120%"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:line-height)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:line-height='120%'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-margin">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:margin="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-margin-bottom">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:margin-bottom="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-bottom)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-bottom,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-margin-left">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:margin-left="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-left)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-left,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-margin-right">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:margin-right="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-right)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-right,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-margin-top">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:margin-top="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-top)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:margin-top,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-orphans">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:orphans="1"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:orphans)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:orphans='1'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-padding">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:padding="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-padding-bottom">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:padding-bottom="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-bottom)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-bottom,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-padding-left">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:padding-left="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-left)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-left,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-padding-right">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:padding-right="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-right)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-right,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-padding-top">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:padding-top="0.0299in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-top)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:padding-top,'0.0299in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-text-align">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:text-align="center"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-align)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-align='center'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-text-align-last">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:text-align-last="center"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-align-last)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-align-last='center'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-text-indent">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:text-indent="10mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-indent)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:text-indent,'10mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-widows">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:widows="1"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:widows)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:widows='1'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-auto-test-indent">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:auto-text-indent="true"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:auto-text-indent)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:auto-text-indent='true'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-background-transparency">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:background-transparency="50%"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:background-transparency)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:background-transparency='50%'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-line-width">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width="0.4mm 0.0299in 0.7mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width,0,&quot; &quot;),'0.4mm')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width,1,&quot; &quot;),'0.0299in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width,2,&quot; &quot;),'0.7mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-line-width-bottom">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-bottom="0.4mm 0.0299in 0.7mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom,0,&quot; &quot;),'0.4mm')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom,1,&quot; &quot;),'0.0299in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-bottom,2,&quot; &quot;),'0.7mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-line-width-left">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-left="0.4mm 0.0299in 0.7mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left,0,&quot; &quot;),'0.4mm')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left,1,&quot; &quot;),'0.0299in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-left,2,&quot; &quot;),'0.7mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-line-width-right">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-right="0.4mm 0.0299in 0.7mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right,0,&quot; &quot;),'0.4mm')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right,1,&quot; &quot;),'0.0299in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-right,2,&quot; &quot;),'0.7mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-border-line-width-top">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties fo:border="5pt double #000000" s:border-line-width-top="0.4mm 0.0299in 0.7mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,0,&quot; &quot;),'5pt')"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,1,&quot; &quot;)='double'"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@fo:border,2,&quot; &quot;)='#000000'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top)"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top,0,&quot; &quot;),'0.4mm')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top,1,&quot; &quot;),'0.0299in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:border-line-width-top,2,&quot; &quot;),'0.7mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-font-independent-line-spacing">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:font-independent-line-spacing="false"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:font-independent-line-spacing)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:font-independent-line-spacing='false'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-join-border">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:join-border="true"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:join-border)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:join-border='true'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-justify-single-word">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:justify-single-word="true"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:justify-single-word)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:justify-single-word='true'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-line-break">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:line-break="normal"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-break)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-break='normal'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-line-height-at-least">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:line-height-at-least="10mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-height-at-least)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-height-at-least,'10mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-line-spacing">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:line-spacing="10mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-spacing)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:line-spacing,'10mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-page-number">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:page-number="10"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:page-number)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:page-number='10'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-punctuation-wrap">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:punctuation-wrap="simple"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:punctuation-wrap)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:punctuation-wrap='simple'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-register-true">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:register-true="false"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:register-true)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:register-true='false'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-shadow">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:shadow="#808080 -0.0701in 0.0701in"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:shadow)"/>
+        <xpath expr="t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:shadow,0,&quot; &quot;)='#808080'"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:shadow,1,&quot; &quot;),'-0.0701in')"/>
+        <xpath expr="t:compareLength(t:item(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:shadow,2,&quot; &quot;),'0.0701in')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-snap-to-layout-grid">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:snap-to-layout-grid="false"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:snap-to-layout-grid)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:snap-to-layout-grid='false'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-tab-stop-distance">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:tab-stop-distance="50mm"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:tab-stop-distance)"/>
+        <xpath expr="t:compareLength(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:tab-stop-distance,'50mm')"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-text-autospace">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:text-autospace="none"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:text-autospace)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:text-autospace='none'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-vertical-align">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:vertical-align="auto"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:vertical-align)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:vertical-align='auto'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-writing-mode">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:writing-mode="lr-tb"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:writing-mode)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:writing-mode='lr-tb'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-writing-mode-automatic">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties s:writing-mode-automatic="false"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:writing-mode-automatic)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@s:writing-mode-automatic='false'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-line-number">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties text:number-lines="true" text:line-number="5"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:number-lines)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:number-lines='true'"/>
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:line-number)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:line-number='5'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+  <test name="odt-number-lines">
+    <input type="odt1.2">
+      <o:styles>
+        <s:style s:name="standard" s:family="paragraph">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="graphic">
+          <s:graphic-properties draw:stroke="none" draw:fill="none"/>
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="standard" s:family="table-cell">
+          <s:text-properties fo:font-size="12pt" s:font-name="Helvetica"/>
+        </s:style>
+        <s:style s:name="color" s:family="text" s:display-name="Text">
+          <s:text-properties fo:color="#339999"/>
+        </s:style>
+        <s:style s:name="style" s:family="paragraph" s:display-name="TestStyle" s:parent-style-name="standard">
+          <s:paragraph-properties text:number-lines="true"/>
+        </s:style>
+        <s:style s:name="table" s:family="table" s:master-page-name="Standard">
+          <s:table-properties table:display="true" s:writing-mode="lr-tb"/>
+        </s:style>
+      </o:styles>
+      <o:automatic-styles>
+        <s:style s:family="table" s:master-page-name="Standard" s:name="table">
+          <s:table-properties s:writing-mode="lr-tb" table:display="true"/>
+        </s:style>
+      </o:automatic-styles>
+      <o:text>
+        <text:p text:style-name="style">hello world</text:p>
+      </o:text>
+    </input>
+    <output types="odt1.0 odt1.1 odt1.2 odt1.2ext">
+      <file path="styles.xml">
+        <xpath expr="boolean(//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:number-lines)"/>
+        <xpath expr="//s:style[@s:display-name='TestStyle' or (not(@s:display-name) and @s:name='TestStyle')]/s:paragraph-properties/@text:number-lines='true'"/>
+      </file>
+    </output>
+    <pdf/>
+  </test>
+</documenttests>

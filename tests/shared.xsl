@@ -65,7 +65,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of
-						select="concat('t:item(',$selector,',',$index,'&quot; &quot;')" />
+						select="concat('t:item(',$selector,',',$index,',&quot; &quot;)')" />
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
