@@ -319,7 +319,14 @@ public class Tester {
 		return report;
 	}
 
+	static final Map<String, String> exeCache = new HashMap<String, String>();
+
 	public static String resolveExe(String exe) {
+		if (exeCache.containsKey(exe)) {
+			return exeCache.get(exe);
+		}
+		boolean isWindows = System.getProperty("os.name").toLowerCase()
+				.indexOf("win") >= 0;
 		File f = new File(exe);
 		if (!f.exists()) {
 			String paths[] = System.getenv("PATH").split(File.pathSeparator);
@@ -328,11 +335,13 @@ public class Tester {
 				if (f.exists()) {
 					break;
 				}
-				// look for windows executable
-				f = new File(p, exe + ".exe");
-				System.err.println("Checking " + f.getAbsolutePath());
-				if (f.exists()) {
-					break;
+				if (isWindows) {
+					// look for windows executable
+					f = new File(p, exe + ".exe");
+					System.err.println("Checking " + f.getAbsolutePath());
+					if (f.exists()) {
+						break;
+					}
 				}
 			}
 		}
@@ -341,9 +350,10 @@ public class Tester {
 		} catch (IOException e) {
 		}
 		if (f.isFile()) {
+			exeCache.put(exe, f.getPath());
 			return f.getPath();
 		}
-		return exe;
+		return null;
 	}
 
 	public static CommandReportType runCommand(String cmd[],
