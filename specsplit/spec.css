@@ -1,0 +1,106 @@
+h1, h2, h3, h4, h5, h6 {
+    color: #009;
+    font-weight: bold;
+    text-indent: 0in;
+    clear: both;
+}
+h1 > a, h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
+    color: #009;
+    text-decoration: none;
+}
+h1 > a:hover, h2 > a:hover, h3 > a:hover, h4 > a:hover, h5 > a:hover, h6 > a:hover {
+    color: #009;
+    text-decoration: underline;
+}
+h1 {
+    font-size: 180%;
+}
+h2 {
+    font-size: 140%;
+}
+h3 {
+    font-size: 130%;
+}
+h4 {
+    font-size: 120%;
+    /*margin: 0.1665in 0in 0.0835in;*/
+}
+h5 {
+    margin: 0.1665in 0in 0.0835in;
+}
+p {
+    /*margin-bottom: 0.0555in;*/
+    /*margin-top: 0.0555in;*/
+    /*font-size: 10pt;*/
+}
+body {
+    font-family: Arial, sans-serif;
+/*    margin: 0px;*/
+    max-width: 8.5in;
+    margin: 1in 1.2492in 0.4925in;
+}
+
+.Attribute {
+    font-family: Courier New, monospace;
+}
+.Element {
+    font-family: Courier New, monospace;
+}
+
+.RelaxNG {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.Example, .Example_20_end {
+    margin-left: 2em;
+    border: 1px solid black;
+}
+
+.codeStart {
+    padding-top: 0.5em;
+    border-bottom: 1px none transparent;
+}
+.codeEnd {
+    padding-bottom: 0.5em;
+    border-top: 1px none transparent;
+}
+.code {
+    border-top: 1px none transparent;
+    border-bottom: 1px none transparent;
+}
+.codeStart, .code, .codeEnd {
+    font-family: Courier New, monospace;
+    background-color: #D9D9D9;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    white-space: pre-wrap;
+    -moz-tab-size: 4;
+    tab-size: 4;
+}
+
+.boxStart {
+    border-top: 1px solid black;
+}
+.boxEnd {
+    border-bottom: 1px solid black;
+}
+.boxStart, .box, .boxEnd {
+    background-color: #E6E6E6;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0.5em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+table {
+    border-collapse: collapse;
+}
+td, th {
+    border: 1px solid black;
+    vertical-align: top;
+}
+.inline {
+    display: inline-block;
+}
