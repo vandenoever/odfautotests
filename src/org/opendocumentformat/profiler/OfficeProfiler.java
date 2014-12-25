@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.example.documenttests.CommandReportType;
 import org.example.documenttests.OutputReportType;
 import org.example.documenttests.ValidationErrorType;
@@ -123,7 +124,7 @@ public class OfficeProfiler {
 
 	static int maxbacktraces = 50;
 
-	static Result profile(String dir, String file, Logger logger,
+	static @Nullable Result profile(String dir, String file, Logger logger,
 			ODFValidator validator) throws IOException {
 		String ext = getExt(file);
 		String exe = null;
@@ -200,8 +201,8 @@ public class OfficeProfiler {
 		return null;
 	}
 
-	static Map<String, Result> profileAll(String dir, String loggername)
-			throws IOException {
+	static Map<String, Result> profileAll(String dir,
+			@Nullable String loggername) throws IOException {
 		List<String> exts = new ArrayList<String>();
 		for (List<String> v : applications.values()) {
 			for (String e : v) {
@@ -233,11 +234,11 @@ public class OfficeProfiler {
 		return results;
 	}
 
-	static Times summarize(Object lines) {
-		return null;
+	static Times summarize(@Nullable Object lines) {
+		return new Times();
 	}
 
-	static int getUnaccountedTime(Object lines, Object times) {
+	static int getUnaccountedTime(@Nullable Object lines, @Nullable Object times) {
 		return 0;
 	}
 
@@ -338,7 +339,7 @@ class FieldComparator implements Comparator<String> {
 		this.fields = fields;
 	}
 
-	public int compare(String e1, String e2) {
+	public int compare(@Nullable String e1, @Nullable String e2) {
 		return fields.get(e1).min - fields.get(e2).min;
 	}
 }
@@ -353,6 +354,11 @@ class Field {
 class Times {
 	Map<String, Integer> min;
 	Map<Object, Integer> max;
+
+	Times() {
+		min = new HashMap<String, Integer>();
+		max = new HashMap<Object, Integer>();
+	}
 }
 
 class Result {
@@ -362,12 +368,19 @@ class Result {
 	int returnValue;
 	int utime;
 	int stime;
+	@Nullable
 	String backtrace;
+
+	Result() {
+		times = new Times();
+		lines = new ArrayList<String>();
+	}
 }
 
 class ODFValidator {
 	final static OdfChecker odfvalidator = new OdfChecker(true);
 
+	@Nullable
 	String validate(String path) {
 		System.out.println(path);
 		OutputReportType report = new OutputReportType();
@@ -390,7 +403,9 @@ class ODFValidator {
 }
 
 class Logger {
+	@Nullable
 	String suitename;
+	@Nullable
 	String testname;
 
 	void startTestSuite(String name) {
@@ -431,7 +446,7 @@ class Logger {
 				.replaceAll("\r", "|n");
 	}
 
-	void failTest(String err) {
+	void failTest(@Nullable String err) {
 		if (suitename != null && testname != null) {
 			if (err == null) {
 				err = "";

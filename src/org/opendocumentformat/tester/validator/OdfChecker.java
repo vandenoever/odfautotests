@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,11 +28,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -39,6 +40,7 @@ import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.example.documenttests.FileTestReportType;
 import org.example.documenttests.FileType;
 import org.example.documenttests.FragmentType;
@@ -51,7 +53,6 @@ import org.example.documenttests.ValidationReportType;
 import org.example.documenttests.XpathReportType;
 import org.example.documenttests.XpathType;
 import org.opendocumentformat.tester.InputCreator;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -92,12 +93,13 @@ public class OdfChecker {
 		}
 
 		@Override
-		public void error(SAXParseException e) {
+		public void error(@Nullable SAXParseException e) {
 			errors.add(e);
 		}
 
 		@Override
-		public void fatalError(SAXParseException e) throws SAXParseException {
+		public void fatalError(@Nullable SAXParseException e)
+				throws SAXParseException {
 			errors.add(e);
 		}
 
@@ -107,7 +109,7 @@ public class OdfChecker {
 	}
 
 	private class OdfData {
-		public String version;
+		public @Nullable String version;
 		public Set<String> entries = new HashSet<String>();
 	}
 
@@ -128,7 +130,8 @@ public class OdfChecker {
 	}
 
 	static private ValidationDriver createValidationDriver(String tmpdir,
-			String path, ErrorHandler errorhandler, boolean extendedODF) {
+			String path, ErrorHandler errorhandler, boolean extendedODF,
+			@Nullable ValidationDriver parent) {
 		File rng = new File(tmpdir + File.separator + path);
 		if (!rng.exists()) {
 			extract(rng.getPath(), path);
@@ -149,8 +152,7 @@ public class OdfChecker {
 				throw new Error("Could not load schema " + rngpath + ".");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			driver = null;
+			throw new Error(e);
 		}
 		return driver;
 	}
@@ -161,27 +163,28 @@ public class OdfChecker {
 		(new File(tmpdir)).mkdir();
 
 		odf10Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.0-os.rng", errorhandler, extendedODF);
+				"OpenDocument-schema-v1.0-os.rng", errorhandler, extendedODF,
+				null);
 		odf10manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.0-os.rng", errorhandler,
-				extendedODF);
+				extendedODF, null);
 		odf11Validator = createValidationDriver(tmpdir,
-				"OpenDocument-schema-v1.1.rng", errorhandler, extendedODF);
-		odf11strictValidator = (odf11Validator != null) ? createValidationDriver(
-				tmpdir, "OpenDocument-strict-schema-v1.1.rng", errorhandler,
-				extendedODF) : null;
+				"OpenDocument-schema-v1.1.rng", errorhandler, extendedODF, null);
+		odf11strictValidator = createValidationDriver(tmpdir,
+				"OpenDocument-strict-schema-v1.1.rng", errorhandler,
+				extendedODF, odf11Validator);
 		odf11manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-manifest-schema-v1.1.rng", errorhandler,
-				extendedODF);
+				extendedODF, null);
 		odf12manifestValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-manifest-schema.rng", errorhandler,
-				extendedODF);
+				extendedODF, null);
 		odf12dsigValidator = createValidationDriver(tmpdir,
 				"OpenDocument-v1.2-os-dsig-schema.rng", errorhandler,
-				extendedODF);
-		odf12Validator = (odf12dsigValidator != null) ? createValidationDriver(
-				tmpdir, "OpenDocument-v1.2-os-schema.rng", errorhandler,
-				extendedODF) : null;
+				extendedODF, null);
+		odf12Validator = createValidationDriver(tmpdir,
+				"OpenDocument-v1.2-os-schema.rng", errorhandler, extendedODF,
+				odf12dsigValidator);
 
 		documentBuilder = createDocumentBuilder();
 
@@ -192,15 +195,15 @@ public class OdfChecker {
 	private class NSMapper implements NamespaceContext {
 		Map<String, String> nsmap;
 
-		NSMapper(Map<String, String> map) {
-			nsmap = map;
+		NSMapper(@Nullable Map<String, String> map) {
+			nsmap = (map == null) ? new HashMap<String, String>() : map;
 		}
 
-		public String getNamespaceURI(String prefix) {
-			return (nsmap == null) ? null : nsmap.get(prefix);
+		public @Nullable String getNamespaceURI(@Nullable String prefix) {
+			return nsmap.get(prefix);
 		}
 
-		public String getPrefix(String nsuri) {
+		public @Nullable String getPrefix(@Nullable String nsuri) {
 			for (Entry<String, String> e : nsmap.entrySet()) {
 				if (e.getValue().equals(nsuri)) {
 					return e.getKey();
@@ -209,7 +212,7 @@ public class OdfChecker {
 			return null;
 		}
 
-		public Iterator<String> getPrefixes(String nsuri) {
+		public Iterator<String> getPrefixes(@Nullable String nsuri) {
 			Set<String> set = new HashSet<String>();
 			for (Entry<String, String> e : nsmap.entrySet()) {
 				if (e.getValue().equals(nsuri)) {
@@ -241,7 +244,7 @@ public class OdfChecker {
 			builder = factory.newDocumentBuilder();
 
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new Error(e);
 		}
 		return builder;
 	}
@@ -276,8 +279,8 @@ public class OdfChecker {
 		report(report, type, "");
 	}
 
-	public void check(File odfpath, OutputReportType report, OutputType out,
-			Map<String, String> nsmap) {
+	public void check(File odfpath, OutputReportType report,
+			@Nullable OutputType out, @Nullable Map<String, String> nsmap) {
 		xpath.setNamespaceContext(new NSMapper(nsmap));
 
 		report.setFragment(new FragmentType());
@@ -300,31 +303,31 @@ public class OdfChecker {
 	}
 
 	private void checkStylesXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+			OdfData data, @Nullable OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSTYLESXML,
 				ValidationErrorTypeType.MISSINGSTYLESXML, "styles.xml", out);
 	}
 
 	private void checkContentXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+			OdfData data, @Nullable OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDCONTENTXML,
 				ValidationErrorTypeType.MISSINGCONTENTXML, "content.xml", out);
 	}
 
 	private void checkMetaXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+			OdfData data, @Nullable OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDMETAXML,
 				ValidationErrorTypeType.MISSINGMETAXML, "meta.xml", out);
 	}
 
 	private void checkSettingsXml(ZipFile zip, OutputReportType report,
-			OdfData data, OutputType out) throws IOException {
+			OdfData data, @Nullable OutputType out) throws IOException {
 		checkXml(zip, report, data, ValidationErrorTypeType.INVALIDSETTINGSXML,
 				ValidationErrorTypeType.MISSINGSETTINGSXML, "settings.xml", out);
 	}
 
-	private Element getChild(String localname, Element e) {
-		Node n = e.getFirstChild();
+	private @Nullable Element getChild(String localname, @Nullable Element e) {
+		Node n = (e == null) ? null : e.getFirstChild();
 		while (n != null) {
 			if (n instanceof Element) {
 				e = (Element) n;
@@ -342,10 +345,10 @@ public class OdfChecker {
 		return null;
 	}
 
-	private Document checkXml(ZipFile zip, OutputReportType report,
+	private @Nullable Document checkXml(ZipFile zip, OutputReportType report,
 			OdfData data, ValidationErrorTypeType invalid,
-			ValidationErrorTypeType missing, String path, OutputType out)
-			throws IOException {
+			ValidationErrorTypeType missing, String path,
+			@Nullable OutputType out) throws IOException {
 		ZipEntry ze = zip.getEntry(path);
 		if (ze == null) {
 			report(report.getValidation(), missing);
@@ -376,15 +379,18 @@ public class OdfChecker {
 		return doc;
 	}
 
-	private FileTestReportType checkExpressions(Document doc, OutputType out,
-			String path) {
+	private @Nullable FileTestReportType checkExpressions(Document doc,
+			@Nullable OutputType out, String path) {
 		if (out == null) {
 			return null;
 		}
 		FileTestReportType ft = null;
 		for (FileType f : out.getFile()) {
 			if (f.getPath().equals(path)) {
-				if (ft == null && f.getXpath().size() > 0) {
+				if (ft == null) {
+					if (f.getXpath().size() == 0) {
+						// TODO: handle error
+					}
 					ft = new FileTestReportType();
 					ft.setPath(path);
 				}
@@ -454,8 +460,9 @@ public class OdfChecker {
 		}
 	}
 
-	private void checkXml(InputStream in, String version,
-			OutputReportType report, ValidationErrorTypeType error) {
+	private void checkXml(InputStream in, @Nullable String version,
+			OutputReportType report, ValidationErrorTypeType error)
+			throws IOException {
 		ValidationDriver driver = null;
 		if ("1.2".equals(version)) {
 			driver = odf12Validator;
@@ -473,8 +480,9 @@ public class OdfChecker {
 		}
 	}
 
-	private void checkManifestXml(InputStream in, String version,
-			ValidationReportType report, ValidationErrorTypeType error) {
+	private void checkManifestXml(InputStream in, @Nullable String version,
+			ValidationReportType report, ValidationErrorTypeType error)
+			throws IOException {
 		ValidationDriver driver = null;
 		if ("1.2".equals(version)) {
 			driver = odf12manifestValidator;
@@ -507,8 +515,7 @@ public class OdfChecker {
 			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			trans = factory.newTransformer(source);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			throw new Error(e);
 		}
 		// abiwords manifest.xml needs Manifest.dtd
 		// we create one if there is none yet
@@ -523,36 +530,17 @@ public class OdfChecker {
 		return trans;
 	}
 
-	InputStream removeForeign(InputStream in) {
-		InputStream result = null;
+	InputStream removeForeign(InputStream in) throws IOException {
+		Source source = new StreamSource(in);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		StreamResult stream = new StreamResult(out);
 		try {
-			Source source = new StreamSource(in);
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			StreamResult stream = new StreamResult(out);
 			foreignRemover.transform(source, stream);
-			out.close();
-			result = new ByteArrayInputStream(out.toByteArray());
-		} catch (Exception e) {
+		} catch (TransformerException e) {
 			e.printStackTrace();
 		}
-		return result;
-	}
-
-	void removeForeignXml(Element e) {
-		// just remove attributes from calligra ns for now
-		XPathExpression x = null;
-		NodeList list = null;
-		try {
-			x = xpath
-					.compile("//@*[namespace-uri(.)='http://www.calligra.org/2005/']");
-			list = (NodeList) x.evaluate(e, XPathConstants.NODESET);
-		} catch (XPathExpressionException err) {
-		}
-		for (int i = 0; i < list.getLength(); ++i) {
-			Attr a = (Attr) list.item(i);
-			a.getOwnerElement().getAttributes()
-					.removeNamedItemNS(a.getNamespaceURI(), a.getLocalName());
-		}
+		out.close();
+		return new ByteArrayInputStream(out.toByteArray());
 	}
 
 	private void checkManifestXml(ZipFile zip, ValidationReportType report,
@@ -645,8 +633,10 @@ class XPathFunctions implements XPathFunctionResolver {
 	final XPathFunction item = new ItemFunction();
 
 	@Override
-	public XPathFunction resolveFunction(QName qname, int nargs) {
+	public @Nullable XPathFunction resolveFunction(@Nullable QName qname,
+			int nargs) {
 		if ((nargs == 2 || nargs == 3)
+				&& qname != null
 				&& qname.getNamespaceURI().equals(
 						"http://www.example.org/documenttests")
 				&& qname.getLocalPart().equals("compareLength")) {
@@ -654,6 +644,7 @@ class XPathFunctions implements XPathFunctionResolver {
 			return compareLength;
 		}
 		if ((nargs == 2 || nargs == 3)
+				&& qname != null
 				&& qname.getNamespaceURI().equals(
 						"http://www.example.org/documenttests")
 				&& qname.getLocalPart().equals("item")) {
@@ -667,7 +658,7 @@ class XPathFunctions implements XPathFunctionResolver {
 
 class CompareLengthFunction implements XPathFunction {
 
-	public static String getString(Object o) {
+	public static @Nullable String getString(Object o) {
 		if (o instanceof String) {
 			return (String) o;
 		}
@@ -681,9 +672,9 @@ class CompareLengthFunction implements XPathFunction {
 	}
 
 	@Override
-	public Object evaluate(@SuppressWarnings("rawtypes") List args)
+	public Object evaluate(@SuppressWarnings("rawtypes") @Nullable List args)
 			throws XPathFunctionException {
-		if (args.size() < 2 || args.size() > 3) {
+		if (args == null || args.size() < 2 || args.size() > 3) {
 			throw new XPathFunctionException("two or three arguments needed");
 		}
 
@@ -734,8 +725,8 @@ class CompareLengthFunction implements XPathFunction {
 		return value;
 	}
 
-	private boolean evaluate(String length, String reference, String tolerance)
-			throws XPathFunctionException {
+	private boolean evaluate(String length, String reference,
+			@Nullable String tolerance) throws XPathFunctionException {
 		double lengthPx = convertToPx(length);
 		double referencePx = convertToPx(reference);
 		double tolerancePx = referencePx * 0.03; // default allows 3% error
@@ -748,10 +739,11 @@ class CompareLengthFunction implements XPathFunction {
 
 class ItemFunction implements XPathFunction {
 	@Override
-	public Object evaluate(@SuppressWarnings("rawtypes") List args)
+	public @Nullable Object evaluate(
+			@SuppressWarnings("rawtypes") @Nullable List args)
 			throws XPathFunctionException {
 
-		if (args.size() < 2 || args.size() > 3) {
+		if (args == null || args.size() < 2 || args.size() > 3) {
 			throw new XPathFunctionException("two or three arguments needed");
 		}
 

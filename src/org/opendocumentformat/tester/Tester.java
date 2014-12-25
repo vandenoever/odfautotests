@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.example.documenttests.ArgumentType;
 import org.example.documenttests.CommandReportType;
 import org.example.documenttests.CommandType;
@@ -165,14 +166,17 @@ public class Tester {
 
 	private void evaluateTest(TargetType target, File result, OutputType out,
 			Map<String, String> nsmap, TargetReportType report) {
-		OutputReportType output = getOutputReportType(report,
-				Main.getFileType(result.getName()));
-		output.setPath(result.getPath());
-		output.setSize(result.length());
-		ValidationReportType vreport = new ValidationReportType();
-		output.setValidation(vreport);
-		System.out.println("> " + result.getPath());
-		odfchecker.check(result, output, out, nsmap);
+		@Nullable
+		FiletypeType type = Main.getFileType(result.getName());
+		if (type != null) {
+			OutputReportType output = getOutputReportType(report, type);
+			output.setPath(result.getPath());
+			output.setSize(result.length());
+			ValidationReportType vreport = new ValidationReportType();
+			output.setValidation(vreport);
+			System.out.println("> " + result.getPath());
+			odfchecker.check(result, output, out, nsmap);
+		}
 	}
 
 	private void evaluateTest(TargetType target, File result, PdfType pdf,
@@ -321,7 +325,7 @@ public class Tester {
 
 	static final Map<String, String> exeCache = new HashMap<String, String>();
 
-	public static String resolveExe(String exe) {
+	public static @Nullable String resolveExe(String exe) {
 		if (exeCache.containsKey(exe)) {
 			return exeCache.get(exe);
 		}
@@ -357,7 +361,7 @@ public class Tester {
 	}
 
 	public static CommandReportType runCommand(String cmd[],
-			Map<String, String> env) {
+			@Nullable Map<String, String> env) {
 		cmd[0] = resolveExe(cmd[0]);
 		if (env == null) {
 			env = new HashMap<String, String>();
@@ -423,8 +427,8 @@ public class Tester {
 
 class Reader extends Thread {
 
-	InputStream in;
-	ByteArrayOutputStream out;
+	final InputStream in;
+	final ByteArrayOutputStream out;
 	boolean keepRunning;
 
 	Reader(InputStream in) {
@@ -478,7 +482,7 @@ class Reader extends Thread {
 }
 
 class Waiter extends Thread {
-	private Thread thread;
+	private @Nullable Thread thread;
 
 	Waiter(Thread t) {
 		this.thread = t;
@@ -498,7 +502,7 @@ class Waiter extends Thread {
 		thread = null;
 	}
 
-	private synchronized Thread getThread() {
+	private synchronized @Nullable Thread getThread() {
 		return thread;
 	}
 

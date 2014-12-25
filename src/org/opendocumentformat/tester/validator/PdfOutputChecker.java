@@ -59,11 +59,12 @@ public class PdfOutputChecker {
 		} catch (TranscoderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new Error(e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new Error(e);
 		}
-
 		// create the new image, canvas size is the max. of both image sizes
 		int w = Math.max(pdfimage.getWidth(), svgimage.getWidth());
 		int h = Math.max(pdfimage.getHeight(), svgimage.getHeight());
@@ -202,7 +203,9 @@ public class PdfOutputChecker {
 				e.printStackTrace();
 			}
 			try {
-				document.close();
+				if (document != null) {
+					document.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

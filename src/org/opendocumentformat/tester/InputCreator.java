@@ -52,21 +52,11 @@ public class InputCreator {
 
 	final ODFVersion version;
 
-	Document content;
-	Document styles;
-	Document meta;
-	Document settings;
-	Document manifest;
-
-	Element documentStylesElement;
-	Element stylesElement;
-	Element stylesAutomaticStylesElement;
-	Element masterStylesElement;
-
-	Element documentContentElement;
-	Element contentAutomaticStylesElement;
-	Element bodyElement;
-	Element bodyChildElement;
+	Content content;
+	Styles styles;
+	final Document meta;
+	final Document settings;
+	final Document manifest;
 
 	final Transformer xformer;
 
@@ -92,7 +82,7 @@ public class InputCreator {
 		if (version.contains("1.2")) {
 			return ODFVersion.v1_2;
 		}
-		return null;
+		throw new Error("Implementation error");
 	}
 
 	static String getODFType(FiletypeType type) {
@@ -193,7 +183,7 @@ public class InputCreator {
 		case OTH_1_2_EXTXML:
 			return "text-master";
 		default:
-			return null;
+			throw new Error("Implementation error");
 		}
 	}
 
@@ -225,7 +215,7 @@ public class InputCreator {
 			xformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			xformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new Error(e);
 		}
 		this.xformer = xformer;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -234,105 +224,20 @@ public class InputCreator {
 		try {
 			builder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new Error(e);
 		}
 		domimplementation = builder.getDOMImplementation();
-	}
 
-	private void createNewDocument() {
-		createNewContent();
-		createNewStyles();
+		content = new Content(domimplementation, version, type);
+		styles = new Styles(domimplementation, version);
 		manifest = createNewManifest();
 		meta = createNewMeta();
 		settings = createNewSettings();
 	}
 
-	private void createNewContent() {
-		content = domimplementation.createDocument(officens,
-				"document-content", null);
-		content.setXmlStandalone(true);
-		documentContentElement = content.getDocumentElement();
-		setAttribute(documentContentElement, "office", officens, "version",
-				version.toString());
-		contentAutomaticStylesElement = content.createElementNS(officens,
-				"automatic-styles");
-		documentContentElement.appendChild(contentAutomaticStylesElement);
-		bodyElement = content.createElementNS(officens, "body");
-		documentContentElement.appendChild(bodyElement);
-		bodyChildElement = content.createElementNS(officens, getODFType(type));
-		bodyElement.appendChild(bodyChildElement);
-	}
-
-	private void createNewStyles() {
-		styles = domimplementation.createDocument(officens, "document-styles",
-				null);
-		styles.setXmlStandalone(true);
-		documentStylesElement = styles.getDocumentElement();
-		setAttribute(documentStylesElement, "office", officens, "version",
-				version.toString());
-
-		// set default font to Helvetica 12pt
-		Element fontFaceDecls = styles.createElementNS(officens,
-				"style:font-face-decls");
-		documentStylesElement.appendChild(fontFaceDecls);
-		Element fontFace = styles.createElementNS(stylens, "font-face");
-		setAttribute(fontFace, "style", stylens, "font-family-generic", "swiss");
-		setAttribute(fontFace, "style", stylens, "font-pitch", "variable");
-		setAttribute(fontFace, "style", stylens, "name", "Helvetica");
-		setAttribute(fontFace, "svg", svgns, "font-family", "'Helvetica'");
-		fontFaceDecls.appendChild(fontFace);
-
-		stylesElement = styles.createElementNS(officens, "styles");
-		documentStylesElement.appendChild(stylesElement);
-
-		Element textProperties = styles.createElementNS(stylens,
-				"text-properties");
-		setAttribute(textProperties, "style", stylens, "font-name", "Helvetica");
-		setAttribute(textProperties, "fo", fons, "font-size", "12pt");
-
-		Element graphicProperties = styles.createElementNS(stylens,
-				"graphic-properties");
-		setAttribute(graphicProperties, "draw", drawns, "fill", "none");
-		setAttribute(graphicProperties, "draw", drawns, "stroke", "none");
-
-		Element defaultStyle = styles.createElementNS(stylens, "default-style");
-		setAttribute(defaultStyle, "style", stylens, "family", "text");
-		stylesElement.appendChild(defaultStyle);
-		defaultStyle.appendChild(textProperties);
-
-		defaultStyle.cloneNode(true);
-		setAttribute(defaultStyle, "style", stylens, "family", "paragraph");
-		stylesElement.appendChild(defaultStyle);
-
-		defaultStyle.cloneNode(true);
-		setAttribute(defaultStyle, "style", stylens, "family", "graphic");
-		defaultStyle.insertBefore(graphicProperties,
-				defaultStyle.getFirstChild());
-		stylesElement.appendChild(defaultStyle);
-
-		stylesAutomaticStylesElement = styles.createElementNS(officens,
-				"automatic-styles");
-		documentStylesElement.appendChild(stylesAutomaticStylesElement);
-		masterStylesElement = styles.createElementNS(officens, "master-styles");
-		documentStylesElement.appendChild(masterStylesElement);
-
-		// provide a simple layout by defaulst
-		Element layout = styles.createElementNS(stylens, "page-layout");
-		setAttribute(layout, "style", stylens, "name", "TestLayout");
-		Element layoutProperties = styles.createElementNS(stylens,
-				"page-layout-properties");
-		setAttribute(layoutProperties, "fo", fons, "margin", "1cm");
-		setAttribute(layoutProperties, "fo", fons, "page-height", "12cm");
-		setAttribute(layoutProperties, "fo", fons, "page-width", "10cm");
-		layout.appendChild(layoutProperties);
-		stylesAutomaticStylesElement.appendChild(layout);
-
-		Element masterStyleElement = styles.createElementNS(stylens,
-				"master-page");
-		setAttribute(masterStyleElement, "style", stylens, "name", "Standard");
-		setAttribute(masterStyleElement, "style", stylens, "page-layout-name",
-				"TestLayout");
-		masterStylesElement.appendChild(masterStyleElement);
+	private void createNewDocument() {
+		content = new Content(domimplementation, version, type);
+		styles = new Styles(domimplementation, version);
 	}
 
 	private Document createNewManifest() {
@@ -372,8 +277,8 @@ public class InputCreator {
 		return doc;
 	}
 
-	private static void setAttribute(Element e, String prefix, String ns,
-			String name, String value) {
+	static void setAttribute(Element e, String prefix, String ns, String name,
+			String value) {
 		Attr a = e.getOwnerDocument().createAttributeNS(ns, name);
 		a.setPrefix(prefix);
 		a.setValue(value);
@@ -398,14 +303,14 @@ public class InputCreator {
 	private void setStylesPart(Element e) {
 		String ns = e.getNamespaceURI();
 		String name = e.getLocalName();
-		e = (Element) styles.importNode(e, true);
+		e = (Element) styles.styles.importNode(e, true);
 		if (ns.equals(officens)) {
 			if (name.equals("styles")) {
-				merge(e, stylesElement);
+				merge(e, styles.stylesElement);
 			} else if (name.equals("automatic-styles")) {
-				merge(e, stylesAutomaticStylesElement);
+				merge(e, styles.stylesAutomaticStylesElement);
 			} else if (name.equals("master-styles")) {
-				merge(e, masterStylesElement);
+				merge(e, styles.masterStylesElement);
 			}
 		}
 	}
@@ -413,14 +318,14 @@ public class InputCreator {
 	private boolean setContentPart(Element e) {
 		String ns = e.getNamespaceURI();
 		String name = e.getLocalName();
-		e = (Element) content.importNode(e, true);
+		e = (Element) content.content.importNode(e, true);
 		if (ns.equals(officens)) {
 			if (name.equals(getODFType(type))) {
-				bodyChildElement.getParentNode().replaceChild(e,
-						bodyChildElement);
+				content.bodyChildElement.getParentNode().replaceChild(e,
+						content.bodyChildElement);
 				return true;
 			} else if (name.equals("automatic-styles")) {
-				merge(e, contentAutomaticStylesElement);
+				merge(e, content.contentAutomaticStylesElement);
 				return true;
 			}
 		}
@@ -465,10 +370,11 @@ public class InputCreator {
 			setDocumentPart(e);
 		}
 		NamespaceCleaner nc = new NamespaceCleaner();
-		nc.cleanNamespaces(content);
-		nc.cleanNamespaces(styles);
-		documentStylesElement.setAttributeNS(xmlnsns, "xmlns:of", ofns);
-		documentContentElement.setAttributeNS(xmlnsns, "xmlns:of", ofns);
+		nc.cleanNamespaces(content.content);
+		nc.cleanNamespaces(styles.styles);
+		styles.documentStylesElement.setAttributeNS(xmlnsns, "xmlns:of", ofns);
+		content.documentContentElement
+				.setAttributeNS(xmlnsns, "xmlns:of", ofns);
 	}
 
 	void createInput(File target, InputType input) {
@@ -482,8 +388,8 @@ public class InputCreator {
 					+ getODFMimeType(type));
 			zos.setMethod(ZipOutputStream.DEFLATED);
 			addEntry(zos, "META-INF/manifest.xml", manifest);
-			addEntry(zos, "content.xml", content);
-			addEntry(zos, "styles.xml", styles);
+			addEntry(zos, "content.xml", content.content);
+			addEntry(zos, "styles.xml", styles.styles);
 			addEntry(zos, "meta.xml", meta);
 			addEntry(zos, "settings.xml", settings);
 			zos.flush();
@@ -526,5 +432,131 @@ public class InputCreator {
 			e.printStackTrace();
 		}
 		zos.closeEntry();
+	}
+}
+
+class Content {
+	final Document content;
+	final Element documentContentElement;
+	final Element bodyElement;
+	final Element bodyChildElement;
+	final Element contentAutomaticStylesElement;
+
+	Content(DOMImplementation domimplementation,
+			InputCreator.ODFVersion version, FiletypeType type) {
+		content = domimplementation.createDocument(InputCreator.officens,
+				"document-content", null);
+		content.setXmlStandalone(true);
+		documentContentElement = content.getDocumentElement();
+		InputCreator.setAttribute(documentContentElement, "office",
+				InputCreator.officens, "version", version.toString());
+		contentAutomaticStylesElement = content.createElementNS(
+				InputCreator.officens, "automatic-styles");
+		documentContentElement.appendChild(contentAutomaticStylesElement);
+		bodyElement = content.createElementNS(InputCreator.officens, "body");
+		documentContentElement.appendChild(bodyElement);
+		bodyChildElement = content.createElementNS(InputCreator.officens,
+				InputCreator.getODFType(type));
+		bodyElement.appendChild(bodyChildElement);
+	}
+}
+
+class Styles {
+	final Document styles;
+	final Element documentStylesElement;
+	final Element stylesElement;
+	final Element stylesAutomaticStylesElement;
+	final Element masterStylesElement;
+
+	Styles(DOMImplementation domimplementation, InputCreator.ODFVersion version) {
+		styles = domimplementation.createDocument(InputCreator.officens,
+				"document-styles", null);
+		styles.setXmlStandalone(true);
+		documentStylesElement = styles.getDocumentElement();
+		InputCreator.setAttribute(documentStylesElement, "office",
+				InputCreator.officens, "version", version.toString());
+
+		// set default font to Helvetica 12pt
+		Element fontFaceDecls = styles.createElementNS(InputCreator.officens,
+				"style:font-face-decls");
+		documentStylesElement.appendChild(fontFaceDecls);
+		Element fontFace = styles.createElementNS(InputCreator.stylens,
+				"font-face");
+		InputCreator.setAttribute(fontFace, "style", InputCreator.stylens,
+				"font-family-generic", "swiss");
+		InputCreator.setAttribute(fontFace, "style", InputCreator.stylens,
+				"font-pitch", "variable");
+		InputCreator.setAttribute(fontFace, "style", InputCreator.stylens,
+				"name", "Helvetica");
+		InputCreator.setAttribute(fontFace, "svg", InputCreator.svgns,
+				"font-family", "'Helvetica'");
+		fontFaceDecls.appendChild(fontFace);
+
+		stylesElement = styles.createElementNS(InputCreator.officens, "styles");
+		documentStylesElement.appendChild(stylesElement);
+
+		Element textProperties = styles.createElementNS(InputCreator.stylens,
+				"text-properties");
+		InputCreator.setAttribute(textProperties, "style",
+				InputCreator.stylens, "font-name", "Helvetica");
+		InputCreator.setAttribute(textProperties, "fo", InputCreator.fons,
+				"font-size", "12pt");
+
+		Element graphicProperties = styles.createElementNS(
+				InputCreator.stylens, "graphic-properties");
+		InputCreator.setAttribute(graphicProperties, "draw",
+				InputCreator.drawns, "fill", "none");
+		InputCreator.setAttribute(graphicProperties, "draw",
+				InputCreator.drawns, "stroke", "none");
+
+		Element defaultStyle = styles.createElementNS(InputCreator.stylens,
+				"default-style");
+		InputCreator.setAttribute(defaultStyle, "style", InputCreator.stylens,
+				"family", "text");
+		stylesElement.appendChild(defaultStyle);
+		defaultStyle.appendChild(textProperties);
+
+		defaultStyle.cloneNode(true);
+		InputCreator.setAttribute(defaultStyle, "style", InputCreator.stylens,
+				"family", "paragraph");
+		stylesElement.appendChild(defaultStyle);
+
+		defaultStyle.cloneNode(true);
+		InputCreator.setAttribute(defaultStyle, "style", InputCreator.stylens,
+				"family", "graphic");
+		defaultStyle.insertBefore(graphicProperties,
+				defaultStyle.getFirstChild());
+		stylesElement.appendChild(defaultStyle);
+
+		stylesAutomaticStylesElement = styles.createElementNS(
+				InputCreator.officens, "automatic-styles");
+		documentStylesElement.appendChild(stylesAutomaticStylesElement);
+		masterStylesElement = styles.createElementNS(InputCreator.officens,
+				"master-styles");
+		documentStylesElement.appendChild(masterStylesElement);
+
+		// provide a simple layout by defaulst
+		Element layout = styles.createElementNS(InputCreator.stylens,
+				"page-layout");
+		InputCreator.setAttribute(layout, "style", InputCreator.stylens,
+				"name", "TestLayout");
+		Element layoutProperties = styles.createElementNS(InputCreator.stylens,
+				"page-layout-properties");
+		InputCreator.setAttribute(layoutProperties, "fo", InputCreator.fons,
+				"margin", "1cm");
+		InputCreator.setAttribute(layoutProperties, "fo", InputCreator.fons,
+				"page-height", "12cm");
+		InputCreator.setAttribute(layoutProperties, "fo", InputCreator.fons,
+				"page-width", "10cm");
+		layout.appendChild(layoutProperties);
+		stylesAutomaticStylesElement.appendChild(layout);
+
+		Element masterStyleElement = styles.createElementNS(
+				InputCreator.stylens, "master-page");
+		InputCreator.setAttribute(masterStyleElement, "style",
+				InputCreator.stylens, "name", "Standard");
+		InputCreator.setAttribute(masterStyleElement, "style",
+				InputCreator.stylens, "page-layout-name", "TestLayout");
+		masterStylesElement.appendChild(masterStyleElement);
 	}
 }

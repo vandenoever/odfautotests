@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.example.documenttests.DocumenttestsType;
 import org.example.documenttests.DocumenttestsconfigType;
 import org.example.documenttests.DocumenttestsreportType;
@@ -58,12 +59,14 @@ public class Main {
 		class Handler extends ValidationEventCollector {
 			public int linenumber;
 			public int offset;
-			public ValidationEvent lastEvent = null;
+			public @Nullable ValidationEvent lastEvent = null;
 
 			@Override
-			public boolean handleEvent(ValidationEvent event) {
-				linenumber = event.getLocator().getLineNumber();
-				offset = event.getLocator().getOffset();
+			public boolean handleEvent(@Nullable ValidationEvent event) {
+				if (event != null) {
+					linenumber = event.getLocator().getLineNumber();
+					offset = event.getLocator().getOffset();
+				}
 				lastEvent = event;
 				return false;
 			}
@@ -175,13 +178,12 @@ public class Main {
 		}
 	}
 
-	static private void fatalFileError(int linenumber, Throwable t, File file) {
+	static private Error fatalFileError(int linenumber, Throwable t, File file) {
 		while (t.getMessage() == null & t.getCause() != null) {
 			t = t.getCause();
 		}
-		System.err.println("Could not load " + file.getPath() + " line "
-				+ linenumber + ": " + t.getMessage());
-		System.exit(1);
+		return new Error("Could not load " + file.getPath() + " line "
+				+ linenumber + ": " + t.getMessage(), t);
 	}
 
 	/**
@@ -205,7 +207,7 @@ public class Main {
 	}
 
 	// derive the file type from the file suffix. see getSuffix()
-	static FiletypeType getFileType(String name) {
+	static @Nullable FiletypeType getFileType(String name) {
 		if (name.endsWith(".pdf")) {
 			return FiletypeType.PDF;
 		}
@@ -350,7 +352,7 @@ public class Main {
 		try {
 			tests = loader.loadTests(conf.tests, nsmap);
 		} catch (Throwable t) {
-			fatalFileError(loader.handler.linenumber, t, conf.tests);
+			throw fatalFileError(loader.handler.linenumber, t, conf.tests);
 		}
 		// create any missing input files
 		createInputFiles(conf, tests);
@@ -360,11 +362,11 @@ public class Main {
 		if (conf.runConfiguration != null) {
 			try {
 				config = loader.loadConfig(conf.runConfiguration);
+				removeMissingTargets(config);
 			} catch (Throwable t) {
 				fatalFileError(loader.handler.linenumber, t,
 						conf.runConfiguration);
 			}
-			removeMissingTargets(config);
 		}
 
 		Tester tester = null;

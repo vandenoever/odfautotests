@@ -9,33 +9,40 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class RunConfiguration {
 
 	final File inputDir;
 	final File resultDir;
-	final File runConfiguration;
+	final @Nullable File runConfiguration;
 	final File tests;
 
 	private RunConfiguration(File inputDir, File resultDir,
-			File runConfiguration, File tests) {
+			@Nullable File runConfiguration, File tests) {
 		this.inputDir = inputDir;
 		this.resultDir = resultDir;
 		this.runConfiguration = runConfiguration;
 		this.tests = tests;
 	}
 
-	static File getReadableFile(Options options, CommandLine line, Option option)
-			throws ArgumentException {
+	static @Nullable File getOptionalReadableFile(Options options,
+			CommandLine line, Option option) throws ArgumentException {
 		String shorto = option.getOpt();
 		File file = null;
 		if (line.hasOption(shorto)) {
-			file = new File(line.getOptionValue(shorto));
-			if (!file.exists() || !file.isFile() || !file.canRead()) {
-				error(options, "Option " + shorto + "/"
-						+ option.getLongOpt()
-						+ " should be followed by a readable file path.");
-			}
+			file = getReadableFile(options, line, option);
+		}
+		return file;
+	}
+
+	static File getReadableFile(Options options, CommandLine line, Option option)
+			throws ArgumentException {
+		String shorto = option.getOpt();
+		File file = new File(line.getOptionValue(shorto));
+		if (!file.exists() || !file.isFile() || !file.canRead()) {
+			error(options, "Option " + shorto + "/" + option.getLongOpt()
+					+ " should be followed by a readable file path.");
 		}
 		return file;
 	}
@@ -45,20 +52,19 @@ public class RunConfiguration {
 		String shorto = option.getOpt();
 		File dir = new File(line.getOptionValue(shorto));
 		if (dir.exists() && !dir.isDirectory()) {
-			error(options, "Option " + shorto + "/"
-					+ option.getLongOpt()
+			error(options, "Option " + shorto + "/" + option.getLongOpt()
 					+ " should be followed by an directory path.");
 		} else if (!dir.exists() && !dir.mkdirs()) {
-			error(options, "The directory "
-					+ dir.getPath() + " cannot be created.");
+			error(options, "The directory " + dir.getPath()
+					+ " cannot be created.");
 		}
 		return dir;
 	}
 
-	static void error(Options options, String msg) throws ArgumentException {
+	static ArgumentException error(Options options, String msg) {
 		System.out.println("Error: " + msg);
 		usage(options);
-		throw new ArgumentException(msg);
+		return new ArgumentException(msg);
 	}
 
 	static RunConfiguration parseArguments(String[] args)
@@ -101,11 +107,11 @@ public class RunConfiguration {
 			line = parser.parse(options, args);
 			File i = getDir(options, line, inputDir);
 			File r = getDir(options, line, resultDir);
-			File c = getReadableFile(options, line, runConfiguration);
+			File c = getOptionalReadableFile(options, line, runConfiguration);
 			File t = getReadableFile(options, line, tests);
 			conf = new RunConfiguration(i, r, c, t);
 		} catch (ParseException e) {
-			error(options, e.getMessage());
+			throw error(options, e.getMessage());
 		}
 		return conf;
 	}
