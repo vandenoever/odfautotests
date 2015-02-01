@@ -12,4 +12,4 @@ cp spec.css out
 # remove DTD so XSLT process will load the document
 perl -pi -e 's#<!DOCTYPE math:math PUBLIC "-//OpenOffice.org//DTD Modified W3C MathML 1.01//EN" "math.dtd">##' out/*/*/content.xml
 
-xslt2 odt2html.xsl out/v1.1/content.xml
+java -jar ../lib/saxon9he.jar -dtd:off -expand:off -a:off -xsl:"odt2html.xsl" -s:"out/v1.1/content.xml"
