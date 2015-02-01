@@ -362,7 +362,11 @@ public class Tester {
 
 	public static CommandReportType runCommand(String cmd[],
 			@Nullable Map<String, String> env) {
-		cmd[0] = resolveExe(cmd[0]);
+		String exe = resolveExe(cmd[0]);
+		if (exe == null) {
+			throw new Error("Cannot find program " + cmd[0]);
+		}
+		cmd[0] = exe;
 		if (env == null) {
 			env = new HashMap<String, String>();
 		}
