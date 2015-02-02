@@ -463,6 +463,8 @@
     </xsl:for-each-group>
   </xsl:template>
 
+  <!-- Convert the content below a text:h of a given level to html.
+       This function is called recursively for each possible header level. -->
   <xsl:template name="group">
     <xsl:param name="level" select="1"/>
     <xsl:param name="group" select="node()"/>
@@ -500,6 +502,7 @@
     </xsl:for-each-group>
   </xsl:template>
 
+  <!-- Convert the office:text element into an html tree -->
   <xsl:template match="office:text">
     <xsl:call-template name="group"/>
     <xsl:call-template name="appendices"/>
@@ -542,9 +545,12 @@
     </div>
   </xsl:template>
 
+  <!-- Write each section of the content.xml into a separate file.
+       -->
   <xsl:template name="writeSections">
     <xsl:param name="tree"/>
     <xsl:param name="dir" as="xsd:string"/>
+    <xsl:param name="version" as="xsd:string"/>
     <xsl:param name="documentName" as="xsd:string"/>
     <xsl:for-each select="$tree//h:span[@class='number']">
       <xsl:variable name="number" select="." as="xsd:string"/>
@@ -557,16 +563,17 @@
         </xsl:call-template>
       </xsl:variable>
       <xsl:call-template name="html">
-        <xsl:with-param name="href" select="concat($dir,$number,'.xhtml')"/>
+        <xsl:with-param name="href" select="concat($dir,$version,'/',$number,'.xhtml')"/>
         <xsl:with-param name="title" select="$h"/>
         <xsl:with-param name="body" select="$enhanced"/>
       </xsl:call-template>
+      <enumeration value="{$version}/{$number}"/>
     </xsl:for-each>
-      <xsl:call-template name="html">
-        <xsl:with-param name="href" select="concat($dir,'all.xhtml')"/>
-        <xsl:with-param name="title" select="'all'"/>
-        <xsl:with-param name="body" select="$tree"/>
-      </xsl:call-template>
+    <xsl:call-template name="html">
+      <xsl:with-param name="href" select="concat($dir,$version,'/','all.xhtml')"/>
+      <xsl:with-param name="title" select="'all'"/>
+      <xsl:with-param name="body" select="$tree"/>
+    </xsl:call-template>
   </xsl:template>
 
   <xsl:template name="index">
@@ -577,19 +584,27 @@
     <xsl:copy-of select="$tree/node()[not(@id) and not(preceding-sibling::h:div[@id])]"/>
   </xsl:template>
 
+  <!-- Convert one version of the specification.
+       The file out/$v/content.xml is the input file. -->
   <xsl:template name="convert">
     <xsl:param name="v"/>
-<xsl:message><xsl:value-of select="$v"/></xsl:message>
+    <xsl:message>
+      <xsl:value-of select="$v"/>
+    </xsl:message>
     <xsl:variable name="dir" select="concat('out/', $v, '/')"/>
     <xsl:variable name="doc" select="document(concat($dir,'content.xml'))"/>
+    <!-- convert the document into an HTML tree -->
     <xsl:variable name="tree">
       <xsl:apply-templates select="$doc/office:document-content/office:body/office:text"/>
     </xsl:variable>
+    <!-- write each section of the HTML tree into a separate file -->
     <xsl:call-template name="writeSections">
       <xsl:with-param name="tree" select="$tree"/>
-      <xsl:with-param name="dir" select="$dir"/>
+      <xsl:with-param name="dir" select="'out/'"/>
+      <xsl:with-param name="version" select="$v"/>
       <xsl:with-param name="documentName" select="c:getDocumentName($doc)"/>
     </xsl:call-template>
+    <!-- create an index and write it to index.xhtml -->
     <xsl:variable name="index">
       <xsl:call-template name="index">
         <xsl:with-param name="tree" select="$tree"/>
@@ -602,21 +617,44 @@
     </xsl:call-template>
   </xsl:template>
 
+  <!-- convert each version of the specification -->
   <xsl:template match="/">
-    <xsl:call-template name="convert">
-      <xsl:with-param name="v" select="'v1.1'"/>
-    </xsl:call-template>
-    <xsl:call-template name="convert">
-      <xsl:with-param name="v" select="'v1.2'"/>
-    </xsl:call-template>
-    <xsl:call-template name="convert">
-      <xsl:with-param name="v" select="'v1.2-part1'"/>
-    </xsl:call-template>
-    <xsl:call-template name="convert">
-      <xsl:with-param name="v" select="'v1.2-part2'"/>
-    </xsl:call-template>
-    <xsl:call-template name="convert">
-      <xsl:with-param name="v" select="'v1.2-part3'"/>
-    </xsl:call-template>
+    <xsl:variable name="sectionlist">
+      <xsl:call-template name="convert">
+        <xsl:with-param name="v" select="'v1.1'"/>
+      </xsl:call-template>
+      <xsl:call-template name="convert">
+        <xsl:with-param name="v" select="'v1.2'"/>
+      </xsl:call-template>
+      <xsl:call-template name="convert">
+        <xsl:with-param name="v" select="'v1.2-part1'"/>
+      </xsl:call-template>
+      <xsl:call-template name="convert">
+        <xsl:with-param name="v" select="'v1.2-part2'"/>
+      </xsl:call-template>
+      <xsl:call-template name="convert">
+        <xsl:with-param name="v" select="'v1.2-part3'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <!-- write the list of sections -->
+    <xsl:result-document href="specreferences.xsd" method="xml" indent="yes">
+      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/documenttests" xmlns:tns="http://www.example.org/documenttests" elementFormDefault="qualified">
+        <xs:simpleType name="specRefType">
+          <xs:restriction base="xs:token">
+            <xsl:for-each select="$sectionlist/*">
+              <xs:enumeration value="{@value}" />
+            </xsl:for-each>
+          </xs:restriction>
+        </xs:simpleType>
+        <xs:simpleType name='specRefsType'>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list itemType="tns:specRefType" />
+            </xs:simpleType>
+            <xs:minLength value='1' />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:schema>
+    </xsl:result-document>
   </xsl:template>
 </xsl:stylesheet>

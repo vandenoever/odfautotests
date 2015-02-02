@@ -9,7 +9,7 @@ unzip -q v1.2/OpenDocument-v1.2-part3.odt -d out/v1.2-part3
 
 cp spec.css out
 
-# remove DTD so XSLT process will load the document
-perl -pi -e 's#<!DOCTYPE math:math PUBLIC "-//OpenOffice.org//DTD Modified W3C MathML 1.01//EN" "math.dtd">##' out/*/*/content.xml
+# remove DTD in embedded documents so XSLT process will load the document
+find out/*/* -name content.xml -exec perl -pi -e 's#<!DOCTYPE math:math PUBLIC "-//OpenOffice.org//DTD Modified W3C MathML 1.01//EN" "math.dtd">##' {} +
 
-java -jar ../lib/saxon9he.jar -dtd:off -expand:off -a:off -xsl:"odt2html.xsl" -s:"out/v1.1/content.xml"
+java -jar ../lib/saxon9he.jar -dtd:off -expand:off -a:off -xsl:"odt2html.xsl" -s:"dummy.xml"

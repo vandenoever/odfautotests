@@ -8,7 +8,7 @@
 	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns="http://www.example.org/documenttests"
 	xsi:schemaLocation="http://www.example.org/documenttests documenttests.xsd">
 
-	<test name="simpletext">
+	<test name="simpletext" spec="v1.2-part1/5.1.3">
 		<input type="odt1.2">
 			<o:text>
 				<text:p>hello</text:p>
