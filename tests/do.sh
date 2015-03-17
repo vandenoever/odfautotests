@@ -8,3 +8,5 @@ xsltproc --stringparam mode odp createTextPropertiesTests.xsl createTextProperti
 xsltproc --stringparam mode odt createParagraphPropertiesTests.xsl createParagraphPropertiesTests.xsl | xmlstarlet fo > paragraph-properties-odt.xml
 xsltproc --stringparam mode ods createParagraphPropertiesTests.xsl createParagraphPropertiesTests.xsl | xmlstarlet fo > paragraph-properties-ods.xml
 xsltproc --stringparam mode odp createParagraphPropertiesTests.xsl createParagraphPropertiesTests.xsl | xmlstarlet fo > paragraph-properties-odp.xml
+
+xsltproc createTextChangeTrackingTests.xsl createTextChangeTrackingTests.xsl | xmlstarlet fo > textchangetrackingtests.xml
